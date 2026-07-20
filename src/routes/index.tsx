@@ -127,7 +127,7 @@ function Nav() {
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <a href="#" className="font-display text-xl font-semibold tracking-tight">
-          TRIA
+          GumLab
         </a>
         <nav className="hidden items-center gap-8 text-sm md:flex">
           <a href="#products" className="hover:opacity-70">Products</a>
@@ -634,7 +634,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
           <div>
-            <div className="font-display text-2xl">TRIA</div>
+            <div className="font-display text-2xl">GumLab</div>
             <div className="mono mt-2 text-[11px] uppercase tracking-widest text-muted-ink">
               EU / 001
             </div>
@@ -663,7 +663,7 @@ function Footer() {
             children.
           </p>
           <div className="mono mt-8 flex flex-wrap items-center justify-between gap-4 text-[10px] uppercase tracking-widest text-muted-ink">
-            <span>© 2026 TRIA · Made in the EU</span>
+            <span>© 2026 GumLab · Made in the EU</span>
             <span>Batch verification · Every shipment</span>
           </div>
         </div>
