@@ -84,6 +84,7 @@ const PRODUCTS: Product[] = [
     description:
       "A low, considered dose of melatonin with chelated magnesium. Built for the last hour of the day, not the first.",
     badge: "New batch",
+    cover: recoverCover.url,
   },
 ];
 
