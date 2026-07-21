@@ -185,6 +185,7 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
           <a href="#verification" className="hover:opacity-70">Verification</a>
           <a href="#reviews" className="hover:opacity-70">Reviews</a>
           <a href="#faq" className="hover:opacity-70">FAQ</a>
+          <a href="#about" className="hover:opacity-70">About us</a>
         </nav>
         <div className="flex items-center gap-2">
           <a
