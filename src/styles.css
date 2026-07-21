@@ -146,4 +146,14 @@
   will-change: opacity, transform;
 }
 
+@keyframes gumlab-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@utility marquee-track {
+  animation: gumlab-marquee 38s linear infinite;
+  will-change: transform;
+}
+.marquee-track:hover { animation-play-state: paused; }
+
 
