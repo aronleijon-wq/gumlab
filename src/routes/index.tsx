@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import recoverCover from "@/assets/recover-cover.png.asset.json";
 import calmCover from "@/assets/calm-cover.png.asset.json";
 import performCover from "@/assets/perform-cover.png.asset.json";
+import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -175,8 +176,8 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
   return (
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a href="#" className="font-display text-xl font-semibold tracking-tight">
-          GumLab
+        <a href="#" className="flex items-center" aria-label="GumLab">
+          <img src={gumlabLogo.url} alt="GumLab" className="h-10 w-auto" style={{ mixBlendMode: "multiply" }} />
         </a>
         <nav className="hidden items-center gap-8 text-sm md:flex">
           <a href="#products" className="hover:opacity-70">Shop</a>
@@ -972,7 +973,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
-            <div className="font-display text-2xl">GumLab</div>
+            <img src={gumlabLogo.url} alt="GumLab" className="h-14 w-auto" style={{ mixBlendMode: "multiply" }} />
             <div className="mono mt-2 text-[11px] uppercase tracking-widest text-muted-ink">
               EU / 001
             </div>
