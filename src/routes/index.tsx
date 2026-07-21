@@ -729,7 +729,7 @@ function StackBuilder({
               return (
                 <div
                   key={p.id}
-                  className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-6 py-6 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] ${i > 0 ? "hairline-t" : ""}`}
+                  className={`grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4 px-6 py-6 sm:grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] ${i > 0 ? "hairline-t" : ""}`}
                 >
                   <button
                     onClick={() =>
