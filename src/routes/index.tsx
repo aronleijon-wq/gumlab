@@ -202,39 +202,63 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
 
 function Hero() {
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-16 pb-16 md:pt-24 md:pb-24">
-      <div className="mb-8 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
-        <span className="mono">EU / 001</span>
-        <span className="hairline-t inline-block h-px w-8" />
-        <span>Third-party assayed · every batch</span>
-      </div>
-      <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-ink md:text-7xl lg:text-8xl">
-        One for the morning.<br />
-        One for whenever.<br />
-        <span style={{ color: "var(--recover)" }}>One for the night.</span>
-      </h1>
-      <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-ink">
-        Three gummies, built for the actual shape of your day — not a shelf of ten things that
-        overlap. Precisely dosed, independently assayed before every shipment, delivered in{" "}
-        <span className="mono text-ink">28</span>-day bags matched to your cycle.
-      </p>
-      <div className="mt-10 flex flex-wrap items-center gap-4">
-        <a
-          href="#stack"
-          className="hairline bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+    <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 md:pt-20 md:pb-24">
+      <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
+        {/* Left: rotating 3D Perform batch */}
+        <div
+          className="relative flex items-center justify-center"
+          style={{ perspective: "1200px" }}
         >
-          Shop the stack →
-        </a>
-        <a
-          href="#verification"
-          className="hairline px-6 py-3.5 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
-        >
-          See the lab results
-        </a>
+          <div
+            aria-hidden
+            className="absolute inset-x-8 bottom-4 h-6 rounded-full bg-ink/20 blur-2xl"
+          />
+          <img
+            src={performCover.url}
+            alt="PERFORM batch — creatine gummies"
+            className="spin3d w-full max-w-[420px] drop-shadow-[0_30px_40px_rgba(0,0,0,0.18)]"
+          />
+          <div className="hairline mono absolute left-2 top-2 bg-paper/85 px-2 py-1 text-[10px] uppercase tracking-widest text-muted-ink backdrop-blur-sm">
+            Batch PF-26-0001 · 99.4%
+          </div>
+        </div>
+
+        {/* Right: minimized copy */}
+        <div>
+          <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
+            <span className="mono">EU / 001</span>
+            <span className="hairline-t inline-block h-px w-8" />
+            <span>Third-party assayed</span>
+          </div>
+          <h1 className="font-display text-4xl leading-[1.05] tracking-tight text-ink md:text-6xl">
+            Morning. Anytime.{" "}
+            <span style={{ color: "var(--recover)" }}>Night.</span>
+          </h1>
+          <p className="mt-5 max-w-md text-base leading-relaxed text-muted-ink">
+            Three gummies for the shape of your day. Precisely dosed,
+            independently assayed, delivered in{" "}
+            <span className="mono text-ink">28</span>-day bags.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href="#stack"
+              className="hairline bg-brand px-6 py-3 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+            >
+              Shop the stack →
+            </a>
+            <a
+              href="#verification"
+              className="hairline px-5 py-3 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
+            >
+              Lab results
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
+
 
 function TrustRow() {
   const items = [
