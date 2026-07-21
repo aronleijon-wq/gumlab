@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import recoverCover from "@/assets/recover-cover.png.asset.json";
 import calmCover from "@/assets/calm-cover.png.asset.json";
 import performCover from "@/assets/perform-cover.png.asset.json";
+import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
