@@ -588,41 +588,82 @@ function StackBuilder({
           <aside className="hairline bg-ink text-paper">
             <div className="border-b border-white/10 px-6 py-4">
               <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
-                Your subscription
+                {isSub ? "Your subscription" : "Your one-time order"}
               </div>
+            </div>
+            <div className="border-b border-white/10 px-6 py-5">
+              <div className="mono mb-3 text-[10px] uppercase tracking-[0.2em] text-paper/60">
+                Purchase type
+              </div>
+              <div className="hairline grid grid-cols-2 border-white/20 text-xs">
+                <button
+                  onClick={() => setMode("subscribe")}
+                  className={`px-3 py-2.5 uppercase tracking-widest ${isSub ? "bg-paper text-ink" : "text-paper hover:bg-white/10"}`}
+                >
+                  Subscribe
+                </button>
+                <button
+                  onClick={() => setMode("onetime")}
+                  className={`border-l border-white/20 px-3 py-2.5 uppercase tracking-widest ${!isSub ? "bg-paper text-ink" : "text-paper hover:bg-white/10"}`}
+                >
+                  One-time
+                </button>
+              </div>
+              <p className="mono mt-3 text-[10px] leading-relaxed text-paper/60">
+                {isSub
+                  ? "Best price. Ships every 28 days. Pause or cancel anytime."
+                  : `Single delivery. +${Math.round(ONETIME_MARKUP * 100)}% vs. subscription. No stack discount.`}
+              </p>
             </div>
             <div className="px-6 py-6 space-y-4 text-sm">
               <SummaryRow label="Products selected" value={<span className="mono">{selectedCount} / 3</span>} />
-              <SummaryRow label="Bags per cycle" value={<span className="mono">{bagsPerCycle}</span>} />
-              <SummaryRow label="Subtotal / cycle" value={<span className="mono">€{fmt(subtotal)}</span>} />
               <SummaryRow
-                label={`Stack discount${discountPct ? "" : " (2+ products)"}`}
-                value={
-                  <span className="mono">
-                    {discountPct ? `−${discountPct}%` : "—"}
-                  </span>
-                }
+                label={isSub ? "Bags per cycle" : "Bags in order"}
+                value={<span className="mono">{bagsPerCycle}</span>}
               />
+              <SummaryRow
+                label={isSub ? "Subtotal / cycle" : "Subtotal"}
+                value={<span className="mono">€{fmt(subtotal)}</span>}
+              />
+              {isSub ? (
+                <SummaryRow
+                  label={`Stack discount${discountPct ? "" : " (2+ products)"}`}
+                  value={
+                    <span className="mono">
+                      {discountPct ? `−${discountPct}%` : "—"}
+                    </span>
+                  }
+                />
+              ) : (
+                <SummaryRow
+                  label="One-time surcharge"
+                  value={<span className="mono">+{markupPct}%</span>}
+                />
+              )}
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
-                Total per 28-day cycle
+                {isSub ? "Total per 28-day cycle" : "Total (one-time)"}
               </div>
               <div className="mono mt-2 font-display text-5xl">€{fmt(cycleTotal)}</div>
-              <div className="mono mt-2 text-xs text-paper/70">
-                = €{fmt(annual)} / year over 13 cycles
-              </div>
+              {isSub && (
+                <div className="mono mt-2 text-xs text-paper/70">
+                  = €{fmt(annual)} / year over 13 cycles
+                </div>
+              )}
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <button
                 disabled={selectedCount === 0}
                 className="w-full bg-paper px-4 py-3 text-xs font-medium uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-30"
               >
-                Start subscription
+                {isSub ? "Start subscription" : "Place one-time order"}
               </button>
               <p className="mt-4 text-[11px] leading-relaxed text-paper/60">
-                Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships
-                with the assayed batch certificate for its bags.
+                {isSub
+                  ? "Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships with the assayed batch certificate for its bags."
+                  : "Ships once with the assayed batch certificate for its bags. Switch to subscribe at checkout to save."}
+              </p>
               </p>
             </div>
           </aside>
