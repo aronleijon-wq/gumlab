@@ -26,6 +26,9 @@ type Product = {
   potency: string;
   lab: string;
   description: string;
+  rating: number;
+  reviews: number;
+  badge?: string;
 };
 
 const PRODUCTS: Product[] = [
@@ -45,6 +48,9 @@ const PRODUCTS: Product[] = [
     lab: "Eurofins Scientific",
     description:
       "A morning gummy formulated around a single, well-studied compound. No stimulants, no proprietary blends.",
+    rating: 4.8,
+    reviews: 1247,
+    badge: "Bestseller",
   },
   {
     id: "calm",
@@ -62,6 +68,8 @@ const PRODUCTS: Product[] = [
     lab: "Eurofins Scientific",
     description:
       "Standardised KSM-66 root extract paired with L-theanine. Take when the day calls for it.",
+    rating: 4.7,
+    reviews: 892,
   },
   {
     id: "recover",
@@ -79,6 +87,9 @@ const PRODUCTS: Product[] = [
     lab: "Eurofins Scientific",
     description:
       "A low, considered dose of melatonin with chelated magnesium. Built for the last hour of the day.",
+    rating: 4.9,
+    reviews: 1583,
+    badge: "New batch",
   },
 ];
 
@@ -99,7 +110,6 @@ function Index() {
     (sum, p) => sum + (stack[p.id].dose === 2 ? p.price2 : p.price1),
     0
   );
-  // Stack discount only applies to subscriptions
   const discountPct =
     mode === "subscribe" ? (selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0) : 0;
   const markupPct = mode === "onetime" ? Math.round(ONETIME_MARKUP * 100) : 0;
@@ -112,11 +122,14 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <Nav />
+      <AnnouncementBar />
+      <Nav cartCount={selected.length} cartTotal={cycleTotal} />
       <Hero />
+      <TrustRow />
       <DayArc />
-      <Verification />
       <ProductGrid stack={stack} setStack={setStack} />
+      <Verification />
+      <Reviews />
       <StackBuilder
         stack={stack}
         setStack={setStack}
@@ -130,12 +143,36 @@ function Index() {
         bagsPerCycle={bagsPerCycle}
         selectedCount={selected.length}
       />
+      <Faq />
       <Footer />
+      {selected.length > 0 && (
+        <StickyCart count={selected.length} total={cycleTotal} isSub={mode === "subscribe"} />
+      )}
     </div>
   );
 }
 
-function Nav() {
+function AnnouncementBar() {
+  const items = [
+    "Free EU shipping over €40",
+    "Third-party assayed · every batch",
+    "Pause or cancel anytime",
+    "Ships within 48 h from Rotterdam",
+  ];
+  return (
+    <div className="bg-ink text-paper">
+      <div className="mx-auto flex max-w-7xl items-center justify-center gap-8 overflow-hidden px-6 py-2 text-[10px] uppercase tracking-[0.2em]">
+        {items.map((t, i) => (
+          <span key={t} className={`mono ${i > 1 ? "hidden md:inline" : ""}`}>
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number }) {
   return (
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -143,24 +180,44 @@ function Nav() {
           GumLab
         </a>
         <nav className="hidden items-center gap-8 text-sm md:flex">
-          <a href="#products" className="hover:opacity-70">Products</a>
+          <a href="#products" className="hover:opacity-70">Shop</a>
           <a href="#verification" className="hover:opacity-70">Verification</a>
-          <a href="#stack" className="hover:opacity-70">Build your stack</a>
+          <a href="#reviews" className="hover:opacity-70">Reviews</a>
+          <a href="#faq" className="hover:opacity-70">FAQ</a>
         </nav>
-        <a
-          href="#stack"
-          className="hairline bg-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
-        >
-          Subscribe
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="#stack"
+            className="hairline flex items-center gap-2 bg-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
+          >
+            <span>Cart</span>
+            <span className="mono border-l border-paper/30 pl-2">
+              {cartCount} · €{fmt(cartTotal)}
+            </span>
+          </a>
+        </div>
       </div>
     </header>
   );
 }
 
+function Stars({ rating, size = "sm" }: { rating: number; size?: "sm" | "xs" }) {
+  const full = Math.round(rating);
+  const px = size === "xs" ? "text-[10px]" : "text-xs";
+  return (
+    <span className={`mono ${px} flex items-center gap-1`}>
+      <span aria-hidden className="tracking-tight">
+        {"★".repeat(full)}
+        <span className="opacity-30">{"★".repeat(5 - full)}</span>
+      </span>
+      <span className="text-muted-ink">{rating.toFixed(1)}</span>
+    </span>
+  );
+}
+
 function Hero() {
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-20 pb-16 md:pt-32 md:pb-24">
+    <section className="mx-auto max-w-7xl px-6 pt-16 pb-16 md:pt-24 md:pb-24">
       <div className="mb-8 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
         <span className="mono">EU / 001</span>
         <span className="hairline-t inline-block h-px w-8" />
@@ -176,12 +233,12 @@ function Hero() {
         before every shipment, and delivered in <span className="mono text-ink">28</span>-day bags
         matched to your billing cycle.
       </p>
-      <div className="mt-10 flex flex-wrap gap-3">
+      <div className="mt-10 flex flex-wrap items-center gap-4">
         <a
           href="#stack"
           className="hairline bg-ink px-6 py-3 text-sm font-medium uppercase tracking-widest text-paper hover:opacity-90"
         >
-          Build your stack
+          Shop the stack
         </a>
         <a
           href="#verification"
@@ -189,6 +246,37 @@ function Hero() {
         >
           See the lab results
         </a>
+        <div className="ml-2 flex items-center gap-3">
+          <Stars rating={4.8} />
+          <span className="mono text-xs text-muted-ink">3,722 verified reviews</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustRow() {
+  const items = [
+    { k: "Free EU shipping", v: "Orders over €40" },
+    { k: "60-day guarantee", v: "Full refund, no questions" },
+    { k: "Cancel anytime", v: "Manage from your dashboard" },
+    { k: "Batch certificate", v: "Ships with every order" },
+  ];
+  return (
+    <section className="hairline-t hairline-b bg-paper-2/40">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4">
+        {items.map((it, i) => (
+          <div
+            key={it.k}
+            className={`px-6 py-6 ${i > 0 ? "border-l border-hairline" : ""}`}
+          >
+            <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+              0{i + 1}
+            </div>
+            <div className="mt-2 text-sm font-medium">{it.k}</div>
+            <div className="mt-1 text-xs text-muted-ink">{it.v}</div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -196,7 +284,7 @@ function Hero() {
 
 function DayArc() {
   return (
-    <section className="hairline-t hairline-b bg-paper-2/40">
+    <section className="hairline-b bg-paper">
       <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3">
         {PRODUCTS.map((p, i) => (
           <div
@@ -225,11 +313,11 @@ function DayArc() {
 
 function Verification() {
   return (
-    <section id="verification" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+    <section id="verification" className="hairline-t mx-auto max-w-7xl px-6 py-24 md:py-32">
       <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-20">
         <div>
           <div className="mono mb-6 text-xs uppercase tracking-[0.2em] text-muted-ink">
-            § 02 — Verification
+            § 03 — Verification
           </div>
           <h2 className="font-display text-4xl leading-tight md:text-5xl">
             The functional gummy category has a dosing problem.
@@ -323,6 +411,42 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   );
 }
 
+function ProductVisual({ product }: { product: Product }) {
+  // Clinical, structured "product tile" — hairline grid, dot cluster suggesting 28 gummies, accent bar.
+  const dots = Array.from({ length: 28 });
+  return (
+    <div className="hairline-b relative aspect-[4/3] overflow-hidden bg-paper">
+      <div
+        className="absolute inset-x-0 top-0 h-1"
+        style={{ backgroundColor: product.accent }}
+        aria-hidden
+      />
+      <div className="absolute left-4 top-4 flex items-center gap-2">
+        <span className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+          {product.name} · 28 ct
+        </span>
+      </div>
+      <div className="absolute right-4 top-4 mono text-[10px] uppercase tracking-widest text-muted-ink">
+        {product.timeTag}
+      </div>
+      <div className="absolute inset-x-0 bottom-0 flex items-end justify-center px-8 pb-8">
+        <div className="grid grid-cols-7 gap-1.5">
+          {dots.map((_, i) => (
+            <span
+              key={i}
+              className="block h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: product.accent, opacity: 0.15 + (i % 7) * 0.11 }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="absolute bottom-3 left-4 mono text-[10px] text-muted-ink">
+        Batch {product.batch}
+      </div>
+    </div>
+  );
+}
+
 function ProductGrid({
   stack,
   setStack,
@@ -334,11 +458,11 @@ function ProductGrid({
 }) {
   return (
     <section id="products" className="hairline-t">
-      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
             <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
-              § 03 — Products
+              § 02 — Shop
             </div>
             <h2 className="font-display text-4xl leading-tight md:text-5xl">
               Three formulations.<br />No filler SKUs.
@@ -346,8 +470,8 @@ function ProductGrid({
           </div>
           <p className="max-w-md text-sm text-muted-ink">
             Every product is a single-purpose formulation built around one clinically-studied
-            compound (or a well-established pairing). Each ships as a bag of{" "}
-            <span className="mono text-ink">28</span> gummies.
+            compound. Ships as a bag of <span className="mono text-ink">28</span> gummies —
+            matched to a 28-day cycle.
           </p>
         </div>
 
@@ -393,7 +517,9 @@ function ProductCard({
 
   return (
     <article className="hairline flex flex-col bg-card">
-      <div className="hairline-b flex items-center justify-between px-6 py-4">
+      <ProductVisual product={product} />
+
+      <div className="hairline-b flex items-center justify-between px-6 py-3">
         <div className="flex items-center gap-2">
           <span
             className="inline-block h-2 w-2"
@@ -404,23 +530,36 @@ function ProductCard({
             {product.timeTag} · {product.timeLabel}
           </span>
         </div>
-        <span className="mono text-xs text-muted-ink">28 / bag</span>
+        {product.badge && (
+          <span
+            className="mono text-[10px] uppercase tracking-widest"
+            style={{ color: product.accent }}
+          >
+            {product.badge}
+          </span>
+        )}
       </div>
 
-      <div className="flex flex-1 flex-col px-6 py-8">
-        <h3 className="font-display text-4xl">{product.name}</h3>
+      <div className="flex flex-1 flex-col px-6 py-6">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="font-display text-3xl">{product.name}</h3>
+          <Stars rating={product.rating} size="xs" />
+        </div>
         <div
           className="mt-1 h-px w-8"
           style={{ backgroundColor: product.accent }}
         />
+        <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
+          {product.reviews.toLocaleString()} reviews · In stock
+        </div>
         <div className="mt-4 text-sm text-muted-ink">{product.ingredient}</div>
         <div className="mono mt-1 text-sm">{product.dose} per gummy</div>
 
-        <p className="mt-6 text-sm leading-relaxed text-muted-ink">
+        <p className="mt-5 text-sm leading-relaxed text-muted-ink">
           {product.description}
         </p>
 
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="mono mb-2 text-[10px] uppercase tracking-widest text-muted-ink">
             Daily dose
           </div>
@@ -443,7 +582,7 @@ function ProductCard({
           </div>
         </div>
 
-        <div className="hairline-t mt-8 flex items-end justify-between pt-6">
+        <div className="hairline-t mt-6 flex items-end justify-between pt-5">
           <div>
             <div className="mono text-3xl">€{fmt(price)}</div>
             <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
@@ -458,14 +597,14 @@ function ProductCard({
               onClick={onRemove}
               className="hairline px-4 py-2.5 text-xs font-medium uppercase tracking-widest hover:bg-paper-2"
             >
-              In stack ✓
+              In cart ✓
             </button>
           ) : (
             <button
               onClick={onAdd}
               className="bg-ink px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
             >
-              Add to stack
+              Add to cart
             </button>
           )}
         </div>
@@ -478,6 +617,95 @@ function ProductCard({
         </div>
       </div>
     </article>
+  );
+}
+
+function Reviews() {
+  const items = [
+    {
+      p: "PERFORM",
+      accent: "#B5652E",
+      name: "Elin S.",
+      loc: "Stockholm, SE",
+      r: 5,
+      title: "Actually assayed. Actually works.",
+      body:
+        "I switched from creatine powder for convenience and was skeptical. The published potency numbers on the batch page are the reason I stayed.",
+      date: "2 weeks ago",
+    },
+    {
+      p: "CALM",
+      accent: "#54613F",
+      name: "Marc L.",
+      loc: "Amsterdam, NL",
+      r: 5,
+      title: "Quiet effect, no drowsiness.",
+      body:
+        "I take it before meetings. It doesn't sedate — it just takes the edge off. KSM-66 dose is honest.",
+      date: "1 month ago",
+    },
+    {
+      p: "RECOVER",
+      accent: "#2E2A54",
+      name: "Sofia G.",
+      loc: "Barcelona, ES",
+      r: 5,
+      title: "The 0.5 mg melatonin is the right call.",
+      body:
+        "Most brands overshoot melatonin badly. A low dose plus magnesium is what I've wanted for years.",
+      date: "3 weeks ago",
+    },
+  ];
+  return (
+    <section id="reviews" className="hairline-t bg-paper-2/40">
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-24">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
+              § 04 — Reviews
+            </div>
+            <h2 className="font-display text-4xl leading-tight md:text-5xl">
+              3,722 verified reviews.
+            </h2>
+          </div>
+          <div className="flex items-center gap-6">
+            <div>
+              <div className="mono font-display text-4xl">4.8</div>
+              <Stars rating={4.8} />
+            </div>
+            <div className="mono max-w-[14rem] text-xs text-muted-ink">
+              Verified purchase reviews only. No paid placements, no gifted product.
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {items.map((r) => (
+            <div key={r.name} className="hairline flex flex-col bg-card p-6">
+              <div className="flex items-center justify-between">
+                <span className="mono text-[10px] uppercase tracking-widest" style={{ color: r.accent }}>
+                  {r.p}
+                </span>
+                <Stars rating={r.r} size="xs" />
+              </div>
+              <div className="mt-4 font-display text-lg leading-snug">{r.title}</div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-ink">{r.body}</p>
+              <div className="hairline-t mt-6 flex items-center justify-between pt-4 text-xs">
+                <div>
+                  <div>{r.name}</div>
+                  <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+                    {r.loc}
+                  </div>
+                </div>
+                <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+                  Verified · {r.date}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -510,11 +738,11 @@ function StackBuilder({
 }) {
   const isSub = mode === "subscribe";
   return (
-    <section id="stack" className="hairline-t bg-paper-2/50">
-      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="mb-14 max-w-3xl">
+    <section id="stack" className="hairline-t bg-paper">
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-28">
+        <div className="mb-12 max-w-3xl">
           <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
-            § 04 — Build your stack
+            § 05 — Build your stack
           </div>
           <h2 className="font-display text-4xl leading-tight md:text-5xl">
             Choose your products.<br />Choose your dose.
@@ -591,7 +819,7 @@ function StackBuilder({
           <aside className="hairline bg-ink text-paper">
             <div className="border-b border-white/10 px-6 py-4">
               <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
-                {isSub ? "Your subscription" : "Your one-time order"}
+                {isSub ? "Order summary" : "Order summary"}
               </div>
             </div>
             <div className="border-b border-white/10 px-6 py-5">
@@ -643,6 +871,10 @@ function StackBuilder({
                   value={<span className="mono">+{markupPct}%</span>}
                 />
               )}
+              <SummaryRow
+                label="Shipping (EU)"
+                value={<span className="mono">{cycleTotal >= 40 ? "Free" : "€3.90"}</span>}
+              />
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
@@ -660,18 +892,27 @@ function StackBuilder({
                 disabled={selectedCount === 0}
                 className="w-full bg-paper px-4 py-3 text-xs font-medium uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-30"
               >
-                {isSub ? "Start subscription" : "Place one-time order"}
+                {isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
               </button>
+              <div className="mono mt-4 flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest text-paper/50">
+                <span>Visa</span>
+                <span>·</span>
+                <span>Mastercard</span>
+                <span>·</span>
+                <span>Klarna</span>
+                <span>·</span>
+                <span>iDEAL</span>
+              </div>
               <p className="mt-4 text-[11px] leading-relaxed text-paper/60">
                 {isSub
-                  ? "Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships with the assayed batch certificate for its bags."
-                  : "Ships once with the assayed batch certificate for its bags. Switch to subscribe at checkout to save."}
+                  ? "Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships with the assayed batch certificate."
+                  : "Ships once with the assayed batch certificate. Switch to subscribe at checkout to save."}
               </p>
             </div>
           </aside>
         </div>
 
-        <div className="mono mt-10 max-w-3xl text-[11px] leading-relaxed text-muted-ink">
+        <div className="mono mt-8 max-w-3xl text-[11px] leading-relaxed text-muted-ink">
           Note — the 28-day cycle is intentional. A 28-gummy bag exactly covers one cycle at 1 gummy
           per day, which means 13 shipments per calendar year rather than 12. On a 2-gummies-per-day
           plan, 2 bags ship each cycle and the per-cycle price is roughly 1.8× the 1-a-day price,
@@ -691,19 +932,108 @@ function SummaryRow({ label, value }: { label: string; value: React.ReactNode })
   );
 }
 
+function Faq() {
+  const items = [
+    {
+      q: "Why 28-day cycles instead of monthly?",
+      a: "Each bag is exactly 28 gummies, so a 28-day cycle means one bag equals one cycle at 1/day. It also means 13 shipments per year rather than 12 — you'll see this reflected in the annual total.",
+    },
+    {
+      q: "Can I change my dose or pause?",
+      a: "Yes. Dose (1/day vs 2/day) can be changed between cycles from your account. You can pause, skip, or cancel anytime with no fee.",
+    },
+    {
+      q: "How is every batch verified?",
+      a: "Before a batch ships, an independent EU laboratory (Eurofins Scientific) assays potency, heavy metals, and microbial content. The full Certificate of Analysis is published on the product page and shipped with your order.",
+    },
+    {
+      q: "Shipping and returns?",
+      a: "Free EU shipping over €40, otherwise €3.90. Ships within 48 h from Rotterdam. 60-day satisfaction guarantee — full refund, no questions asked.",
+    },
+  ];
+  return (
+    <section id="faq" className="hairline-t">
+      <div className="mx-auto max-w-4xl px-6 py-20 md:py-24">
+        <div className="mb-10">
+          <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
+            § 06 — FAQ
+          </div>
+          <h2 className="font-display text-4xl leading-tight md:text-5xl">
+            Questions, answered.
+          </h2>
+        </div>
+        <div className="hairline bg-card">
+          {items.map((it, i) => (
+            <details
+              key={it.q}
+              className={`group px-6 py-5 ${i > 0 ? "hairline-t" : ""}`}
+            >
+              <summary className="flex cursor-pointer items-center justify-between gap-6 text-sm font-medium">
+                <span>{it.q}</span>
+                <span className="mono text-lg text-muted-ink group-open:rotate-45 transition-transform">
+                  +
+                </span>
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-muted-ink">{it.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StickyCart({ count, total, isSub }: { count: number; total: number; isSub: boolean }) {
+  return (
+    <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
+      <a
+        href="#stack"
+        className="hairline mx-auto flex max-w-md items-center justify-between bg-ink px-4 py-3 text-paper shadow-lg"
+      >
+        <span className="mono text-[11px] uppercase tracking-widest">
+          {count} in cart
+        </span>
+        <span className="mono text-sm">€{fmt(total)}</span>
+        <span className="mono text-[11px] uppercase tracking-widest">
+          {isSub ? "Checkout →" : "Checkout →"}
+        </span>
+      </a>
+    </div>
+  );
+}
+
 function Footer() {
   return (
     <footer className="hairline-t">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
-          <div>
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
+          <div className="md:col-span-2">
             <div className="font-display text-2xl">GumLab</div>
             <div className="mono mt-2 text-[11px] uppercase tracking-widest text-muted-ink">
               EU / 001
             </div>
+            <p className="mt-4 max-w-sm text-sm text-muted-ink">
+              Precision-dosed functional gummies. Third-party assayed, published batch-by-batch.
+            </p>
+            <form className="hairline mt-6 flex max-w-sm items-center bg-card">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="mono flex-1 bg-transparent px-3 py-2.5 text-xs outline-none placeholder:text-muted-ink"
+              />
+              <button
+                type="button"
+                className="bg-ink px-4 py-2.5 text-[11px] font-medium uppercase tracking-widest text-paper hover:opacity-90"
+              >
+                Subscribe
+              </button>
+            </form>
+            <div className="mono mt-2 text-[10px] uppercase tracking-widest text-muted-ink">
+              Batch releases · lab reports · no spam
+            </div>
           </div>
           <FooterCol
-            title="Products"
+            title="Shop"
             links={["Perform", "Calm", "Recover", "Build your stack"]}
           />
           <FooterCol
@@ -711,8 +1041,8 @@ function Footer() {
             links={["Certificates", "Testing method", "Batch archive", "Ingredient sourcing"]}
           />
           <FooterCol
-            title="Company"
-            links={["About", "Shipping (EU)", "Contact", "Terms & privacy"]}
+            title="Help"
+            links={["Shipping (EU)", "Returns", "Contact", "Terms & privacy"]}
           />
         </div>
 
