@@ -7,6 +7,9 @@ export const Route = createFileRoute("/")({
 
 type ProductId = "perform" | "calm" | "recover";
 type Dose = 1 | 2;
+type PurchaseMode = "subscribe" | "onetime";
+
+const ONETIME_MARKUP = 0.35; // +35% vs subscription
 
 type Product = {
   id: ProductId;
@@ -89,14 +92,21 @@ function Index() {
     calm: { on: false, dose: 1 },
     recover: { on: false, dose: 1 },
   });
+  const [mode, setMode] = useState<PurchaseMode>("subscribe");
 
   const selected = PRODUCTS.filter((p) => stack[p.id].on);
   const subtotal = selected.reduce(
     (sum, p) => sum + (stack[p.id].dose === 2 ? p.price2 : p.price1),
     0
   );
-  const discountPct = selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0;
-  const cycleTotal = subtotal * (1 - discountPct / 100);
+  // Stack discount only applies to subscriptions
+  const discountPct =
+    mode === "subscribe" ? (selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0) : 0;
+  const markupPct = mode === "onetime" ? Math.round(ONETIME_MARKUP * 100) : 0;
+  const cycleTotal =
+    mode === "onetime"
+      ? subtotal * (1 + ONETIME_MARKUP)
+      : subtotal * (1 - discountPct / 100);
   const annual = cycleTotal * 13;
   const bagsPerCycle = selected.reduce((s, p) => s + stack[p.id].dose, 0);
 
@@ -110,8 +120,11 @@ function Index() {
       <StackBuilder
         stack={stack}
         setStack={setStack}
+        mode={mode}
+        setMode={setMode}
         subtotal={subtotal}
         discountPct={discountPct}
+        markupPct={markupPct}
         cycleTotal={cycleTotal}
         annual={annual}
         bagsPerCycle={bagsPerCycle}
@@ -434,7 +447,10 @@ function ProductCard({
           <div>
             <div className="mono text-3xl">€{fmt(price)}</div>
             <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
-              per 28-day cycle
+              per 28-day cycle · subscribe
+            </div>
+            <div className="mono mt-1 text-[11px] text-muted-ink">
+              or €{fmt(price * (1 + ONETIME_MARKUP))} one-time
             </div>
           </div>
           {state.on ? (
@@ -468,8 +484,11 @@ function ProductCard({
 function StackBuilder({
   stack,
   setStack,
+  mode,
+  setMode,
   subtotal,
   discountPct,
+  markupPct,
   cycleTotal,
   annual,
   bagsPerCycle,
@@ -479,13 +498,17 @@ function StackBuilder({
   setStack: React.Dispatch<
     React.SetStateAction<Record<ProductId, { on: boolean; dose: Dose }>>
   >;
+  mode: PurchaseMode;
+  setMode: React.Dispatch<React.SetStateAction<PurchaseMode>>;
   subtotal: number;
   discountPct: number;
+  markupPct: number;
   cycleTotal: number;
   annual: number;
   bagsPerCycle: number;
   selectedCount: number;
 }) {
+  const isSub = mode === "subscribe";
   return (
     <section id="stack" className="hairline-t bg-paper-2/50">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
@@ -555,9 +578,9 @@ function StackBuilder({
                     </button>
                   </div>
                   <div className="mono text-right text-sm">
-                    <div>€{fmt(price)}</div>
+                    <div>€{fmt(isSub ? price : price * (1 + ONETIME_MARKUP))}</div>
                     <div className="text-[10px] uppercase tracking-widest text-muted-ink">
-                      /cycle
+                      {isSub ? "/cycle" : "one-time"}
                     </div>
                   </div>
                 </div>
@@ -568,41 +591,81 @@ function StackBuilder({
           <aside className="hairline bg-ink text-paper">
             <div className="border-b border-white/10 px-6 py-4">
               <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
-                Your subscription
+                {isSub ? "Your subscription" : "Your one-time order"}
               </div>
+            </div>
+            <div className="border-b border-white/10 px-6 py-5">
+              <div className="mono mb-3 text-[10px] uppercase tracking-[0.2em] text-paper/60">
+                Purchase type
+              </div>
+              <div className="hairline grid grid-cols-2 border-white/20 text-xs">
+                <button
+                  onClick={() => setMode("subscribe")}
+                  className={`px-3 py-2.5 uppercase tracking-widest ${isSub ? "bg-paper text-ink" : "text-paper hover:bg-white/10"}`}
+                >
+                  Subscribe
+                </button>
+                <button
+                  onClick={() => setMode("onetime")}
+                  className={`border-l border-white/20 px-3 py-2.5 uppercase tracking-widest ${!isSub ? "bg-paper text-ink" : "text-paper hover:bg-white/10"}`}
+                >
+                  One-time
+                </button>
+              </div>
+              <p className="mono mt-3 text-[10px] leading-relaxed text-paper/60">
+                {isSub
+                  ? "Best price. Ships every 28 days. Pause or cancel anytime."
+                  : `Single delivery. +${Math.round(ONETIME_MARKUP * 100)}% vs. subscription. No stack discount.`}
+              </p>
             </div>
             <div className="px-6 py-6 space-y-4 text-sm">
               <SummaryRow label="Products selected" value={<span className="mono">{selectedCount} / 3</span>} />
-              <SummaryRow label="Bags per cycle" value={<span className="mono">{bagsPerCycle}</span>} />
-              <SummaryRow label="Subtotal / cycle" value={<span className="mono">€{fmt(subtotal)}</span>} />
               <SummaryRow
-                label={`Stack discount${discountPct ? "" : " (2+ products)"}`}
-                value={
-                  <span className="mono">
-                    {discountPct ? `−${discountPct}%` : "—"}
-                  </span>
-                }
+                label={isSub ? "Bags per cycle" : "Bags in order"}
+                value={<span className="mono">{bagsPerCycle}</span>}
               />
+              <SummaryRow
+                label={isSub ? "Subtotal / cycle" : "Subtotal"}
+                value={<span className="mono">€{fmt(subtotal)}</span>}
+              />
+              {isSub ? (
+                <SummaryRow
+                  label={`Stack discount${discountPct ? "" : " (2+ products)"}`}
+                  value={
+                    <span className="mono">
+                      {discountPct ? `−${discountPct}%` : "—"}
+                    </span>
+                  }
+                />
+              ) : (
+                <SummaryRow
+                  label="One-time surcharge"
+                  value={<span className="mono">+{markupPct}%</span>}
+                />
+              )}
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
-                Total per 28-day cycle
+                {isSub ? "Total per 28-day cycle" : "Total (one-time)"}
               </div>
               <div className="mono mt-2 font-display text-5xl">€{fmt(cycleTotal)}</div>
-              <div className="mono mt-2 text-xs text-paper/70">
-                = €{fmt(annual)} / year over 13 cycles
-              </div>
+              {isSub && (
+                <div className="mono mt-2 text-xs text-paper/70">
+                  = €{fmt(annual)} / year over 13 cycles
+                </div>
+              )}
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <button
                 disabled={selectedCount === 0}
                 className="w-full bg-paper px-4 py-3 text-xs font-medium uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-30"
               >
-                Start subscription
+                {isSub ? "Start subscription" : "Place one-time order"}
               </button>
               <p className="mt-4 text-[11px] leading-relaxed text-paper/60">
-                Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships
-                with the assayed batch certificate for its bags.
+                {isSub
+                  ? "Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships with the assayed batch certificate for its bags."
+                  : "Ships once with the assayed batch certificate for its bags. Switch to subscribe at checkout to save."}
               </p>
             </div>
           </aside>
