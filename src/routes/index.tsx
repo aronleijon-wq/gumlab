@@ -761,6 +761,81 @@ function StackBuilder({
   selectedCount: number;
 }) {
   const isSub = mode === "subscribe";
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutMsg, setCheckoutMsg] = useState<string | null>(null);
+
+  async function handleCheckout() {
+    if (selectedCount === 0) return;
+    if (!user) {
+      // Preserve intent by dropping them at auth
+      navigate({ to: "/auth" });
+      return;
+    }
+    setCheckoutBusy(true);
+    setCheckoutMsg(null);
+    try {
+      const selectedProducts = PRODUCTS.filter((p) => stack[p.id].on);
+      if (isSub) {
+        // Distribute stack discount across products
+        const factor = 1 - discountPct / 100;
+        const subRows = selectedProducts.map((p) => {
+          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          return {
+            user_id: user.id,
+            product_id: p.id,
+            dose: stack[p.id].dose,
+            price_eur: Number(price.toFixed(2)),
+            status: "active" as const,
+          };
+        });
+        const { data: created, error } = await supabase
+          .from("subscriptions")
+          .insert(subRows)
+          .select("id, product_id, dose, price_eur");
+        if (error) throw error;
+        // First-cycle orders
+        const orders = (created ?? []).map((s) => ({
+          user_id: user.id,
+          subscription_id: s.id,
+          product_id: s.product_id,
+          dose: s.dose,
+          bags: s.dose,
+          amount_eur: s.price_eur,
+          batch_code:
+            s.product_id === "perform" ? "PF-26-0001" :
+            s.product_id === "calm" ? "CA-26-0001" : "RC-26-0001",
+          status: "paid" as const,
+        }));
+        if (orders.length) await supabase.from("orders").insert(orders);
+      } else {
+        // One-time: only orders, no subs
+        const factor = 1 + ONETIME_MARKUP;
+        const orders = selectedProducts.map((p) => {
+          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          return {
+            user_id: user.id,
+            product_id: p.id,
+            dose: stack[p.id].dose,
+            bags: stack[p.id].dose,
+            amount_eur: Number(price.toFixed(2)),
+            batch_code:
+              p.id === "perform" ? "PF-26-0001" :
+              p.id === "calm" ? "CA-26-0001" : "RC-26-0001",
+            status: "paid" as const,
+          };
+        });
+        await supabase.from("orders").insert(orders);
+      }
+      navigate({ to: "/account" });
+    } catch (err) {
+      setCheckoutMsg(err instanceof Error ? err.message : "Checkout failed");
+    } finally {
+      setCheckoutBusy(false);
+    }
+  }
+
   return (
     <section id="stack" className="hairline-t bg-paper">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-28">
