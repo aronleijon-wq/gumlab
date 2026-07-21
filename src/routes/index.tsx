@@ -664,7 +664,6 @@ function StackBuilder({
                   ? "Pause, edit, or cancel anytime. Change dose between cycles. Every shipment ships with the assayed batch certificate for its bags."
                   : "Ships once with the assayed batch certificate for its bags. Switch to subscribe at checkout to save."}
               </p>
-              </p>
             </div>
           </aside>
         </div>
