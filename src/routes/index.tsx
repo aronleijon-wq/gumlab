@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import recoverCover from "@/assets/recover-cover.png.asset.json";
+import calmCover from "@/assets/calm-cover.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -66,6 +67,7 @@ const PRODUCTS: Product[] = [
     lab: "Independent EU-accredited laboratory",
     description:
       "Standardised KSM-66 root extract paired with L-theanine. Take it when the day is asking a bit much of you.",
+    cover: calmCover.url,
   },
   {
     id: "recover",
