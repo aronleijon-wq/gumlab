@@ -729,7 +729,7 @@ function StackBuilder({
               return (
                 <div
                   key={p.id}
-                  className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-6 py-6 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] ${i > 0 ? "hairline-t" : ""}`}
+                  className={`grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4 px-6 py-6 sm:grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] ${i > 0 ? "hairline-t" : ""}`}
                 >
                   <button
                     onClick={() =>
@@ -740,6 +740,16 @@ function StackBuilder({
                   >
                     {st.on && <span className="text-[11px]">✓</span>}
                   </button>
+                  {p.cover ? (
+                    <img
+                      src={p.cover}
+                      alt={p.name}
+                      className="hairline h-14 w-14 shrink-0 object-cover bg-paper-2"
+                      style={{ mixBlendMode: "multiply" }}
+                    />
+                  ) : (
+                    <div className="hairline h-14 w-14 shrink-0 bg-paper-2" />
+                  )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span
@@ -752,7 +762,8 @@ function StackBuilder({
                       {p.ingredient} · {p.dose}
                     </div>
                   </div>
-                  <div className="hairline col-span-2 grid grid-cols-2 text-xs sm:col-span-1">
+
+                  <div className="hairline col-span-3 grid grid-cols-2 text-xs sm:col-span-1">
                     <button
                       onClick={() =>
                         setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 1 } }))
