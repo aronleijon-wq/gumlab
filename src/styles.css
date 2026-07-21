@@ -6,7 +6,7 @@
 
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Baloo 2", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-background: var(--background);
@@ -20,6 +20,7 @@
   --color-perform: var(--perform);
   --color-calm: var(--calm);
   --color-recover: var(--recover);
+  --color-brand: var(--brand);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -32,36 +33,41 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-ring: var(--ring);
 
-  --radius-sm: 2px;
-  --radius-md: 2px;
-  --radius-lg: 3px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
 }
 
 :root {
-  --paper: #edeae2;
-  --paper-2: #e3dfd4;
-  --ink: #15140f;
-  --muted-ink: #5c5a52;
-  --hairline: #cac6bb;
+  /* Warm, bright base — closer to Gruns' light-green/cream energy than a clinical grey */
+  --paper: #f5f4e6;
+  --paper-2: #eae8d3;
+  --ink: #1c1a10;
+  --muted-ink: #625f4e;
+  --hairline: #ddd8b8;
 
-  --perform: #b5652e;
-  --calm: #54613f;
-  --recover: #2e2a54;
+  /* Bold, saturated, candy-adjacent product colors — same three roles, much more personality */
+  --perform: #ff7a3d;
+  --calm: #2fc39a;
+  --recover: #7a5cfa;
 
-  --background: #edeae2;
-  --foreground: #15140f;
-  --card: #f4f1e9;
-  --card-foreground: #15140f;
-  --border: #cac6bb;
-  --muted: #e3dfd4;
-  --muted-foreground: #5c5a52;
-  --accent: #d9d4c6;
-  --accent-foreground: #15140f;
-  --primary: #15140f;
-  --primary-foreground: #edeae2;
-  --ring: #15140f;
+  /* Big bright "brand" color for the logo / primary CTAs, Gruns-style high-contrast pop */
+  --brand: #d8f24e;
 
-  --radius: 2px;
+  --background: #f5f4e6;
+  --foreground: #1c1a10;
+  --card: #fffdf2;
+  --card-foreground: #1c1a10;
+  --border: #ddd8b8;
+  --muted: #eae8d3;
+  --muted-foreground: #625f4e;
+  --accent: #d8f24e;
+  --accent-foreground: #1c1a10;
+  --primary: #1c1a10;
+  --primary-foreground: #f5f4e6;
+  --ring: #1c1a10;
+
+  --radius: 18px;
 }
 
 @layer base {
@@ -86,19 +92,23 @@
 }
 
 @utility hairline {
-  border: 1px solid var(--hairline);
+  border: 1.5px solid var(--hairline);
+  border-radius: var(--radius-md);
 }
 @utility hairline-t {
-  border-top: 1px solid var(--hairline);
+  border-top: 1.5px solid var(--hairline);
 }
 @utility hairline-b {
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1.5px solid var(--hairline);
 }
 
-@keyframes tria-rise {
+@keyframes gumlab-rise {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @utility rise-in {
-  animation: tria-rise 0.6s ease-out both;
+  animation: gumlab-rise 0.6s ease-out both;
+}
+@utility blob {
+  border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
 }
