@@ -176,8 +176,8 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
   return (
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a href="#" className="font-display text-xl font-semibold tracking-tight">
-          GumLab
+        <a href="#" className="flex items-center" aria-label="GumLab">
+          <img src={gumlabLogo.url} alt="GumLab" className="h-10 w-auto" style={{ mixBlendMode: "multiply" }} />
         </a>
         <nav className="hidden items-center gap-8 text-sm md:flex">
           <a href="#products" className="hover:opacity-70">Shop</a>
