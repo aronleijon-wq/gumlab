@@ -176,6 +176,7 @@ function AnnouncementBar() {
 }
 
 function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number }) {
+  const { user, loading } = useSession();
   return (
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -190,6 +191,17 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
           <a href="#about" className="hover:opacity-70">About us</a>
         </nav>
         <div className="flex items-center gap-2">
+          {!loading && (
+            user ? (
+              <Link to="/account" className="hairline px-3 py-2 text-xs uppercase tracking-widest hover:bg-paper-2">
+                Account
+              </Link>
+            ) : (
+              <Link to="/auth" className="hairline px-3 py-2 text-xs uppercase tracking-widest hover:bg-paper-2">
+                Sign in
+              </Link>
+            )
+          )}
           <a
             href="#stack"
             className="hairline flex items-center gap-2 bg-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
