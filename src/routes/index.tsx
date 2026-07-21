@@ -575,9 +575,9 @@ function StackBuilder({
                     </button>
                   </div>
                   <div className="mono text-right text-sm">
-                    <div>€{fmt(price)}</div>
+                    <div>€{fmt(isSub ? price : price * (1 + ONETIME_MARKUP))}</div>
                     <div className="text-[10px] uppercase tracking-widest text-muted-ink">
-                      /cycle
+                      {isSub ? "/cycle" : "one-time"}
                     </div>
                   </div>
                 </div>
