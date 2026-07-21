@@ -112,3 +112,15 @@
 @utility blob {
   border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
 }
+
+@keyframes gumlab-spin3d {
+  0%   { transform: rotateY(-18deg) rotateX(6deg) translateY(0); }
+  50%  { transform: rotateY(18deg) rotateX(-4deg) translateY(-10px); }
+  100% { transform: rotateY(-18deg) rotateX(6deg) translateY(0); }
+}
+@utility spin3d {
+  animation: gumlab-spin3d 7s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
