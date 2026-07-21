@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import recoverCover from "@/assets/recover-cover.png.asset.json";
 import calmCover from "@/assets/calm-cover.png.asset.json";
 import performCover from "@/assets/perform-cover.png.asset.json";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
+import { useSession } from "@/hooks/use-session";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -174,6 +176,7 @@ function AnnouncementBar() {
 }
 
 function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number }) {
+  const { user, loading } = useSession();
   return (
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -188,6 +191,17 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
           <a href="#about" className="hover:opacity-70">About us</a>
         </nav>
         <div className="flex items-center gap-2">
+          {!loading && (
+            user ? (
+              <Link to="/account" className="hairline px-3 py-2 text-xs uppercase tracking-widest hover:bg-paper-2">
+                Account
+              </Link>
+            ) : (
+              <Link to="/auth" className="hairline px-3 py-2 text-xs uppercase tracking-widest hover:bg-paper-2">
+                Sign in
+              </Link>
+            )
+          )}
           <a
             href="#stack"
             className="hairline flex items-center gap-2 bg-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
@@ -747,6 +761,81 @@ function StackBuilder({
   selectedCount: number;
 }) {
   const isSub = mode === "subscribe";
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutMsg, setCheckoutMsg] = useState<string | null>(null);
+
+  async function handleCheckout() {
+    if (selectedCount === 0) return;
+    if (!user) {
+      // Preserve intent by dropping them at auth
+      navigate({ to: "/auth" });
+      return;
+    }
+    setCheckoutBusy(true);
+    setCheckoutMsg(null);
+    try {
+      const selectedProducts = PRODUCTS.filter((p) => stack[p.id].on);
+      if (isSub) {
+        // Distribute stack discount across products
+        const factor = 1 - discountPct / 100;
+        const subRows = selectedProducts.map((p) => {
+          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          return {
+            user_id: user.id,
+            product_id: p.id,
+            dose: stack[p.id].dose,
+            price_eur: Number(price.toFixed(2)),
+            status: "active" as const,
+          };
+        });
+        const { data: created, error } = await supabase
+          .from("subscriptions")
+          .insert(subRows)
+          .select("id, product_id, dose, price_eur");
+        if (error) throw error;
+        // First-cycle orders
+        const orders = (created ?? []).map((s) => ({
+          user_id: user.id,
+          subscription_id: s.id,
+          product_id: s.product_id,
+          dose: s.dose,
+          bags: s.dose,
+          amount_eur: s.price_eur,
+          batch_code:
+            s.product_id === "perform" ? "PF-26-0001" :
+            s.product_id === "calm" ? "CA-26-0001" : "RC-26-0001",
+          status: "paid" as const,
+        }));
+        if (orders.length) await supabase.from("orders").insert(orders);
+      } else {
+        // One-time: only orders, no subs
+        const factor = 1 + ONETIME_MARKUP;
+        const orders = selectedProducts.map((p) => {
+          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          return {
+            user_id: user.id,
+            product_id: p.id,
+            dose: stack[p.id].dose,
+            bags: stack[p.id].dose,
+            amount_eur: Number(price.toFixed(2)),
+            batch_code:
+              p.id === "perform" ? "PF-26-0001" :
+              p.id === "calm" ? "CA-26-0001" : "RC-26-0001",
+            status: "paid" as const,
+          };
+        });
+        await supabase.from("orders").insert(orders);
+      }
+      navigate({ to: "/account" });
+    } catch (err) {
+      setCheckoutMsg(err instanceof Error ? err.message : "Checkout failed");
+    } finally {
+      setCheckoutBusy(false);
+    }
+  }
+
   return (
     <section id="stack" className="hairline-t bg-paper">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-28">
@@ -910,11 +999,21 @@ function StackBuilder({
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <button
-                disabled={selectedCount === 0}
+                onClick={handleCheckout}
+                disabled={selectedCount === 0 || checkoutBusy}
                 className="w-full bg-paper px-4 py-3 text-xs font-medium uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-30"
               >
-                {isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
+                {checkoutBusy
+                  ? "Processing…"
+                  : !user
+                    ? isSub ? "Sign in to subscribe" : "Sign in to order"
+                    : isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
               </button>
+              {checkoutMsg && (
+                <div className="mono mt-3 text-[10px] uppercase tracking-widest text-perform">
+                  {checkoutMsg}
+                </div>
+              )}
               <div className="mono mt-4 flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest text-paper/50">
                 <span>Visa</span>
                 <span>·</span>
