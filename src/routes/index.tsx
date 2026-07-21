@@ -216,8 +216,10 @@ function Hero() {
           <img
             src={performCover.url}
             alt="PERFORM batch — creatine gummies"
-            className="spin3d w-full max-w-[420px] drop-shadow-[0_30px_40px_rgba(0,0,0,0.18)]"
+            className="spin3d w-full max-w-[420px]"
+            style={{ mixBlendMode: "multiply", filter: "drop-shadow(0 30px 30px rgba(0,0,0,0.15))" }}
           />
+
           <div className="hairline mono absolute left-2 top-2 bg-paper/85 px-2 py-1 text-[10px] uppercase tracking-widest text-muted-ink backdrop-blur-sm">
             Batch PF-26-0001 · 99.4%
           </div>
