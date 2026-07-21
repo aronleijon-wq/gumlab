@@ -396,17 +396,29 @@ function ProductVisual({ product }: { product: Product }) {
       className="relative aspect-[4/3] overflow-hidden"
       style={{ backgroundColor: `color-mix(in srgb, ${product.accent} 14%, var(--paper))` }}
     >
-      <div
-        className="blob absolute -right-8 -top-10 h-40 w-40 opacity-90"
-        style={{ backgroundColor: product.accent }}
-        aria-hidden
-      />
-      <div
-        className="blob absolute -bottom-10 -left-10 h-32 w-32 opacity-40"
-        style={{ backgroundColor: product.accent }}
-        aria-hidden
-      />
+      {product.cover ? (
+        <img
+          src={product.cover}
+          alt={`${product.name} packaging`}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <>
+          <div
+            className="blob absolute -right-8 -top-10 h-40 w-40 opacity-90"
+            style={{ backgroundColor: product.accent }}
+            aria-hidden
+          />
+          <div
+            className="blob absolute -bottom-10 -left-10 h-32 w-32 opacity-40"
+            style={{ backgroundColor: product.accent }}
+            aria-hidden
+          />
+        </>
+      )}
       <div className="absolute left-4 top-4 flex items-center gap-2">
+
         <span className="mono rounded-full bg-ink/85 px-2.5 py-1 text-[10px] uppercase tracking-widest text-paper">
           {product.name} · 28 ct
         </span>
