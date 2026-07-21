@@ -1113,8 +1113,8 @@ function Footer() {
             and a healthy lifestyle. Consult a doctor before use if you are pregnant,
             breastfeeding, on medication, or have a medical condition. These products are not
             intended to diagnose, treat, cure or prevent any disease. Claims used are limited to
-            those authorised under EU Regulation (EC) No 1924/2006. Keep out of reach of
-            children.
+            those authorised under EU Regulation (EC) No 1924/2006. Keep out of reach of children
+            under age of 6.
           </p>
           <div className="mono mt-8 flex flex-wrap items-center justify-between gap-4 text-[10px] uppercase tracking-widest text-muted-ink">
             <span>© 2026 GumLab · Made in the EU</span>
