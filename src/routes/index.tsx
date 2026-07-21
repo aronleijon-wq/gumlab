@@ -284,24 +284,52 @@ function Hero() {
 
 function TrustRow() {
   const items = [
-    { k: "Free EU shipping", v: "Orders over €40" },
-    { k: "60-day guarantee", v: "Full refund, no questions" },
-    { k: "Cancel anytime", v: "Manage from your dashboard" },
-    { k: "Batch certificate", v: "Ships with every order" },
+    { k: "Free EU shipping", v: "Orders over €40", color: "#B5652E" },
+    { k: "60-day guarantee", v: "Full refund, no questions", color: "#54613F" },
+    { k: "Cancel anytime", v: "Manage from your dashboard", color: "#2E2A54" },
+    { k: "Batch certificate", v: "Ships with every order", color: "#B5652E" },
+    { k: "Third-party assayed", v: "Every batch, every time", color: "#54613F" },
+    { k: "Made in EU", v: "GMP-certified facilities", color: "#2E2A54" },
+    { k: "28-day cycle", v: "One bag, one cycle", color: "#B5652E" },
+    { k: "No hidden additives", v: "Clean, disclosed formulas", color: "#54613F" },
   ];
+  const loop = [...items, ...items];
   return (
-    <section className="hairline-t hairline-b bg-paper-2/40">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4">
-        {items.map((it, i) => (
+    <section
+      className="hairline-t hairline-b relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(90deg, #EDEAE2 0%, #E6E0D0 25%, #E4E4DC 50%, #E0DAE4 75%, #EDEAE2 100%)",
+      }}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24"
+        style={{ background: "linear-gradient(90deg, #EDEAE2, transparent)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24"
+        style={{ background: "linear-gradient(270deg, #EDEAE2, transparent)" }}
+      />
+      <div className="marquee-track flex w-max">
+        {loop.map((it, i) => (
           <div
-            key={it.k}
-            className={`px-6 py-6 ${i > 0 ? "border-l border-hairline" : ""}`}
+            key={i}
+            className="flex w-[280px] shrink-0 items-start gap-4 border-l border-hairline px-6 py-7"
           >
-            <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-              0{i + 1}
+            <span
+              className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: it.color, boxShadow: `0 0 0 4px ${it.color}22` }}
+              aria-hidden
+            />
+            <div>
+              <div className="mono text-[10px] uppercase tracking-widest" style={{ color: it.color }}>
+                0{(i % items.length) + 1}
+              </div>
+              <div className="mt-1.5 text-sm font-medium">{it.k}</div>
+              <div className="mt-1 text-xs text-muted-ink">{it.v}</div>
             </div>
-            <div className="mt-2 text-sm font-medium">{it.k}</div>
-            <div className="mt-1 text-xs text-muted-ink">{it.v}</div>
           </div>
         ))}
       </div>
