@@ -481,8 +481,11 @@ function ProductCard({
 function StackBuilder({
   stack,
   setStack,
+  mode,
+  setMode,
   subtotal,
   discountPct,
+  markupPct,
   cycleTotal,
   annual,
   bagsPerCycle,
@@ -492,13 +495,17 @@ function StackBuilder({
   setStack: React.Dispatch<
     React.SetStateAction<Record<ProductId, { on: boolean; dose: Dose }>>
   >;
+  mode: PurchaseMode;
+  setMode: React.Dispatch<React.SetStateAction<PurchaseMode>>;
   subtotal: number;
   discountPct: number;
+  markupPct: number;
   cycleTotal: number;
   annual: number;
   bagsPerCycle: number;
   selectedCount: number;
 }) {
+  const isSub = mode === "subscribe";
   return (
     <section id="stack" className="hairline-t bg-paper-2/50">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
