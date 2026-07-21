@@ -28,6 +28,7 @@ type Product = {
   lab: string;
   description: string;
   badge?: string;
+  cover?: string;
 };
 
 const PRODUCTS: Product[] = [
