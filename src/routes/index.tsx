@@ -740,6 +740,16 @@ function StackBuilder({
                   >
                     {st.on && <span className="text-[11px]">✓</span>}
                   </button>
+                  {p.cover ? (
+                    <img
+                      src={p.cover}
+                      alt={p.name}
+                      className="hairline h-14 w-14 shrink-0 object-cover bg-paper-2"
+                      style={{ mixBlendMode: "multiply" }}
+                    />
+                  ) : (
+                    <div className="hairline h-14 w-14 shrink-0 bg-paper-2" />
+                  )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span
@@ -752,6 +762,7 @@ function StackBuilder({
                       {p.ingredient} · {p.dose}
                     </div>
                   </div>
+
                   <div className="hairline col-span-2 grid grid-cols-2 text-xs sm:col-span-1">
                     <button
                       onClick={() =>
