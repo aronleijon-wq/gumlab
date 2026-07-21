@@ -219,75 +219,126 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
 
 function Hero() {
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 md:pt-20 md:pb-24">
-      <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
-        {/* Left: rotating 3D Perform batch */}
-        <div
-          className="relative flex items-center justify-center py-8"
-          style={{ perspective: "1400px" }}
-        >
-          {/* soft paper-tone halo to seat the product on the background */}
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(ellipse at 15% 20%, rgba(181,101,46,0.18) 0%, transparent 45%), radial-gradient(ellipse at 85% 30%, rgba(46,42,84,0.20) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(84,97,63,0.22) 0%, transparent 55%)",
+      }}
+    >
+      {/* colorful blurred blobs behind everything */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-24 top-10 h-80 w-80 blob"
+        style={{ background: "#B5652E", opacity: 0.25, filter: "blur(60px)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-[-6rem] top-24 h-96 w-96 blob"
+        style={{ background: "#2E2A54", opacity: 0.22, filter: "blur(70px)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-[-4rem] left-1/3 h-72 w-72 blob"
+        style={{ background: "#54613F", opacity: 0.28, filter: "blur(65px)" }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6 pt-12 pb-16 md:pt-20 md:pb-24">
+        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
+          {/* Left: rotating 3D Perform batch */}
           <div
-            aria-hidden
-            className="halo pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 45%, rgba(181,101,46,0.18) 0%, rgba(181,101,46,0.06) 35%, transparent 65%)",
-              filter: "blur(8px)",
-            }}
-          />
-          {/* contact shadow — moves opposite to the float */}
-          <div
-            aria-hidden
-            className="contact-shadow absolute left-1/2 bottom-6 h-6 w-[60%] -translate-x-1/2 rounded-[50%] bg-ink"
-          />
-          <img
-            src={performCover.url}
-            alt="PERFORM batch — creatine gummies"
-            className="spin3d relative w-full max-w-[420px] select-none"
-            draggable={false}
-            style={{
-              mixBlendMode: "multiply",
-              filter:
-                "drop-shadow(0 22px 18px rgba(21,20,15,0.18)) drop-shadow(0 4px 6px rgba(21,20,15,0.12))",
-            }}
-          />
+            className="relative flex items-center justify-center py-8"
+            style={{ perspective: "1400px" }}
+          >
+            {/* multi-color halo */}
+            <div
+              aria-hidden
+              className="halo pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(circle at 30% 40%, rgba(181,101,46,0.45) 0%, transparent 45%), radial-gradient(circle at 70% 60%, rgba(216,242,78,0.35) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(84,97,63,0.30) 0%, transparent 55%)",
+                filter: "blur(12px)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="contact-shadow absolute left-1/2 bottom-6 h-6 w-[60%] -translate-x-1/2 rounded-[50%] bg-ink"
+            />
+            <img
+              src={performCover.url}
+              alt="PERFORM batch — creatine gummies"
+              className="spin3d relative w-full max-w-[420px] select-none"
+              draggable={false}
+              style={{
+                mixBlendMode: "multiply",
+                filter:
+                  "drop-shadow(0 22px 18px rgba(21,20,15,0.18)) drop-shadow(0 4px 6px rgba(21,20,15,0.12))",
+              }}
+            />
 
-          <div className="hairline mono absolute left-2 top-2 bg-paper/85 px-2 py-1 text-[10px] uppercase tracking-widest text-muted-ink backdrop-blur-sm">
-            Batch PF-26-0001 · 99.4%
-          </div>
-        </div>
-
-
-        {/* Right: minimized copy */}
-        <div>
-          <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
-            <span className="mono">EU / 001</span>
-            <span className="hairline-t inline-block h-px w-8" />
-            <span>Third-party assayed</span>
-          </div>
-          <h1 className="font-display text-4xl leading-[1.05] tracking-tight text-ink md:text-6xl">
-            Morning. Anytime.{" "}
-            <span style={{ color: "var(--recover)" }}>Night.</span>
-          </h1>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-muted-ink">
-            Three gummies for the shape of your day. Precisely dosed,
-            independently assayed, delivered in{" "}
-            <span className="mono text-ink">28</span>-day bags.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a
-              href="#stack"
-              className="hairline bg-brand px-6 py-3 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+            <div
+              className="mono absolute left-2 top-2 px-2 py-1 text-[10px] uppercase tracking-widest text-paper"
+              style={{ background: "#B5652E", borderRadius: 3 }}
             >
-              Shop the stack →
-            </a>
-            <a
-              href="#verification"
-              className="hairline px-5 py-3 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
-            >
-              Lab results
-            </a>
+              Batch PF-26-0001 · 99.4%
+            </div>
+          </div>
+
+          {/* Right: copy */}
+          <div>
+            <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
+              <span
+                className="mono px-2 py-0.5 text-paper"
+                style={{ background: "#2E2A54", borderRadius: 2 }}
+              >
+                EU / 001
+              </span>
+              <span className="hairline-t inline-block h-px w-8" />
+              <span>Third-party assayed</span>
+            </div>
+            <h1 className="font-display text-4xl leading-[1.05] tracking-tight text-ink md:text-6xl">
+              <span style={{ color: "#B5652E" }}>Morning.</span>{" "}
+              <span style={{ color: "#54613F" }}>Anytime.</span>{" "}
+              <span style={{ color: "#2E2A54" }}>Night.</span>
+            </h1>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-muted-ink">
+              Three gummies for the shape of your day. Precisely dosed,
+              independently assayed, delivered in{" "}
+              <span className="mono text-ink">28</span>-day bags.
+            </p>
+
+            {/* colorful day-arc chips */}
+            <div className="mt-6 flex flex-wrap gap-2">
+              {[
+                { t: "06:00", l: "Perform", c: "#B5652E" },
+                { t: "Anytime", l: "Calm", c: "#54613F" },
+                { t: "22:00", l: "Recover", c: "#2E2A54" },
+              ].map((c) => (
+                <div
+                  key={c.l}
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-paper"
+                  style={{ background: c.c, borderRadius: 3 }}
+                >
+                  <span className="mono">{c.t}</span>
+                  <span className="uppercase tracking-widest">{c.l}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a
+                href="#stack"
+                className="hairline bg-brand px-6 py-3 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+              >
+                Shop the stack →
+              </a>
+              <a
+                href="#verification"
+                className="hairline px-5 py-3 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
+              >
+                Lab results
+              </a>
+            </div>
           </div>
         </div>
       </div>
