@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import recoverCover from "@/assets/recover-cover.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
