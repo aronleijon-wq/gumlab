@@ -92,14 +92,21 @@ function Index() {
     calm: { on: false, dose: 1 },
     recover: { on: false, dose: 1 },
   });
+  const [mode, setMode] = useState<PurchaseMode>("subscribe");
 
   const selected = PRODUCTS.filter((p) => stack[p.id].on);
   const subtotal = selected.reduce(
     (sum, p) => sum + (stack[p.id].dose === 2 ? p.price2 : p.price1),
     0
   );
-  const discountPct = selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0;
-  const cycleTotal = subtotal * (1 - discountPct / 100);
+  // Stack discount only applies to subscriptions
+  const discountPct =
+    mode === "subscribe" ? (selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0) : 0;
+  const markupPct = mode === "onetime" ? Math.round(ONETIME_MARKUP * 100) : 0;
+  const cycleTotal =
+    mode === "onetime"
+      ? subtotal * (1 + ONETIME_MARKUP)
+      : subtotal * (1 - discountPct / 100);
   const annual = cycleTotal * 13;
   const bagsPerCycle = selected.reduce((s, p) => s + stack[p.id].dose, 0);
 
@@ -113,8 +120,11 @@ function Index() {
       <StackBuilder
         stack={stack}
         setStack={setStack}
+        mode={mode}
+        setMode={setMode}
         subtotal={subtotal}
         discountPct={discountPct}
+        markupPct={markupPct}
         cycleTotal={cycleTotal}
         annual={annual}
         bagsPerCycle={bagsPerCycle}
