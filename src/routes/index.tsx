@@ -26,8 +26,6 @@ type Product = {
   potency: string;
   lab: string;
   description: string;
-  rating: number;
-  reviews: number;
   badge?: string;
 };
 
@@ -42,15 +40,13 @@ const PRODUCTS: Product[] = [
     claim: "Supports performance in high-intensity exercise.",
     price1: 25,
     price2: 45,
-    accent: "#B5652E",
-    batch: "PF-24-0417",
+    accent: "var(--perform)",
+    batch: "PF-26-0001",
     potency: "99.4%",
-    lab: "Eurofins Scientific",
+    lab: "Independent EU-accredited laboratory",
     description:
-      "A morning gummy formulated around a single, well-studied compound. No stimulants, no proprietary blends.",
-    rating: 4.8,
-    reviews: 1247,
-    badge: "Bestseller",
+      "One well-studied compound, no proprietary blend, no stimulants. The kind of gummy you take because it's Tuesday, not because it's exciting.",
+    badge: "Hero product",
   },
   {
     id: "calm",
@@ -62,14 +58,12 @@ const PRODUCTS: Product[] = [
     claim: "Contributes to a sense of calm.",
     price1: 23,
     price2: 41,
-    accent: "#54613F",
-    batch: "CA-24-0412",
+    accent: "var(--calm)",
+    batch: "CA-26-0001",
     potency: "101.2%",
-    lab: "Eurofins Scientific",
+    lab: "Independent EU-accredited laboratory",
     description:
-      "Standardised KSM-66 root extract paired with L-theanine. Take when the day calls for it.",
-    rating: 4.7,
-    reviews: 892,
+      "Standardised KSM-66 root extract paired with L-theanine. Take it when the day is asking a bit much of you.",
   },
   {
     id: "recover",
@@ -81,14 +75,12 @@ const PRODUCTS: Product[] = [
     claim: "Contributes to a normal wind-down routine and supports normal muscle function.",
     price1: 25,
     price2: 45,
-    accent: "#2E2A54",
-    batch: "RC-24-0421",
+    accent: "var(--recover)",
+    batch: "RC-26-0001",
     potency: "98.7%",
-    lab: "Eurofins Scientific",
+    lab: "Independent EU-accredited laboratory",
     description:
-      "A low, considered dose of melatonin with chelated magnesium. Built for the last hour of the day.",
-    rating: 4.9,
-    reviews: 1583,
+      "A low, considered dose of melatonin with chelated magnesium. Built for the last hour of the day, not the first.",
     badge: "New batch",
   },
 ];
@@ -201,20 +193,6 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
   );
 }
 
-function Stars({ rating, size = "sm" }: { rating: number; size?: "sm" | "xs" }) {
-  const full = Math.round(rating);
-  const px = size === "xs" ? "text-[10px]" : "text-xs";
-  return (
-    <span className={`mono ${px} flex items-center gap-1`}>
-      <span aria-hidden className="tracking-tight">
-        {"★".repeat(full)}
-        <span className="opacity-30">{"★".repeat(5 - full)}</span>
-      </span>
-      <span className="text-muted-ink">{rating.toFixed(1)}</span>
-    </span>
-  );
-}
-
 function Hero() {
   return (
     <section className="mx-auto max-w-7xl px-6 pt-16 pb-16 md:pt-24 md:pb-24">
@@ -223,33 +201,29 @@ function Hero() {
         <span className="hairline-t inline-block h-px w-8" />
         <span>Third-party assayed · every batch</span>
       </div>
-      <h1 className="font-display text-5xl leading-[1.02] tracking-tight md:text-7xl lg:text-8xl">
+      <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-ink md:text-7xl lg:text-8xl">
         One for the morning.<br />
-        One for anytime.<br />
-        One for the night.
+        One for whenever.<br />
+        <span style={{ color: "var(--recover)" }}>One for the night.</span>
       </h1>
       <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-ink">
-        Three functional gummies — precisely dosed, independently assayed by a third-party lab
-        before every shipment, and delivered in <span className="mono text-ink">28</span>-day bags
-        matched to your billing cycle.
+        Three gummies, built for the actual shape of your day — not a shelf of ten things that
+        overlap. Precisely dosed, independently assayed before every shipment, delivered in{" "}
+        <span className="mono text-ink">28</span>-day bags matched to your cycle.
       </p>
       <div className="mt-10 flex flex-wrap items-center gap-4">
         <a
           href="#stack"
-          className="hairline bg-ink px-6 py-3 text-sm font-medium uppercase tracking-widest text-paper hover:opacity-90"
+          className="hairline bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
         >
-          Shop the stack
+          Shop the stack →
         </a>
         <a
           href="#verification"
-          className="hairline px-6 py-3 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
+          className="hairline px-6 py-3.5 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
         >
           See the lab results
         </a>
-        <div className="ml-2 flex items-center gap-3">
-          <Stars rating={4.8} />
-          <span className="mono text-xs text-muted-ink">3,722 verified reviews</span>
-        </div>
       </div>
     </section>
   );
@@ -294,7 +268,7 @@ function DayArc() {
             <div className="flex items-baseline gap-3">
               <span className="mono text-sm text-muted-ink">{p.timeTag}</span>
               <span
-                className="inline-block h-2 w-2"
+                className="inline-block h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: p.accent }}
                 aria-hidden
               />
@@ -363,13 +337,13 @@ function Verification() {
 
 function CoaCard({ product, compact = false }: { product: Product; compact?: boolean }) {
   return (
-    <div className="hairline bg-card">
+    <div className="hairline overflow-hidden bg-card">
       <div className="hairline-b flex items-center justify-between px-6 py-4">
         <div className="mono text-xs uppercase tracking-widest text-muted-ink">
           Certificate of Analysis
         </div>
         <span
-          className="inline-block h-2 w-2"
+          className="inline-block h-2.5 w-2.5 rounded-full"
           style={{ backgroundColor: product.accent }}
           aria-hidden
         />
@@ -386,7 +360,7 @@ function CoaCard({ product, compact = false }: { product: Product; compact?: boo
           <Row label="Heavy metals (Pb, Cd, As, Hg)" value="Pass" />
           <Row label="Microbial screen" value="Pass" />
           <Row label="Testing laboratory" value={product.lab} />
-          <Row label="Assay date" value="2024-04-22" />
+          <Row label="Assay date" value="Add on first real batch" />
         </dl>
 
         {!compact && (
@@ -412,35 +386,32 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 }
 
 function ProductVisual({ product }: { product: Product }) {
-  // Clinical, structured "product tile" — hairline grid, dot cluster suggesting 28 gummies, accent bar.
-  const dots = Array.from({ length: 28 });
+  // Playful "gummy blob" hero shape per product, still carrying the batch/verification
+  // info that keeps the credibility the clinical version had — just friendlier.
   return (
-    <div className="hairline-b relative aspect-[4/3] overflow-hidden bg-paper">
+    <div
+      className="relative aspect-[4/3] overflow-hidden"
+      style={{ backgroundColor: `color-mix(in srgb, ${product.accent} 14%, var(--paper))` }}
+    >
       <div
-        className="absolute inset-x-0 top-0 h-1"
+        className="blob absolute -right-8 -top-10 h-40 w-40 opacity-90"
+        style={{ backgroundColor: product.accent }}
+        aria-hidden
+      />
+      <div
+        className="blob absolute -bottom-10 -left-10 h-32 w-32 opacity-40"
         style={{ backgroundColor: product.accent }}
         aria-hidden
       />
       <div className="absolute left-4 top-4 flex items-center gap-2">
-        <span className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+        <span className="mono rounded-full bg-ink/85 px-2.5 py-1 text-[10px] uppercase tracking-widest text-paper">
           {product.name} · 28 ct
         </span>
       </div>
-      <div className="absolute right-4 top-4 mono text-[10px] uppercase tracking-widest text-muted-ink">
+      <div className="mono absolute right-4 top-4 rounded-full bg-paper/80 px-2.5 py-1 text-[10px] uppercase tracking-widest text-ink">
         {product.timeTag}
       </div>
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-center px-8 pb-8">
-        <div className="grid grid-cols-7 gap-1.5">
-          {dots.map((_, i) => (
-            <span
-              key={i}
-              className="block h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: product.accent, opacity: 0.15 + (i % 7) * 0.11 }}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="absolute bottom-3 left-4 mono text-[10px] text-muted-ink">
+      <div className="mono absolute bottom-3 left-4 rounded-full bg-paper/80 px-2.5 py-1 text-[10px] text-ink">
         Batch {product.batch}
       </div>
     </div>
@@ -516,13 +487,13 @@ function ProductCard({
   const bagsYear = bags * 13;
 
   return (
-    <article className="hairline flex flex-col bg-card">
+    <article className="hairline flex flex-col overflow-hidden bg-card">
       <ProductVisual product={product} />
 
       <div className="hairline-b flex items-center justify-between px-6 py-3">
         <div className="flex items-center gap-2">
           <span
-            className="inline-block h-2 w-2"
+            className="inline-block h-2.5 w-2.5 rounded-full"
             style={{ backgroundColor: product.accent }}
             aria-hidden
           />
@@ -543,15 +514,11 @@ function ProductCard({
       <div className="flex flex-1 flex-col px-6 py-6">
         <div className="flex items-baseline justify-between gap-3">
           <h3 className="font-display text-3xl">{product.name}</h3>
-          <Stars rating={product.rating} size="xs" />
         </div>
         <div
-          className="mt-1 h-px w-8"
+          className="mt-2 h-1.5 w-10 rounded-full"
           style={{ backgroundColor: product.accent }}
         />
-        <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
-          {product.reviews.toLocaleString()} reviews · In stock
-        </div>
         <div className="mt-4 text-sm text-muted-ink">{product.ingredient}</div>
         <div className="mono mt-1 text-sm">{product.dose} per gummy</div>
 
@@ -621,88 +588,38 @@ function ProductCard({
 }
 
 function Reviews() {
-  const items = [
-    {
-      p: "PERFORM",
-      accent: "#B5652E",
-      name: "Elin S.",
-      loc: "Stockholm, SE",
-      r: 5,
-      title: "Actually assayed. Actually works.",
-      body:
-        "I switched from creatine powder for convenience and was skeptical. The published potency numbers on the batch page are the reason I stayed.",
-      date: "2 weeks ago",
-    },
-    {
-      p: "CALM",
-      accent: "#54613F",
-      name: "Marc L.",
-      loc: "Amsterdam, NL",
-      r: 5,
-      title: "Quiet effect, no drowsiness.",
-      body:
-        "I take it before meetings. It doesn't sedate — it just takes the edge off. KSM-66 dose is honest.",
-      date: "1 month ago",
-    },
-    {
-      p: "RECOVER",
-      accent: "#2E2A54",
-      name: "Sofia G.",
-      loc: "Barcelona, ES",
-      r: 5,
-      title: "The 0.5 mg melatonin is the right call.",
-      body:
-        "Most brands overshoot melatonin badly. A low dose plus magnesium is what I've wanted for years.",
-      date: "3 weeks ago",
-    },
-  ];
+  // Honest placeholder: no fabricated names, quotes, or counts. Wire this up to
+  // your real review platform (Trustpilot, Judge.me, Yotpo, etc.) once you have
+  // actual verified-purchase reviews — don't replace these with invented ones.
   return (
     <section id="reviews" className="hairline-t bg-paper-2/40">
       <div className="mx-auto max-w-7xl px-6 py-20 md:py-24">
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
-              § 04 — Reviews
-            </div>
-            <h2 className="font-display text-4xl leading-tight md:text-5xl">
-              3,722 verified reviews.
-            </h2>
+        <div className="mb-10 max-w-2xl">
+          <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
+            § 04 — Reviews
           </div>
-          <div className="flex items-center gap-6">
-            <div>
-              <div className="mono font-display text-4xl">4.8</div>
-              <Stars rating={4.8} />
-            </div>
-            <div className="mono max-w-[14rem] text-xs text-muted-ink">
-              Verified purchase reviews only. No paid placements, no gifted product.
-            </div>
-          </div>
+          <h2 className="font-display text-4xl leading-tight md:text-5xl">
+            We're new. Be the first to say something.
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed text-muted-ink">
+            No reviews yet — and we'd rather show you an empty section than a fake one. Every
+            review here will be a real, verified purchase, linked to a real batch certificate.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {items.map((r) => (
-            <div key={r.name} className="hairline flex flex-col bg-card p-6">
-              <div className="flex items-center justify-between">
-                <span className="mono text-[10px] uppercase tracking-widest" style={{ color: r.accent }}>
-                  {r.p}
-                </span>
-                <Stars rating={r.r} size="xs" />
-              </div>
-              <div className="mt-4 font-display text-lg leading-snug">{r.title}</div>
-              <p className="mt-3 text-sm leading-relaxed text-muted-ink">{r.body}</p>
-              <div className="hairline-t mt-6 flex items-center justify-between pt-4 text-xs">
-                <div>
-                  <div>{r.name}</div>
-                  <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-                    {r.loc}
-                  </div>
-                </div>
-                <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-                  Verified · {r.date}
-                </div>
-              </div>
+        <div className="hairline flex items-center justify-between bg-card p-6">
+          <div>
+            <div className="font-display text-lg">Bought a bag? Tell us how it went.</div>
+            <div className="mt-1 text-sm text-muted-ink">
+              Verified buyers get an email invite 14 days after delivery.
             </div>
-          ))}
+          </div>
+          <a
+            href="#"
+            className="hairline shrink-0 bg-ink px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-paper hover:opacity-90"
+          >
+            Leave a review
+          </a>
         </div>
       </div>
     </section>
@@ -778,7 +695,7 @@ function StackBuilder({
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span
-                        className="inline-block h-2 w-2 shrink-0"
+                        className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
                         style={{ backgroundColor: p.accent }}
                       />
                       <span className="font-display text-lg">{p.name}</span>
@@ -944,11 +861,13 @@ function Faq() {
     },
     {
       q: "How is every batch verified?",
-      a: "Before a batch ships, an independent EU laboratory (Eurofins Scientific) assays potency, heavy metals, and microbial content. The full Certificate of Analysis is published on the product page and shipped with your order.",
+      a: "Before a batch ships, an independent, EU-accredited laboratory assays potency, heavy metals, and microbial content. The full Certificate of Analysis is published on the product page and shipped with your order. (Add your actual lab partner's name here once contracted.)",
     },
     {
       q: "Shipping and returns?",
-      a: "Free EU shipping over €40, otherwise €3.90. Ships within 48 h from Rotterdam. 60-day satisfaction guarantee — full refund, no questions asked.",
+      // NOTE: shipping fee, dispatch time, and guarantee length below are placeholders —
+      // set these to your actual fulfilment terms before launch, don't ship this copy as-is.
+      a: "Free EU shipping over €40, otherwise €3.90. Ships within 48h of your order. 60-day satisfaction guarantee — full refund, no questions asked.",
     },
   ];
   return (
