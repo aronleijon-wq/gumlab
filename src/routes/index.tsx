@@ -7,6 +7,9 @@ export const Route = createFileRoute("/")({
 
 type ProductId = "perform" | "calm" | "recover";
 type Dose = 1 | 2;
+type PurchaseMode = "subscribe" | "onetime";
+
+const ONETIME_MARKUP = 0.35; // +35% vs subscription
 
 type Product = {
   id: ProductId;
