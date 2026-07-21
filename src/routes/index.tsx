@@ -144,6 +144,7 @@ function Index() {
         selectedCount={selected.length}
       />
       <Faq />
+      <About />
       <Footer />
       {selected.length > 0 && (
         <StickyCart count={selected.length} total={cycleTotal} isSub={mode === "subscribe"} />
