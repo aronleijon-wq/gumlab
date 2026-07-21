@@ -209,24 +209,41 @@ function Hero() {
       <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
         {/* Left: rotating 3D Perform batch */}
         <div
-          className="relative flex items-center justify-center"
-          style={{ perspective: "1200px" }}
+          className="relative flex items-center justify-center py-8"
+          style={{ perspective: "1400px" }}
         >
+          {/* soft paper-tone halo to seat the product on the background */}
           <div
             aria-hidden
-            className="absolute inset-x-8 bottom-4 h-6 rounded-full bg-ink/20 blur-2xl"
+            className="halo pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 45%, rgba(181,101,46,0.18) 0%, rgba(181,101,46,0.06) 35%, transparent 65%)",
+              filter: "blur(8px)",
+            }}
+          />
+          {/* contact shadow — moves opposite to the float */}
+          <div
+            aria-hidden
+            className="contact-shadow absolute left-1/2 bottom-6 h-6 w-[60%] -translate-x-1/2 rounded-[50%] bg-ink"
           />
           <img
             src={performCover.url}
             alt="PERFORM batch — creatine gummies"
-            className="spin3d w-full max-w-[420px]"
-            style={{ mixBlendMode: "multiply", filter: "drop-shadow(0 30px 30px rgba(0,0,0,0.15))" }}
+            className="spin3d relative w-full max-w-[420px] select-none"
+            draggable={false}
+            style={{
+              mixBlendMode: "multiply",
+              filter:
+                "drop-shadow(0 22px 18px rgba(21,20,15,0.18)) drop-shadow(0 4px 6px rgba(21,20,15,0.12))",
+            }}
           />
 
           <div className="hairline mono absolute left-2 top-2 bg-paper/85 px-2 py-1 text-[10px] uppercase tracking-widest text-muted-ink backdrop-blur-sm">
             Batch PF-26-0001 · 99.4%
           </div>
         </div>
+
 
         {/* Right: minimized copy */}
         <div>
