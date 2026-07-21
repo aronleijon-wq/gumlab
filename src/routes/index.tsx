@@ -763,7 +763,7 @@ function StackBuilder({
                     </div>
                   </div>
 
-                  <div className="hairline col-span-2 grid grid-cols-2 text-xs sm:col-span-1">
+                  <div className="hairline col-span-3 grid grid-cols-2 text-xs sm:col-span-1">
                     <button
                       onClick={() =>
                         setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 1 } }))
