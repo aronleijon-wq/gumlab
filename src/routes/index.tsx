@@ -950,6 +950,100 @@ function Faq() {
   );
 }
 
+function About() {
+  return (
+    <section id="about" className="hairline-t bg-card">
+      <div className="mx-auto max-w-5xl px-6 py-20 md:py-28">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
+          <div className="md:col-span-7">
+            <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
+              § 07 — About GumLab
+            </div>
+            <h2 className="font-display text-4xl leading-tight md:text-5xl">
+              Europe deserves better supplements.
+            </h2>
+            <div className="mt-8 space-y-5 text-sm leading-relaxed text-ink/80">
+              <p>
+                GumLab was founded in Sweden with a simple belief: Europe deserves better supplements.
+              </p>
+              <p>
+                For too long, the market has been crowded with products filled with unnecessary additives, underdosed ingredients, and formulas that prioritize marketing over quality. We saw a gap for a brand built on transparency, premium ingredients, and products people could genuinely trust.
+              </p>
+              <p>
+                I'm Aron Leijon, the founder of GumLab.
+              </p>
+              <p>
+                I've always been fascinated by how nutrition, training, and recovery can help us perform at our best. Not by chasing shortcuts, but by building better daily habits with products that are backed by science and made with ingredients that actually matter.
+              </p>
+              <p>
+                When I looked at the market, I felt something was missing. There were plenty of supplements—but very few that combined high-quality ingredients, enjoyable formats, and modern branding into a product people genuinely looked forward to using every day.
+              </p>
+              <p>
+                That's why I started GumLab.
+              </p>
+              <p>
+                Every formula is developed with carefully selected, science-backed ingredients sourced from trusted partners and manufactured to the highest quality standards. We believe every ingredient should have a purpose, and every product should deliver real value—not just impressive marketing claims.
+              </p>
+              <p>
+                Our mission is to make daily wellness effortless.
+              </p>
+              <p>
+                No handfuls of pills. No messy powders. Just premium functional gummies that fit naturally into your everyday routine.
+              </p>
+              <p>
+                We're proud to be a Swedish-founded company building a new generation of European wellness products—where quality comes first, transparency is non-negotiable, and great health starts with great ingredients.
+              </p>
+              <p>
+                This is only the beginning.
+              </p>
+              <p>
+                Welcome to GumLab.
+              </p>
+            </div>
+            <div className="hairline mt-10 inline-block bg-paper px-6 py-5">
+              <div className="text-sm font-medium">Aron Leijon</div>
+              <div className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-ink">
+                Founder, GumLab
+              </div>
+            </div>
+          </div>
+          <div className="md:col-span-5">
+            <div className="hairline bg-paper p-6 md:sticky md:top-32">
+              <div className="mono mb-4 text-[11px] uppercase tracking-widest text-muted-ink">
+                What we believe
+              </div>
+              <ul className="space-y-4 text-sm">
+                <li className="flex gap-3">
+                  <span className="mono text-muted-ink">01</span>
+                  <span>Transparency is non-negotiable — every batch is third-party assayed.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mono text-muted-ink">02</span>
+                  <span>Every ingredient must have a purpose — no fillers or marketing fluff.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mono text-muted-ink">03</span>
+                  <span>Quality over quantity — premium sourcing, EU manufacturing.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mono text-muted-ink">04</span>
+                  <span>Wellness should be effortless — no pills, no powders, no friction.</span>
+                </li>
+              </ul>
+              <div className="hairline-t mt-6 pt-6">
+                <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+                  Founded
+                </div>
+                <div className="mt-1 font-display text-2xl">Sweden · 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function StickyCart({ count, total, isSub }: { count: number; total: number; isSub: boolean }) {
   return (
     <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
