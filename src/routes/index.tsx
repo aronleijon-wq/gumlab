@@ -999,11 +999,21 @@ function StackBuilder({
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <button
-                disabled={selectedCount === 0}
+                onClick={handleCheckout}
+                disabled={selectedCount === 0 || checkoutBusy}
                 className="w-full bg-paper px-4 py-3 text-xs font-medium uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-30"
               >
-                {isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
+                {checkoutBusy
+                  ? "Processing…"
+                  : !user
+                    ? isSub ? "Sign in to subscribe" : "Sign in to order"
+                    : isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
               </button>
+              {checkoutMsg && (
+                <div className="mono mt-3 text-[10px] uppercase tracking-widest text-perform">
+                  {checkoutMsg}
+                </div>
+              )}
               <div className="mono mt-4 flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest text-paper/50">
                 <span>Visa</span>
                 <span>·</span>
