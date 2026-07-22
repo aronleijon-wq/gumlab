@@ -124,6 +124,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <SubscribeStrip />
       <AnnouncementBar />
       <Nav cartCount={selected.length} cartTotal={cycleTotal} />
       <Hero />
@@ -172,6 +173,72 @@ function AnnouncementBar() {
         ))}
       </div>
     </div>
+  );
+}
+
+function SubscribeStrip() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [message, setMessage] = useState<string>("");
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (status === "loading" || !email.trim()) return;
+    setStatus("loading");
+    setMessage("");
+    const { error } = await supabase.from("newsletter_signups").insert({
+      email: email.trim().toLowerCase(),
+      source: "top-strip",
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+    if (error) {
+      const dup = error.code === "23505" || /duplicate/i.test(error.message);
+      setStatus(dup ? "ok" : "error");
+      setMessage(dup ? "You're already on the list." : error.message);
+      if (dup) setEmail("");
+    } else {
+      setStatus("ok");
+      setMessage("Thanks — you're on the list.");
+      setEmail("");
+    }
+  }
+
+  return (
+    <section className="bg-ink text-paper">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-3 sm:flex-row sm:gap-6">
+        <div className="text-center sm:text-left">
+          <p className="font-display text-sm font-semibold uppercase tracking-wide">
+            First launch drops soon
+          </p>
+          <p className="mono text-[10px] uppercase tracking-widest text-paper/70">
+            Batch releases, lab reports, no spam
+          </p>
+        </div>
+        <form onSubmit={onSubmit} className="flex w-full max-w-sm items-center overflow-hidden border border-paper/20 bg-paper/5 sm:w-auto">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            disabled={status === "loading"}
+            className="mono flex-1 bg-transparent px-3 py-2 text-xs text-paper outline-none placeholder:text-paper/50 sm:flex-none"
+          />
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="bg-brand px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-60"
+          >
+            {status === "loading" ? "…" : "Notify me"}
+          </button>
+        </form>
+      </div>
+      {status !== "idle" && status !== "loading" && (
+        <div className="mono border-t border-paper/10 px-6 py-1.5 text-center text-[10px] uppercase tracking-widest text-paper/80">
+          {message}
+        </div>
+      )}
+    </section>
   );
 }
 
