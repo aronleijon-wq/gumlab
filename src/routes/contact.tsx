@@ -50,7 +50,7 @@ function ContactPage() {
       setMessage("");
     } catch {
       setStatus("error");
-      setFeedback("Something went wrong. Please email hello@gumlab.se instead.");
+      setFeedback("Something went wrong. Please email support@gumlab.se instead.");
     }
   }
 
@@ -126,8 +126,8 @@ function ContactPage() {
         <div className="hairline-t mt-16 pt-8 text-sm text-muted-ink">
           <div>
             Or email us directly at{" "}
-            <a href="mailto:hello@gumlab.se" className="text-ink underline">
-              hello@gumlab.se
+            <a href="mailto:support@gumlab.se" className="text-ink underline">
+              support@gumlab.se
             </a>
             .
           </div>
