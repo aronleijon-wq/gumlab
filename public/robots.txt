@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gumlab.se/sitemap.xml

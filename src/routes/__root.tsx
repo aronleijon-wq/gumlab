@@ -77,17 +77,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "GumLab — Wellness gummies" },
-{ name: "description", content: "GumLab makes three precisely-dosed functional gummies — Perform, Calm, Sleep — third-party batch tested and delivered on a 28-day cycle across Europe." },
+      { title: "GumLab" },
+      { name: "description", content: "GumLab — precisely-dosed, third-party batch-tested functional gummies delivered on a 28-day cycle across Europe." },
       { name: "author", content: "GumLab" },
-      { property: "og:title", content: "GumLab — Wellness gummies" },
-      { property: "og:description", content: "GumLab makes three precisely-dosed functional gummies — Perform, Calm, Sleep — third-party batch tested and delivered on a 28-day cycle across Europe." },
+      { property: "og:site_name", content: "GumLab" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "GumLab — Wellness gummies" },
-      { name: "twitter:description", content: "GumLab makes three precisely-dosed functional gummies — Perform, Calm, Sleep — third-party batch tested and delivered on a 28-day cycle across Europe." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -95,7 +90,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" },
     ],
-
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "GumLab",
+          url: "https://gumlab.se",
+          logo: "https://gumlab.se/favicon.ico",
+          description: "European direct-to-consumer wellness gummies — precisely-dosed, batch-tested functional formulas.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "GumLab",
+          url: "https://gumlab.se",
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

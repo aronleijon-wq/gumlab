@@ -1,0 +1,13 @@
+# GumLab
+
+> European direct-to-consumer wellness gummies — three precisely-dosed functional formulas (PERFORM, CALM, SLEEP), third-party batch tested and delivered on a 28-day cycle.
+
+GumLab makes serious, clinically-oriented gummy supplements. Every 28-gummy bag is assayed for potency, heavy metals and microbial content by an independent EU-accredited laboratory, and each batch's Certificate of Analysis is published on the product page.
+
+## Pages
+
+- [Home](/): Product overview, stack builder, batch verification, FAQ.
+
+## Optional
+
+- [Sign in](/auth): Customer account access.

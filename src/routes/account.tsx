@@ -10,12 +10,15 @@ export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "Your account · GumLab" },
-      { name: "description", content: "Manage your GumLab subscriptions, orders, and shipping details." },
+      { name: "description", content: "Manage your GumLab subscriptions, orders, dose, and shipping details from one place." },
       { property: "og:title", content: "Your account · GumLab" },
       { property: "og:description", content: "Manage subscriptions and orders." },
+      { property: "og:url", content: "https://gumlab.se/account" },
       { property: "og:type", content: "website" },
+      { name: "robots", content: "noindex, nofollow" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://gumlab.se/account" }],
   }),
   component: AccountPage,
 });
