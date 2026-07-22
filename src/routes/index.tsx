@@ -483,7 +483,7 @@ function Hero() {
 function TrustRow() {
   const items = [
     { k: "Free EU shipping 🚚", v: "Orders over €40", color: "#B5652E" },
-    { k: "60-day guarantee", v: "Full refund, no questions", color: "#54613F" },
+    { k: "60-day guarantee ✅", v: "Full refund, no questions", color: "#54613F" },
     { k: "Cancel anytime ❌", v: "Manage from your dashboard", color: "#2E2A54" },
     { k: "Batch certificate", v: "Ships with every order", color: "#B5652E" },
     { k: "Third-party assayed", v: "Every batch, every time", color: "#54613F" },
