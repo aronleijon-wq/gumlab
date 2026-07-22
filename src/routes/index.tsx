@@ -1315,5 +1315,65 @@ function FooterCol({ title, links }: { title: string; links: string[] }) {
   );
 }
 
+function NewsletterForm() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [message, setMessage] = useState<string>("");
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (status === "loading") return;
+    setStatus("loading");
+    setMessage("");
+    const { error } = await supabase.from("newsletter_signups").insert({
+      email: email.trim().toLowerCase(),
+      source: "footer",
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+    if (error) {
+      const dup = error.code === "23505" || /duplicate/i.test(error.message);
+      setStatus(dup ? "ok" : "error");
+      setMessage(dup ? "You're already on the list." : error.message);
+      if (dup) setEmail("");
+    } else {
+      setStatus("ok");
+      setMessage("Thanks — you're on the list.");
+      setEmail("");
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={onSubmit} className="hairline mt-6 flex max-w-sm items-center bg-card">
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Your email"
+          disabled={status === "loading"}
+          className="mono flex-1 bg-transparent px-3 py-2.5 text-xs outline-none placeholder:text-muted-ink"
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="bg-ink px-4 py-2.5 text-[11px] font-medium uppercase tracking-widest text-paper hover:opacity-90 disabled:opacity-60"
+        >
+          {status === "loading" ? "…" : "Subscribe"}
+        </button>
+      </form>
+      <div
+        className={`mono mt-2 text-[10px] uppercase tracking-widest ${
+          status === "error" ? "text-perform" : "text-muted-ink"
+        }`}
+      >
+        {status === "idle" || status === "loading"
+          ? "Batch releases · lab reports · no spam"
+          : message}
+      </div>
+    </>
+  );
+}
+
 // Prevent tree-shake warning on unused import in some setups
 void useMemo;
