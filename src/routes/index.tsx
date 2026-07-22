@@ -160,7 +160,7 @@ function AnnouncementBar() {
     "Free EU shipping over €40",
     "Third-party assayed · every batch",
     "Pause or cancel anytime",
-    "Ships within 48 h from Rotterdam",
+    "SHIPS WITHIN 24H FROM SWEDEN",
   ];
   return (
     <div className="bg-ink text-paper">
