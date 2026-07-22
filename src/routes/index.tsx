@@ -1260,22 +1260,8 @@ function Footer() {
             <p className="mt-4 max-w-sm text-sm text-muted-ink">
               Precision-dosed functional gummies. Third-party assayed, published batch-by-batch.
             </p>
-            <form className="hairline mt-6 flex max-w-sm items-center bg-card">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="mono flex-1 bg-transparent px-3 py-2.5 text-xs outline-none placeholder:text-muted-ink"
-              />
-              <button
-                type="button"
-                className="bg-ink px-4 py-2.5 text-[11px] font-medium uppercase tracking-widest text-paper hover:opacity-90"
-              >
-                Subscribe
-              </button>
-            </form>
-            <div className="mono mt-2 text-[10px] uppercase tracking-widest text-muted-ink">
-              Batch releases · lab reports · no spam
-            </div>
+            <NewsletterForm />
+
           </div>
           <FooterCol
             title="Shop"
