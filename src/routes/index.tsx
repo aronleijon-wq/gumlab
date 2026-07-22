@@ -124,6 +124,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <SubscribeStrip />
       <AnnouncementBar />
       <Nav cartCount={selected.length} cartTotal={cycleTotal} />
       <Hero />
