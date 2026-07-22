@@ -1268,53 +1268,65 @@ function About() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           <div className="md:col-span-7">
             <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
-              § 07 — About GumLab
+              § 07 — ABOUT GUMLAB
             </div>
             <h2 className="font-display text-4xl leading-tight md:text-5xl">
               Europe deserves better supplements.
             </h2>
             <div className="mt-8 space-y-5 text-sm leading-relaxed text-ink/80">
-              <p>
-                GumLab was founded in Sweden with a simple belief: Europe deserves better supplements.
+              <p className="font-medium text-ink">
+                Europe deserves better supplements.
               </p>
               <p>
-                For too long, the market has been crowded with products filled with unnecessary additives, underdosed ingredients, and formulas that prioritize marketing over quality. We saw a gap for a brand built on transparency, premium ingredients, and products people could genuinely trust.
+                GumLab was founded in Sweden on a simple frustration: most of the industry asks you to trust it, without giving you a reason to.
               </p>
               <p>
-                I'm Aron Leijon, the founder of GumLab.
+                I'm Aron Leijon, the founder of GumLab. I've spent years thinking about how training, nutrition, and recovery actually work — and how rarely that translates into products you can actually verify, not just believe.
               </p>
               <p>
-                I've always been fascinated by how nutrition, training, and recovery can help us perform at our best. Not by chasing shortcuts, but by building better daily habits with products that are backed by science and made with ingredients that actually matter.
+                Look closely at most gummy supplements and you'll find the same pattern: full ingredient lists buried in a product photo instead of written out in plain text, lab reports with the important details blacked out, and formulas built more for the label than for the dose. It's not that the category is bad — it's that almost nothing in it is checkable. We wanted to build the opposite of that.
               </p>
               <p>
-                When I looked at the market, I felt something was missing. There were plenty of supplements—but very few that combined high-quality ingredients, enjoyable formats, and modern branding into a product people genuinely looked forward to using every day.
+                So GumLab is built around one non-negotiable rule: if we can't show it, we don't say it.
+              </p>
+              <ul className="space-y-3 pl-4">
+                <li className="flex gap-3">
+                  <span className="text-muted-ink">—</span>
+                  <span>Every batch is assayed by an independent, EU-accredited laboratory — before it ships, not after a complaint.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-muted-ink">—</span>
+                  <span>The full Certificate of Analysis is published on the product page itself, unredacted.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-muted-ink">—</span>
+                  <span>Every ingredient, and its exact dose, is written out in plain text — never hidden in an image that can quietly change.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-muted-ink">—</span>
+                  <span>No proprietary blends. No dose you can't verify against the label.</span>
+                </li>
+              </ul>
+              <p>
+                But honesty isn't just something we put on a batch certificate — it's how we want to run this whole company. That means being upfront when something isn't perfect yet, not just when it's convenient. We're a new, small team building this from scratch, and we will get things wrong sometimes. What we promise is that we'll say so plainly when we do, and fix it, rather than quietly hoping no one notices.
               </p>
               <p>
-                That's why I started GumLab.
+                That's also why your feedback matters more to us than almost anything else. We're not interested in five-star reviews we haven't earned — we'd rather hear the honest, slightly annoying feedback that actually makes the product better. Tell us the flavor's off, the dose feels wrong, the shipping was too slow, or the copy on this very page doesn't make sense. We read every message ourselves, and we'd genuinely rather know than not.
               </p>
               <p>
-                Every formula is developed with carefully selected, science-backed ingredients sourced from trusted partners and manufactured to the highest quality standards. We believe every ingredient should have a purpose, and every product should deliver real value—not just impressive marketing claims.
+                Because at the end of the day, none of this — the lab tests, the transparency, the packaging — means anything if it doesn't actually serve the people taking these gummies every morning, afternoon, or night. You're not a review count or a subscription number to us. You're the reason any of this is worth building carefully in the first place.
               </p>
               <p>
-                Our mission is to make daily wellness effortless.
+                We make three gummies — Perform, Calm, Sleep — one for each part of the day. No powders, no pills, no guesswork. Just a product built to survive being checked, not just believed.
               </p>
               <p>
-                No handfuls of pills. No messy powders. Just premium functional gummies that fit naturally into your everyday routine.
-              </p>
-              <p>
-                We're proud to be a Swedish-founded company building a new generation of European wellness products—where quality comes first, transparency is non-negotiable, and great health starts with great ingredients.
-              </p>
-              <p>
-                This is only the beginning.
-              </p>
-              <p>
-                Welcome to GumLab.
+                This is only the beginning, and we'd love for you to help shape where it goes. Welcome to GumLab.
               </p>
             </div>
             <div className="hairline mt-10 inline-block bg-paper px-6 py-5">
-              <div className="text-sm font-medium">Aron Leijon</div>
+              <div className="text-sm font-medium">ARON LEIJON</div>
               <div className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-ink">
-                Founder, GumLab
+                FOUNDER, GUMLAB
               </div>
             </div>
           </div>
