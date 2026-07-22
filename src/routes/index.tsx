@@ -271,17 +271,17 @@ function Hero() {
             />
             <div
               aria-hidden
-              className="contact-shadow absolute left-1/2 bottom-4 h-8 w-[70%] -translate-x-1/2 rounded-[50%] bg-ink"
+              className="contact-shadow absolute left-1/2 bottom-0 h-10 w-[78%] -translate-x-1/2 rounded-[50%] bg-ink"
             />
             <img
               src={performCover.url}
               alt="PERFORM batch — creatine gummies"
-              className="spin3d relative w-full max-w-[640px] select-none md:scale-110"
+              className="spin3d relative w-full max-w-[720px] select-none md:scale-125"
               draggable={false}
               style={{
                 mixBlendMode: "multiply",
                 filter:
-                  "contrast(1.08) saturate(1.05) drop-shadow(0 30px 26px rgba(21,20,15,0.28)) drop-shadow(0 8px 10px rgba(21,20,15,0.18))",
+                  "contrast(1.12) saturate(1.1) drop-shadow(0 42px 34px rgba(21,20,15,0.34)) drop-shadow(0 10px 14px rgba(21,20,15,0.22))",
               }}
             />
 
