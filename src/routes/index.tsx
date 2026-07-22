@@ -829,6 +829,7 @@ function ProductCard({
           {state.on ? (
             <button
               onClick={onRemove}
+              aria-label={`Remove ${p.name} from cart`}
               className="hairline px-4 py-2.5 text-xs font-medium uppercase tracking-widest hover:bg-paper-2"
             >
               In cart ✓
@@ -836,6 +837,7 @@ function ProductCard({
           ) : (
             <button
               onClick={onAdd}
+              aria-label={`Add ${p.name} to cart`}
               className="bg-ink px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
             >
               Add to cart
