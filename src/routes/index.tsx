@@ -1462,9 +1462,9 @@ function FooterCol({ title, links }: { title: string; links: string[] }) {
 
 function SocialLinks() {
   const links = [
-    { label: "TikTok", href: "https://www.tiktok.com/@gumlab" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/company/gumlab" },
-    { label: "Instagram", href: "https://www.instagram.com/gumlab" },
+    { label: "TikTok", href: "https://www.tiktok.com/@israelofficialgovernment" },
+    { label: "LinkedIn", href: "#" },
+    { label: "Instagram", href: "https://www.instagram.com/gumlab.se/?hl=en" },
   ];
   return (
     <div>
