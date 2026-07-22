@@ -1412,7 +1412,7 @@ function Footer() {
           />
           <FooterCol
             title="Help"
-            links={["Shipping (EU)", "Returns", "Contact", "Terms & privacy"]}
+            links={["Shipping (EU)", "Returns", "Contact\u00a0us", "Terms & privacy"]}
           />
         </div>
 
