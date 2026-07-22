@@ -86,8 +86,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "GumLab — Lab-verified functional gummies" },
       { name: "twitter:description", content: "GumLab makes three precisely-dosed functional gummies — Perform, Calm, Sleep — third-party batch tested and delivered on a 28-day cycle across Europe." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784649534612-Gemini_Generated_Image_bl72qebl72qebl72.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784649534612-Gemini_Generated_Image_bl72qebl72qebl72.webp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784753966819-ChatGPT_Image_22_juli_2026_22_26_50.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784753966819-ChatGPT_Image_22_juli_2026_22_26_50.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
