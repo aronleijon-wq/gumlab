@@ -244,40 +244,49 @@ function Hero() {
       />
 
       <div className="relative mx-auto max-w-7xl px-6 pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
+        <div className="grid items-center gap-10 md:grid-cols-[1.15fr_1fr] md:gap-8">
           {/* Left: rotating 3D Perform batch */}
           <div
-            className="relative flex items-center justify-center py-8"
-            style={{ perspective: "1400px" }}
+            className="relative flex items-center justify-center py-4 md:-ml-10 md:min-h-[640px]"
+            style={{ perspective: "1600px" }}
           >
+            {/* focused spotlight behind bag */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 50% 55%, rgba(255,251,235,0.9) 0%, rgba(245,244,230,0.6) 30%, transparent 60%)",
+              }}
+            />
             {/* multi-color halo */}
             <div
               aria-hidden
-              className="halo pointer-events-none absolute inset-0"
+              className="halo pointer-events-none absolute inset-8"
               style={{
                 background:
-                  "radial-gradient(circle at 30% 40%, rgba(181,101,46,0.45) 0%, transparent 45%), radial-gradient(circle at 70% 60%, rgba(216,242,78,0.35) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(84,97,63,0.30) 0%, transparent 55%)",
-                filter: "blur(12px)",
+                  "radial-gradient(circle at 30% 40%, rgba(181,101,46,0.55) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(216,242,78,0.4) 0%, transparent 55%), radial-gradient(circle at 50% 80%, rgba(84,97,63,0.35) 0%, transparent 60%)",
+                filter: "blur(18px)",
               }}
             />
             <div
               aria-hidden
-              className="contact-shadow absolute left-1/2 bottom-6 h-6 w-[60%] -translate-x-1/2 rounded-[50%] bg-ink"
+              className="contact-shadow absolute left-1/2 bottom-4 h-8 w-[70%] -translate-x-1/2 rounded-[50%] bg-ink"
             />
             <img
               src={performCover.url}
               alt="PERFORM batch — creatine gummies"
-              className="spin3d relative w-full max-w-[420px] select-none"
+              className="spin3d relative w-full max-w-[640px] select-none md:scale-110"
               draggable={false}
               style={{
                 mixBlendMode: "multiply",
                 filter:
-                  "drop-shadow(0 22px 18px rgba(21,20,15,0.18)) drop-shadow(0 4px 6px rgba(21,20,15,0.12))",
+                  "contrast(1.08) saturate(1.05) drop-shadow(0 30px 26px rgba(21,20,15,0.28)) drop-shadow(0 8px 10px rgba(21,20,15,0.18))",
               }}
             />
 
             <div
-              className="mono absolute left-2 top-2 px-2 py-1 text-[10px] uppercase tracking-widest text-paper"
+              className="mono absolute left-4 top-4 px-2 py-1 text-[10px] uppercase tracking-widest text-paper"
               style={{ background: "#B5652E", borderRadius: 3 }}
             >
               Batch PF-26-0001 · 99.4%
