@@ -53,7 +53,7 @@ type Profile = {
 const PRODUCT_META: Record<ProductId, { name: string; cover: string; accent: string; timeLabel: string }> = {
   perform: { name: "PERFORM", cover: performCover.url, accent: "var(--perform)", timeLabel: "Morning · 06:00" },
   calm: { name: "CALM", cover: calmCover.url, accent: "var(--calm)", timeLabel: "Anytime" },
-  recover: { name: "RECOVER", cover: recoverCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
+  recover: { name: "SLEEP", cover: recoverCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
 };
 
 const PRICE = {
