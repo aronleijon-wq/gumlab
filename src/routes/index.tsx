@@ -7,7 +7,63 @@ import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 
+const OG_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "GumLab — Precisely-dosed functional gummies, batch tested" },
+      { name: "description", content: "Three clinically-focused wellness gummies — PERFORM, CALM, SLEEP. 28-gummy bags on a 28-day cycle, every batch third-party assayed and published." },
+      { property: "og:title", content: "GumLab — Precisely-dosed functional gummies, batch tested" },
+      { property: "og:description", content: "PERFORM, CALM, SLEEP — precisely-dosed European wellness gummies with a published Certificate of Analysis for every batch." },
+      { property: "og:url", content: "https://gumlab.se/" },
+      { property: "og:image", content: OG_IMAGE },
+      { name: "twitter:title", content: "GumLab — Precisely-dosed functional gummies" },
+      { name: "twitter:description", content: "PERFORM, CALM, SLEEP — third-party batch-tested gummies on a 28-day cycle." },
+      { name: "twitter:image", content: OG_IMAGE },
+    ],
+    links: [{ rel: "canonical", href: "https://gumlab.se/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Product",
+              name: "PERFORM",
+              description: "Creatine monohydrate gummies. Supports performance in high-intensity exercise.",
+              brand: { "@type": "Brand", name: "GumLab" },
+              offers: { "@type": "Offer", price: "25.00", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
+            },
+            {
+              "@type": "Product",
+              name: "CALM",
+              description: "Ashwagandha (KSM-66) + L-theanine gummies. Contributes to a sense of calm.",
+              brand: { "@type": "Brand", name: "GumLab" },
+              offers: { "@type": "Offer", price: "23.00", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
+            },
+            {
+              "@type": "Product",
+              name: "SLEEP",
+              description: "Magnesium + melatonin gummies. Contributes to a normal wind-down routine.",
+              brand: { "@type": "Brand", name: "GumLab" },
+              offers: { "@type": "Offer", price: "25.00", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
+            },
+            {
+              "@type": "FAQPage",
+              mainEntity: [
+                { "@type": "Question", name: "Why 28-day cycles instead of monthly?", acceptedAnswer: { "@type": "Answer", text: "Each bag is exactly 28 gummies, so a 28-day cycle means one bag equals one cycle at 1/day — 13 shipments per year rather than 12." } },
+                { "@type": "Question", name: "Can I change my dose or pause?", acceptedAnswer: { "@type": "Answer", text: "Yes. Dose (1/day vs 2/day) can be changed between cycles from your account. Pause, skip, or cancel anytime with no fee." } },
+                { "@type": "Question", name: "How is every batch verified?", acceptedAnswer: { "@type": "Answer", text: "An independent EU-accredited laboratory assays potency, heavy metals, and microbial content before shipping. The Certificate of Analysis is published on the product page." } },
+                { "@type": "Question", name: "Shipping and returns?", acceptedAnswer: { "@type": "Answer", text: "Free EU shipping over €40, otherwise €3.90. Ships within 24h. 30-day satisfaction guarantee." } },
+              ],
+            },
+          ],
+        }),
+      },
+    ],
+  }),
   component: Index,
 });
 
@@ -271,6 +327,7 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
           )}
           <a
             href="#stack"
+            aria-label={`Cart: ${cartCount} item${cartCount === 1 ? "" : "s"}, €${fmt(cartTotal)} per 28-day cycle`}
             className="hairline flex items-center gap-2 bg-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
           >
             <span>Cart</span>

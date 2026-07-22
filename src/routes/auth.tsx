@@ -8,12 +8,14 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in · GumLab" },
-      { name: "description", content: "Sign in or create your GumLab account to manage subscriptions and orders." },
+      { name: "description", content: "Sign in or create your GumLab account to manage subscriptions, dose, and orders." },
       { property: "og:title", content: "Sign in · GumLab" },
       { property: "og:description", content: "Sign in or create your GumLab account." },
+      { property: "og:url", content: "https://gumlab.se/auth" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://gumlab.se/auth" }],
   }),
   component: AuthPage,
 });
