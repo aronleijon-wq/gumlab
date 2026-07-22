@@ -1390,7 +1390,7 @@ function Footer() {
   return (
     <footer className="hairline-t">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-6">
           <div className="md:col-span-2">
             <img src={gumlabLogo.url} alt="GumLab" className="h-14 w-auto" />
             <div className="mono mt-2 text-[11px] uppercase tracking-widest text-muted-ink">
@@ -1414,6 +1414,7 @@ function Footer() {
             title="Help"
             links={["Shipping (EU)", "Returns", "Contact\u00a0us", "Terms & privacy"]}
           />
+          <SocialLinks />
         </div>
 
         <div className="hairline-t mt-16 pt-8">
