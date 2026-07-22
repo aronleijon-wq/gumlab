@@ -1436,6 +1436,11 @@ function Footer() {
 }
 
 function FooterCol({ title, links }: { title: string; links: string[] }) {
+  const hrefFor = (label: string): string => {
+    const normalized = label.replace(/\u00a0/g, " ").toLowerCase();
+    if (normalized === "contact us" || normalized === "contact") return "/contact";
+    return "#";
+  };
   return (
     <div>
       <div className="mono mb-4 text-[11px] uppercase tracking-widest text-muted-ink">
@@ -1444,7 +1449,7 @@ function FooterCol({ title, links }: { title: string; links: string[] }) {
       <ul className="space-y-2 text-sm">
         {links.map((l) => (
           <li key={l}>
-            <a href="#" className="hover:opacity-70">
+            <a href={hrefFor(l)} className="hover:opacity-70">
               {l}
             </a>
           </li>
