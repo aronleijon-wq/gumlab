@@ -76,7 +76,7 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "recover",
-    name: "RECOVER",
+    name: "SLEEP",
     timeTag: "22:00",
     timeLabel: "Night",
     ingredient: "Magnesium bisglycinate + melatonin",
@@ -321,7 +321,7 @@ function Hero() {
               {[
                 { t: "06:00", l: "Perform", c: "#B5652E" },
                 { t: "Anytime", l: "Calm", c: "#54613F" },
-                { t: "22:00", l: "Recover", c: "#2E2A54" },
+                { t: "22:00", l: "Sleep", c: "#2E2A54" },
               ].map((c) => (
                 <div
                   key={c.l}
