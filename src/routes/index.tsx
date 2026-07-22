@@ -1281,7 +1281,7 @@ function About() {
                 GumLab was founded in Sweden on a simple frustration: most of the industry asks you to trust it, without giving you a reason to.
               </p>
               <p>
-                I'm Aron Leijon, the founder of GumLab. I've spent years thinking about how training, nutrition, and recovery actually work — and how rarely that translates into products you can actually verify, not just believe.
+                I'm Aron Leijon, the founder of GumLab. I've spent alot of time thinking about how training, nutrition, and recovery actually work — and how rarely that translates into products you can actually verify, not just believe.
               </p>
               <p>
                 Look closely at most gummy supplements and you'll find the same pattern: full ingredient lists buried in a product photo instead of written out in plain text, lab reports with the important details blacked out, and formulas built more for the label than for the dose. It's not that the category is bad — it's that almost nothing in it is checkable. We wanted to build the opposite of that.
