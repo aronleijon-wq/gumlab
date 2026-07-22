@@ -1390,7 +1390,7 @@ function Footer() {
   return (
     <footer className="hairline-t">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-6">
           <div className="md:col-span-2">
             <img src={gumlabLogo.url} alt="GumLab" className="h-14 w-auto" />
             <div className="mono mt-2 text-[11px] uppercase tracking-widest text-muted-ink">
@@ -1414,6 +1414,7 @@ function Footer() {
             title="Help"
             links={["Shipping (EU)", "Returns", "Contact\u00a0us", "Terms & privacy"]}
           />
+          <SocialLinks />
         </div>
 
         <div className="hairline-t mt-16 pt-8">
@@ -1451,6 +1452,35 @@ function FooterCol({ title, links }: { title: string; links: string[] }) {
           <li key={l}>
             <a href={hrefFor(l)} className="hover:opacity-70">
               {l}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SocialLinks() {
+  const links = [
+    { label: "TikTok", href: "https://www.tiktok.com/@gumlab" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/gumlab" },
+    { label: "Instagram", href: "https://www.instagram.com/gumlab" },
+  ];
+  return (
+    <div>
+      <div className="mono mb-4 text-[11px] uppercase tracking-widest text-muted-ink">
+        Social
+      </div>
+      <ul className="space-y-2 text-sm">
+        {links.map((l) => (
+          <li key={l.label}>
+            <a
+              href={l.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-70"
+            >
+              {l.label}
             </a>
           </li>
         ))}
