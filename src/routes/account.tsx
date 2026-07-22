@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import performCover from "@/assets/perform-cover.png.asset.json";
 import calmCover from "@/assets/calm-cover.png.asset.json";
-import recoverCover from "@/assets/recover-cover.png.asset.json";
+import sleepCover from "@/assets/sleep-cover.png.asset.json";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -53,7 +53,7 @@ type Profile = {
 const PRODUCT_META: Record<ProductId, { name: string; cover: string; accent: string; timeLabel: string }> = {
   perform: { name: "PERFORM", cover: performCover.url, accent: "var(--perform)", timeLabel: "Morning · 06:00" },
   calm: { name: "CALM", cover: calmCover.url, accent: "var(--calm)", timeLabel: "Anytime" },
-  recover: { name: "SLEEP", cover: recoverCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
+  recover: { name: "SLEEP", cover: sleepCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
 };
 
 const PRICE = {

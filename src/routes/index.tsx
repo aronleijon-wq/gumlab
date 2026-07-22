@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import recoverCover from "@/assets/recover-cover.png.asset.json";
+import sleepCover from "@/assets/sleep-cover.png.asset.json";
 import calmCover from "@/assets/calm-cover.png.asset.json";
 import performCover from "@/assets/perform-cover.png.asset.json";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
@@ -91,7 +91,7 @@ const PRODUCTS: Product[] = [
     description:
       "A low, considered dose of melatonin with chelated magnesium. Built for the last hour of the day, not the first.",
     badge: "New batch",
-    cover: recoverCover.url,
+    cover: sleepCover.url,
   },
 ];
 
