@@ -128,7 +128,7 @@ function Index() {
       <Nav cartCount={selected.length} cartTotal={cycleTotal} />
       <Hero />
       <TrustRow />
-      <DayArc />
+      
       <ProductGrid stack={stack} setStack={setStack} />
       <Verification />
       <Reviews />
@@ -411,34 +411,6 @@ function TrustRow() {
   );
 }
 
-function DayArc() {
-  return (
-    <section className="hairline-b bg-paper">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3">
-        {PRODUCTS.map((p, i) => (
-          <div
-            key={p.id}
-            className={`px-6 py-10 md:py-14 ${i > 0 ? "md:border-l md:border-hairline" : ""} ${i > 0 ? "hairline-t md:border-t-0" : ""}`}
-          >
-            <div className="flex items-baseline gap-3">
-              <span className="mono text-sm text-muted-ink">{p.timeTag}</span>
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: p.accent }}
-                aria-hidden
-              />
-              <span className="text-xs uppercase tracking-widest text-muted-ink">
-                {p.timeLabel}
-              </span>
-            </div>
-            <div className="mt-4 font-display text-3xl">{p.name}</div>
-            <div className="mono mt-2 text-xs text-muted-ink">{p.ingredient}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 function Verification() {
   return (
