@@ -1025,7 +1025,8 @@ function StackBuilder({
                       setStack((s) => ({ ...s, [p.id]: { ...s[p.id], on: !s[p.id].on } }))
                     }
                     className={`hairline flex h-6 w-6 shrink-0 items-center justify-center ${st.on ? "bg-ink text-paper" : ""}`}
-                    aria-label={`Toggle ${p.name}`}
+                    aria-label={`${st.on ? "Remove" : "Add"} ${p.name}`}
+                    aria-pressed={st.on}
                   >
                     {st.on && <span className="text-[11px]">✓</span>}
                   </button>
