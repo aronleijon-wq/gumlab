@@ -897,13 +897,6 @@ function StackBuilder({
           <h2 className="font-display text-4xl leading-tight md:text-5xl">
             Choose your products.<br />Choose your dose.
           </h2>
-          <p className="mt-6 text-sm text-muted-ink">
-            Every subscription bills on a{" "}
-            <span className="mono text-ink">28</span>-day cycle — not a calendar month — which
-            works out to <span className="mono text-ink">13</span> cycles per year. Each bag
-            contains <span className="mono text-ink">28</span> gummies, one per day, matched to
-            your cycle.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_420px]">
