@@ -1275,7 +1275,7 @@ function Footer() {
           </div>
           <FooterCol
             title="Shop"
-            links={["Perform", "Calm", "Recover", "Build your stack"]}
+            links={["Perform", "Calm", "Sleep", "Build your stack"]}
           />
           <FooterCol
             title="Verification"
