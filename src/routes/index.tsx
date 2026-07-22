@@ -1099,7 +1099,7 @@ function Faq() {
       q: "Shipping and returns?",
       // NOTE: shipping fee, dispatch time, and guarantee length below are placeholders —
       // set these to your actual fulfilment terms before launch, don't ship this copy as-is.
-      a: "Free EU shipping over €40, otherwise €3.90. Ships within 48h of your order. 60-day satisfaction guarantee — full refund, no questions asked.",
+      a: "Free EU shipping over €40, otherwise €3.90. Ships within 24h of your order. 30-day satisfaction guarantee — full refund, no questions asked.",
     },
   ];
   return (
