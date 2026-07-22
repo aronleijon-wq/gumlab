@@ -518,13 +518,17 @@ function ProductVisual({ product }: { product: Product }) {
   return (
     <div
       className="relative aspect-[4/3] overflow-hidden"
-      style={{ backgroundColor: `color-mix(in srgb, ${product.accent} 14%, var(--paper))` }}
+      style={{
+        backgroundColor: product.cover
+          ? "transparent"
+          : `color-mix(in srgb, ${product.accent} 14%, var(--paper))`,
+      }}
     >
       {product.cover ? (
         <img
           src={product.cover}
           alt={`${product.name} packaging`}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain p-4"
           loading="lazy"
         />
       ) : (
