@@ -766,8 +766,9 @@ function ProductCard({
   onAdd: () => void;
   onRemove: () => void;
 }) {
-  const price = state.dose === 2 ? product.price2 : product.price1;
-  const bags = state.dose === 2 ? 2 : 1;
+  const price = priceForDose(product, state.dose);
+  const bags = state.dose;
+
   const bagsYear = bags * 13;
 
   return (
