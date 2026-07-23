@@ -167,6 +167,13 @@ function priceForDose(p: Product, dose: Dose): number {
   return p.price1;
 }
 
+function bagsForDose(p: Product, dose: Dose): number {
+  // PERFORM ships one bag per cycle regardless of dose (larger bag for 3/day).
+  if (p.id === "perform") return 1;
+  return dose;
+}
+
+
 
 function fmt(n: number) {
   return n.toFixed(2).replace(/\.00$/, "");
