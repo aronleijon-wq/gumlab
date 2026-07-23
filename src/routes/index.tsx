@@ -114,7 +114,7 @@ const PRODUCTS: Product[] = [
     potency: "99.4%",
     lab: "Independent EU-accredited laboratory",
     description:
-      "1.5 g creatine monohydrate per gummy. Choose 2/day (3 g) or 3/day (4.5 g) — one bag per 28-day cycle either way. The 3/day option ships a larger bag at the same €29 price.",
+      "1.5 g creatine monohydrate per gummy. Choose 2/day (3 g total) or 3/day (4.5 g total). Either way you get one bag per 28-day cycle: 2/day = 56 gummies, 3/day = 84 gummies. Same €29 price.",
 
     badge: "Hero product",
     cover: performCover.url,
@@ -847,6 +847,9 @@ function ProductCard({
           </div>
           <div className="mono mt-2 text-[11px] text-muted-ink">
             → {bags} bag{bags > 1 ? "s" : ""} / 28-day cycle · {bagsYear} bags / year
+            {product.id === "perform" && (
+              <span> · {28 * state.dose} gummies total</span>
+            )}
           </div>
         </div>
 
