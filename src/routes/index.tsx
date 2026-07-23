@@ -84,6 +84,7 @@ type Product = {
   price1: number;
   price2: number;
   price3?: number;
+  price3Onetime?: number;
   allowedDoses: Dose[];
   accent: string;
   batch: string;
@@ -106,7 +107,8 @@ const PRODUCTS: Product[] = [
     claim: "Supports performance in high-intensity exercise.",
     price1: 29,
     price2: 29,
-    price3: 29,
+    price3: 36,
+    price3Onetime: 42,
     allowedDoses: [2, 3],
     accent: "var(--perform)",
 
@@ -114,7 +116,7 @@ const PRODUCTS: Product[] = [
     potency: "99.4%",
     lab: "Independent EU-accredited laboratory",
     description:
-      "1.5 g creatine monohydrate per gummy. Choose 2/day (3 g total) or 3/day (4.5 g total). Either way you get one bag per 28-day cycle: 2/day = 56 gummies, 3/day = 84 gummies. Same €29 price.",
+      "1.5 g creatine monohydrate per gummy. Choose 2/day (3 g total) or 3/day (4.5 g total). One bag per 28-day cycle: 2/day = 56 gummies (€29 sub / €39.15 one-time), 3/day = 84 gummies (€36 sub / €42 one-time).", 
 
     badge: "Hero product",
     cover: performCover.url,
@@ -165,6 +167,11 @@ function priceForDose(p: Product, dose: Dose): number {
   if (dose === 3) return p.price3 ?? p.price2;
   if (dose === 2) return p.price2;
   return p.price1;
+}
+
+function onetimePriceForDose(p: Product, dose: Dose): number {
+  if (dose === 3 && p.price3Onetime != null) return p.price3Onetime;
+  return priceForDose(p, dose) * (1 + ONETIME_MARKUP);
 }
 
 function bagsForDose(p: Product, dose: Dose): number {
@@ -775,6 +782,7 @@ function ProductCard({
   onRemove: () => void;
 }) {
   const price = priceForDose(product, state.dose);
+  const oneTimePrice = onetimePriceForDose(product, state.dose);
   const bags = bagsForDose(product, state.dose);
 
 
@@ -861,7 +869,7 @@ function ProductCard({
               per 28-day cycle · subscribe
             </div>
             <div className="mono mt-1 text-[11px] text-muted-ink">
-              or €{fmt(price * (1 + ONETIME_MARKUP))} one-time
+              or €{fmt(oneTimePrice)} one-time
             </div>
           </div>
           {state.on ? (
@@ -1011,9 +1019,8 @@ function StackBuilder({
         if (orders.length) await supabase.from("orders").insert(orders);
       } else {
         // One-time: only orders, no subs
-        const factor = 1 + ONETIME_MARKUP;
         const orders = selectedProducts.map((p) => {
-          const price = priceForDose(p, stack[p.id].dose) * factor;
+          const price = onetimePriceForDose(p, stack[p.id].dose);
           return {
             user_id: user.id,
             product_id: p.id,
@@ -1053,6 +1060,7 @@ function StackBuilder({
             {PRODUCTS.map((p, i) => {
               const st = stack[p.id];
               const price = priceForDose(p, st.dose);
+              const oneTimePrice = onetimePriceForDose(p, st.dose);
               return (
                 <div
                   key={p.id}
@@ -1109,7 +1117,7 @@ function StackBuilder({
                   </div>
 
                   <div className="mono text-right text-sm">
-                    <div>€{fmt(isSub ? price : price * (1 + ONETIME_MARKUP))}</div>
+                    <div>€{fmt(isSub ? price : oneTimePrice)}</div>
                     <div className="text-[10px] uppercase tracking-widest text-muted-ink">
                       {isSub ? "/cycle" : "one-time"}
                     </div>
