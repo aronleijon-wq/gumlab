@@ -27,7 +27,7 @@ type ProductId = "perform" | "calm" | "recover";
 type Sub = {
   id: string;
   product_id: ProductId;
-  dose: 1 | 2;
+  dose: 1 | 2 | 3;
   status: "active" | "paused" | "cancelled";
   price_eur: number;
   next_bill_at: string;
