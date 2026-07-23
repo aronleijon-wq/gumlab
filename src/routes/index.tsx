@@ -128,7 +128,9 @@ const PRODUCTS: Product[] = [
     claim: "Contributes to a sense of calm.",
     price1: 23,
     price2: 41,
+    allowedDoses: [1, 2],
     accent: "var(--calm)",
+
     batch: "CA-26-0001",
     potency: "101.2%",
     lab: "Independent EU-accredited laboratory",
