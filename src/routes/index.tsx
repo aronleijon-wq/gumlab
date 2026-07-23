@@ -148,7 +148,9 @@ const PRODUCTS: Product[] = [
     claim: "Contributes to a normal wind-down routine and supports normal muscle function.",
     price1: 25,
     price2: 45,
+    allowedDoses: [1, 2],
     accent: "var(--recover)",
+
     batch: "RC-26-0001",
     potency: "98.7%",
     lab: "Independent EU-accredited laboratory",
