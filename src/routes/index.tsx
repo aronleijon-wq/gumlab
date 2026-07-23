@@ -1040,7 +1040,7 @@ function StackBuilder({
           <div className="hairline bg-card">
             {PRODUCTS.map((p, i) => {
               const st = stack[p.id];
-              const price = st.dose === 2 ? p.price2 : p.price1;
+              const price = priceForDose(p, st.dose);
               return (
                 <div
                   key={p.id}
