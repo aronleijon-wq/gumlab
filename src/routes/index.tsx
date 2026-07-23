@@ -808,7 +808,9 @@ function ProductCard({
         <div className="mono mt-1 text-sm">
           {product.dose} per gummy
           {product.id === "perform" && (
-            <span className="text-muted-ink"> · 2 gummies/day = 3g creatine</span>
+            <span className="text-muted-ink">
+              {" "}· {state.dose} gummies/day = {(1.5 * state.dose).toFixed(1)}g creatine
+            </span>
           )}
         </div>
 
@@ -820,24 +822,25 @@ function ProductCard({
           <div className="mono mb-2 text-[10px] uppercase tracking-widest text-muted-ink">
             Daily dose
           </div>
-          <div className="hairline grid grid-cols-2 text-sm">
-            <button
-              onClick={() => onDose(1)}
-              className={`px-4 py-2.5 ${state.dose === 1 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-            >
-              <span className="mono">1</span> gummy / day
-            </button>
-            <button
-              onClick={() => onDose(2)}
-              className={`px-4 py-2.5 border-l border-hairline ${state.dose === 2 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-            >
-              <span className="mono">2</span> gummies / day
-            </button>
+          <div
+            className="hairline grid text-sm"
+            style={{ gridTemplateColumns: `repeat(${product.allowedDoses.length}, minmax(0, 1fr))` }}
+          >
+            {product.allowedDoses.map((d, idx) => (
+              <button
+                key={d}
+                onClick={() => onDose(d)}
+                className={`px-4 py-2.5 ${idx > 0 ? "border-l border-hairline" : ""} ${state.dose === d ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+              >
+                <span className="mono">{d}</span> {d === 1 ? "gummy" : "gummies"} / day
+              </button>
+            ))}
           </div>
           <div className="mono mt-2 text-[11px] text-muted-ink">
             → {bags} bag{bags > 1 ? "s" : ""} / 28-day cycle · {bagsYear} bags / year
           </div>
         </div>
+
 
         <div className="hairline-t mt-6 flex items-end justify-between pt-5">
           <div>
