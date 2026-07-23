@@ -83,6 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "GumLab" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "trustpilot-one-time-domain-verification-id", content: "bc2ba11c-2f98-4cb5-ba2d-481318509e6d" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
