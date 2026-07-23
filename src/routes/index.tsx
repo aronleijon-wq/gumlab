@@ -157,7 +157,7 @@ function fmt(n: number) {
 
 function Index() {
   const [stack, setStack] = useState<Record<ProductId, { on: boolean; dose: Dose }>>({
-    perform: { on: false, dose: 1 },
+    perform: { on: false, dose: 2 },
     calm: { on: false, dose: 1 },
     recover: { on: false, dose: 1 },
   });
