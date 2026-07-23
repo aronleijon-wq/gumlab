@@ -869,7 +869,7 @@ function ProductCard({
               per 28-day cycle · subscribe
             </div>
             <div className="mono mt-1 text-[11px] text-muted-ink">
-              or €{fmt(price * (1 + ONETIME_MARKUP))} one-time
+              or €{fmt(oneTimePrice)} one-time
             </div>
           </div>
           {state.on ? (
