@@ -99,7 +99,7 @@ const PRODUCTS: Product[] = [
     timeTag: "06:00",
     timeLabel: "Morning",
     ingredient: "Creatine monohydrate",
-    dose: "3 g",
+    dose: "1.5 g",
     claim: "Supports performance in high-intensity exercise.",
     price1: 25,
     price2: 45,
@@ -108,7 +108,7 @@ const PRODUCTS: Product[] = [
     potency: "99.4%",
     lab: "Independent EU-accredited laboratory",
     description:
-      "One well-studied compound, no proprietary blend, no stimulants. The kind of gummy you take because it's Tuesday, not because it's exciting.",
+      "1.5 g creatine monohydrate per gummy. Two gummies per day deliver 3 g — a well-studied maintenance dose. No proprietary blend, no stimulants.",
     badge: "Hero product",
     cover: performCover.url,
   },
@@ -157,7 +157,7 @@ function fmt(n: number) {
 
 function Index() {
   const [stack, setStack] = useState<Record<ProductId, { on: boolean; dose: Dose }>>({
-    perform: { on: false, dose: 1 },
+    perform: { on: false, dose: 2 },
     calm: { on: false, dose: 1 },
     recover: { on: false, dose: 1 },
   });
@@ -787,7 +787,12 @@ function ProductCard({
           style={{ backgroundColor: product.accent }}
         />
         <div className="mt-4 text-sm text-muted-ink">{product.ingredient}</div>
-        <div className="mono mt-1 text-sm">{product.dose} per gummy</div>
+        <div className="mono mt-1 text-sm">
+          {product.dose} per gummy
+          {product.id === "perform" && (
+            <span className="text-muted-ink"> · 2 gummies/day = 3g creatine</span>
+          )}
+        </div>
 
         <p className="mt-5 text-sm leading-relaxed text-muted-ink">
           {product.description}
