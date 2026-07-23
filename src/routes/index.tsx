@@ -84,6 +84,7 @@ type Product = {
   price1: number;
   price2: number;
   price3?: number;
+  price3Onetime?: number;
   allowedDoses: Dose[];
   accent: string;
   batch: string;
