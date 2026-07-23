@@ -325,15 +325,16 @@ function SubCard({
       {!cancelled && (
         <div className="hairline-t mt-4 pt-4 flex flex-wrap items-center gap-2">
           <div className="mono text-[10px] uppercase tracking-widest text-muted-ink mr-1">Dose</div>
-          {[1, 2].map((d) => (
+          {DOSE_OPTIONS[sub.product_id].map((d) => (
             <button
               key={d}
-              onClick={() => onChangeDose(d as 1 | 2)}
+              onClick={() => onChangeDose(d)}
               className={`px-3 py-1.5 text-xs ${sub.dose === d ? "bg-ink text-paper" : "hairline hover:bg-paper-2"}`}
             >
-              {d} gummy/day
+              {d} {d === 1 ? "gummy" : "gummies"}/day
             </button>
           ))}
+
           <div className="ml-auto flex gap-2">
             {paused ? (
               <button onClick={() => onUpdate({ status: "active" })} className="hairline px-3 py-1.5 text-xs hover:bg-paper-2">Resume</button>
