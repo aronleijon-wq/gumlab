@@ -68,7 +68,7 @@ export const Route = createFileRoute("/")({
 });
 
 type ProductId = "perform" | "calm" | "recover";
-type Dose = 1 | 2;
+type Dose = 1 | 2 | 3;
 type PurchaseMode = "subscribe" | "onetime";
 
 const ONETIME_MARKUP = 0.35; // +35% vs subscription
@@ -83,6 +83,8 @@ type Product = {
   claim: string;
   price1: number;
   price2: number;
+  price3?: number;
+  allowedDoses: Dose[];
   accent: string;
   batch: string;
   potency: string;
@@ -91,6 +93,7 @@ type Product = {
   badge?: string;
   cover?: string;
 };
+
 
 const PRODUCTS: Product[] = [
   {
@@ -103,7 +106,10 @@ const PRODUCTS: Product[] = [
     claim: "Supports performance in high-intensity exercise.",
     price1: 25,
     price2: 45,
+    price3: 63,
+    allowedDoses: [2, 3],
     accent: "var(--perform)",
+
     batch: "PF-26-0001",
     potency: "99.4%",
     lab: "Independent EU-accredited laboratory",
@@ -122,7 +128,9 @@ const PRODUCTS: Product[] = [
     claim: "Contributes to a sense of calm.",
     price1: 23,
     price2: 41,
+    allowedDoses: [1, 2],
     accent: "var(--calm)",
+
     batch: "CA-26-0001",
     potency: "101.2%",
     lab: "Independent EU-accredited laboratory",
@@ -140,6 +148,7 @@ const PRODUCTS: Product[] = [
     claim: "Contributes to a normal wind-down routine and supports normal muscle function.",
     price1: 25,
     price2: 45,
+    allowedDoses: [1, 2],
     accent: "var(--recover)",
     batch: "RC-26-0001",
     potency: "98.7%",
@@ -150,6 +159,13 @@ const PRODUCTS: Product[] = [
     cover: sleepCover.url,
   },
 ];
+
+function priceForDose(p: Product, dose: Dose): number {
+  if (dose === 3) return p.price3 ?? p.price2;
+  if (dose === 2) return p.price2;
+  return p.price1;
+}
+
 
 function fmt(n: number) {
   return n.toFixed(2).replace(/\.00$/, "");
@@ -165,9 +181,10 @@ function Index() {
 
   const selected = PRODUCTS.filter((p) => stack[p.id].on);
   const subtotal = selected.reduce(
-    (sum, p) => sum + (stack[p.id].dose === 2 ? p.price2 : p.price1),
+    (sum, p) => sum + priceForDose(p, stack[p.id].dose),
     0
   );
+
   const discountPct =
     mode === "subscribe" ? (selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0) : 0;
   const markupPct = mode === "onetime" ? Math.round(ONETIME_MARKUP * 100) : 0;
@@ -749,8 +766,9 @@ function ProductCard({
   onAdd: () => void;
   onRemove: () => void;
 }) {
-  const price = state.dose === 2 ? product.price2 : product.price1;
-  const bags = state.dose === 2 ? 2 : 1;
+  const price = priceForDose(product, state.dose);
+  const bags = state.dose;
+
   const bagsYear = bags * 13;
 
   return (
@@ -790,7 +808,9 @@ function ProductCard({
         <div className="mono mt-1 text-sm">
           {product.dose} per gummy
           {product.id === "perform" && (
-            <span className="text-muted-ink"> · 2 gummies/day = 3g creatine</span>
+            <span className="text-muted-ink">
+              {" "}· {state.dose} gummies/day = {(1.5 * state.dose).toFixed(1)}g creatine
+            </span>
           )}
         </div>
 
@@ -802,24 +822,25 @@ function ProductCard({
           <div className="mono mb-2 text-[10px] uppercase tracking-widest text-muted-ink">
             Daily dose
           </div>
-          <div className="hairline grid grid-cols-2 text-sm">
-            <button
-              onClick={() => onDose(1)}
-              className={`px-4 py-2.5 ${state.dose === 1 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-            >
-              <span className="mono">1</span> gummy / day
-            </button>
-            <button
-              onClick={() => onDose(2)}
-              className={`px-4 py-2.5 border-l border-hairline ${state.dose === 2 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-            >
-              <span className="mono">2</span> gummies / day
-            </button>
+          <div
+            className="hairline grid text-sm"
+            style={{ gridTemplateColumns: `repeat(${product.allowedDoses.length}, minmax(0, 1fr))` }}
+          >
+            {product.allowedDoses.map((d, idx) => (
+              <button
+                key={d}
+                onClick={() => onDose(d)}
+                className={`px-4 py-2.5 ${idx > 0 ? "border-l border-hairline" : ""} ${state.dose === d ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+              >
+                <span className="mono">{d}</span> {d === 1 ? "gummy" : "gummies"} / day
+              </button>
+            ))}
           </div>
           <div className="mono mt-2 text-[11px] text-muted-ink">
             → {bags} bag{bags > 1 ? "s" : ""} / 28-day cycle · {bagsYear} bags / year
           </div>
         </div>
+
 
         <div className="hairline-t mt-6 flex items-end justify-between pt-5">
           <div>
@@ -948,7 +969,7 @@ function StackBuilder({
         // Distribute stack discount across products
         const factor = 1 - discountPct / 100;
         const subRows = selectedProducts.map((p) => {
-          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          const price = priceForDose(p, stack[p.id].dose) * factor;
           return {
             user_id: user.id,
             product_id: p.id,
@@ -980,7 +1001,7 @@ function StackBuilder({
         // One-time: only orders, no subs
         const factor = 1 + ONETIME_MARKUP;
         const orders = selectedProducts.map((p) => {
-          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          const price = priceForDose(p, stack[p.id].dose) * factor;
           return {
             user_id: user.id,
             product_id: p.id,
@@ -1019,7 +1040,7 @@ function StackBuilder({
           <div className="hairline bg-card">
             {PRODUCTS.map((p, i) => {
               const st = stack[p.id];
-              const price = st.dose === 2 ? p.price2 : p.price1;
+              const price = priceForDose(p, st.dose);
               return (
                 <div
                   key={p.id}
@@ -1058,24 +1079,23 @@ function StackBuilder({
                     </div>
                   </div>
 
-                  <div className="hairline col-span-3 grid grid-cols-2 text-xs sm:col-span-1">
-                    <button
-                      onClick={() =>
-                        setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 1 } }))
-                      }
-                      className={`px-3 py-2 ${st.dose === 1 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-                    >
-                      <span className="mono">1</span>×/day
-                    </button>
-                    <button
-                      onClick={() =>
-                        setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 2 } }))
-                      }
-                      className={`px-3 py-2 border-l border-hairline ${st.dose === 2 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-                    >
-                      <span className="mono">2</span>×/day
-                    </button>
+                  <div
+                    className="hairline col-span-3 grid text-xs sm:col-span-1"
+                    style={{ gridTemplateColumns: `repeat(${p.allowedDoses.length}, minmax(0, 1fr))` }}
+                  >
+                    {p.allowedDoses.map((d, idx) => (
+                      <button
+                        key={d}
+                        onClick={() =>
+                          setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: d } }))
+                        }
+                        className={`px-3 py-2 ${idx > 0 ? "border-l border-hairline" : ""} ${st.dose === d ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+                      >
+                        <span className="mono">{d}</span>×/day
+                      </button>
+                    ))}
                   </div>
+
                   <div className="mono text-right text-sm">
                     <div>€{fmt(isSub ? price : price * (1 + ONETIME_MARKUP))}</div>
                     <div className="text-[10px] uppercase tracking-widest text-muted-ink">

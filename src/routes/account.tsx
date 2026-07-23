@@ -27,7 +27,7 @@ type ProductId = "perform" | "calm" | "recover";
 type Sub = {
   id: string;
   product_id: ProductId;
-  dose: 1 | 2;
+  dose: 1 | 2 | 3;
   status: "active" | "paused" | "cancelled";
   price_eur: number;
   next_bill_at: string;
@@ -59,11 +59,18 @@ const PRODUCT_META: Record<ProductId, { name: string; cover: string; accent: str
   recover: { name: "SLEEP", cover: sleepCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
 };
 
-const PRICE = {
-  perform: { 1: 25, 2: 45 },
+const PRICE: Record<ProductId, Partial<Record<1 | 2 | 3, number>>> = {
+  perform: { 2: 45, 3: 63 },
   calm: { 1: 23, 2: 41 },
   recover: { 1: 25, 2: 45 },
-} as const;
+};
+
+const DOSE_OPTIONS: Record<ProductId, (1 | 2 | 3)[]> = {
+  perform: [2, 3],
+  calm: [1, 2],
+  recover: [1, 2],
+};
+
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
@@ -119,10 +126,11 @@ function AccountPage() {
     refresh();
   }
 
-  async function changeDose(sub: Sub, dose: 1 | 2) {
-    const price = PRICE[sub.product_id][dose];
+  async function changeDose(sub: Sub, dose: 1 | 2 | 3) {
+    const price = PRICE[sub.product_id][dose] ?? sub.price_eur;
     await updateSub(sub.id, { dose, price_eur: price });
   }
+
 
   async function saveProfile() {
     setSaving(true);
@@ -280,7 +288,8 @@ function SubCard({
   sub, onChangeDose, onUpdate,
 }: {
   sub: Sub;
-  onChangeDose: (d: 1 | 2) => void;
+  onChangeDose: (d: 1 | 2 | 3) => void;
+
   onUpdate: (p: Partial<Sub>) => void;
 }) {
   const meta = PRODUCT_META[sub.product_id];
@@ -316,15 +325,16 @@ function SubCard({
       {!cancelled && (
         <div className="hairline-t mt-4 pt-4 flex flex-wrap items-center gap-2">
           <div className="mono text-[10px] uppercase tracking-widest text-muted-ink mr-1">Dose</div>
-          {[1, 2].map((d) => (
+          {DOSE_OPTIONS[sub.product_id].map((d) => (
             <button
               key={d}
-              onClick={() => onChangeDose(d as 1 | 2)}
+              onClick={() => onChangeDose(d)}
               className={`px-3 py-1.5 text-xs ${sub.dose === d ? "bg-ink text-paper" : "hairline hover:bg-paper-2"}`}
             >
-              {d} gummy/day
+              {d} {d === 1 ? "gummy" : "gummies"}/day
             </button>
           ))}
+
           <div className="ml-auto flex gap-2">
             {paused ? (
               <button onClick={() => onUpdate({ status: "active" })} className="hairline px-3 py-1.5 text-xs hover:bg-paper-2">Resume</button>
