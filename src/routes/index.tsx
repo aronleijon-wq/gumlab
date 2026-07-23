@@ -150,6 +150,12 @@ const PRODUCTS: Product[] = [
     price2: 45,
     allowedDoses: [1, 2],
     accent: "var(--recover)",
+function priceForDose(p: Product, dose: Dose): number {
+  if (dose === 3) return p.price3 ?? p.price2;
+  if (dose === 2) return p.price2;
+  return p.price1;
+}
+
 
     batch: "RC-26-0001",
     potency: "98.7%",
