@@ -1,69 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import sleepCover from "@/assets/sleep-cover.png.asset.json";
-import calmCover from "@/assets/calm-cover.png.asset.json";
-import performCover from "@/assets/perform-cover.png.asset.json";
-import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
-import { useSession } from "@/hooks/use-session";
-import { supabase } from "@/integrations/supabase/client";
-
-const OG_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "GumLab — Precisely-dosed functional gummies, batch tested" },
-      { name: "description", content: "Three clinically-focused wellness gummies — PERFORM, CALM, SLEEP. 28-gummy bags on a 28-day cycle, every batch third-party assayed and published." },
-      { property: "og:title", content: "GumLab — Precisely-dosed functional gummies, batch tested" },
-      { property: "og:description", content: "PERFORM, CALM, SLEEP — precisely-dosed European wellness gummies with a published Certificate of Analysis for every batch." },
-      { property: "og:url", content: "https://gumlab.se/" },
-      { property: "og:image", content: OG_IMAGE },
-      { name: "twitter:title", content: "GumLab — Precisely-dosed functional gummies" },
-      { name: "twitter:description", content: "PERFORM, CALM, SLEEP — third-party batch-tested gummies on a 28-day cycle." },
-      { name: "twitter:image", content: OG_IMAGE },
-    ],
-    links: [{ rel: "canonical", href: "https://gumlab.se/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@graph": [
-            {
-              "@type": "Product",
-              name: "PERFORM",
-              description: "Creatine monohydrate gummies. Supports performance in high-intensity exercise.",
-              brand: { "@type": "Brand", name: "GumLab" },
-              offers: { "@type": "Offer", price: "25.00", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
-            },
-            {
-              "@type": "Product",
-              name: "CALM",
-              description: "Ashwagandha (KSM-66) + L-theanine gummies. Contributes to a sense of calm.",
-              brand: { "@type": "Brand", name: "GumLab" },
-              offers: { "@type": "Offer", price: "23.00", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
-            },
-            {
-              "@type": "Product",
-              name: "SLEEP",
-              description: "Magnesium + melatonin gummies. Contributes to a normal wind-down routine.",
-              brand: { "@type": "Brand", name: "GumLab" },
-              offers: { "@type": "Offer", price: "25.00", priceCurrency: "EUR", availability: "https://schema.org/PreOrder" },
-            },
-            {
-              "@type": "FAQPage",
-              mainEntity: [
-                { "@type": "Question", name: "Why 28-day cycles instead of monthly?", acceptedAnswer: { "@type": "Answer", text: "Each bag is exactly 28 gummies, so a 28-day cycle means one bag equals one cycle at 1/day — 13 shipments per year rather than 12." } },
-                { "@type": "Question", name: "Can I change my dose or pause?", acceptedAnswer: { "@type": "Answer", text: "Yes. Dose (1/day vs 2/day) can be changed between cycles from your account. Pause, skip, or cancel anytime with no fee." } },
-                { "@type": "Question", name: "How is every batch verified?", acceptedAnswer: { "@type": "Answer", text: "An independent EU-accredited laboratory assays potency, heavy metals, and microbial content before shipping. The Certificate of Analysis is published on the product page." } },
-                { "@type": "Question", name: "Shipping and returns?", acceptedAnswer: { "@type": "Answer", text: "Free EU shipping over €40, otherwise €3.90. Ships within 24h. 30-day satisfaction guarantee." } },
-              ],
-            },
-          ],
-        }),
-      },
-    ],
-  }),
   component: Index,
 });
 
@@ -89,7 +27,9 @@ type Product = {
   lab: string;
   description: string;
   badge?: string;
-  cover?: string;
+  image?: string;
+  fixedDose?: boolean;
+  bagCount?: number;
 };
 
 const PRODUCTS: Product[] = [
@@ -99,9 +39,11 @@ const PRODUCTS: Product[] = [
     timeTag: "06:00",
     timeLabel: "Morning",
     ingredient: "Creatine monohydrate",
-    dose: "3 g",
-    claim: "Supports performance in high-intensity exercise.",
-    price1: 25,
+    dose: "1.5 g",
+    fixedDose: true,
+    bagCount: 56,
+    claim: "Supports performance in high-intensity exercise (3g/day serving).",
+    price1: 45,
     price2: 45,
     accent: "var(--perform)",
     batch: "PF-26-0001",
@@ -110,7 +52,7 @@ const PRODUCTS: Product[] = [
     description:
       "One well-studied compound, no proprietary blend, no stimulants. The kind of gummy you take because it's Tuesday, not because it's exciting.",
     badge: "Hero product",
-    cover: performCover.url,
+    image: "/images/perform-bag.png",
   },
   {
     id: "calm",
@@ -128,11 +70,10 @@ const PRODUCTS: Product[] = [
     lab: "Independent EU-accredited laboratory",
     description:
       "Standardised KSM-66 root extract paired with L-theanine. Take it when the day is asking a bit much of you.",
-    cover: calmCover.url,
   },
   {
     id: "recover",
-    name: "SLEEP",
+    name: "RECOVER",
     timeTag: "22:00",
     timeLabel: "Night",
     ingredient: "Magnesium bisglycinate + melatonin",
@@ -147,7 +88,6 @@ const PRODUCTS: Product[] = [
     description:
       "A low, considered dose of melatonin with chelated magnesium. Built for the last hour of the day, not the first.",
     badge: "New batch",
-    cover: sleepCover.url,
   },
 ];
 
@@ -180,12 +120,11 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <SubscribeStrip />
       <AnnouncementBar />
       <Nav cartCount={selected.length} cartTotal={cycleTotal} />
       <Hero />
       <TrustRow />
-      
+      <DayArc />
       <ProductGrid stack={stack} setStack={setStack} />
       <Verification />
       <Reviews />
@@ -203,7 +142,6 @@ function Index() {
         selectedCount={selected.length}
       />
       <Faq />
-      <About />
       <Footer />
       {selected.length > 0 && (
         <StickyCart count={selected.length} total={cycleTotal} isSub={mode === "subscribe"} />
@@ -217,7 +155,7 @@ function AnnouncementBar() {
     "Free EU shipping over €40",
     "Third-party assayed · every batch",
     "Pause or cancel anytime",
-    "SHIPS WITHIN 24H FROM SWEDEN",
+    "Ships within 48 h from Rotterdam",
   ];
   return (
     <div className="bg-ink text-paper">
@@ -232,102 +170,22 @@ function AnnouncementBar() {
   );
 }
 
-function SubscribeStrip() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
-  const [message, setMessage] = useState<string>("");
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (status === "loading" || !email.trim()) return;
-    setStatus("loading");
-    setMessage("");
-    const { error } = await supabase.from("newsletter_signups").insert({
-      email: email.trim().toLowerCase(),
-      source: "top-strip",
-      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-    });
-    if (error) {
-      const dup = error.code === "23505" || /duplicate/i.test(error.message);
-      setStatus(dup ? "ok" : "error");
-      setMessage(dup ? "You're already on the list." : error.message);
-      if (dup) setEmail("");
-    } else {
-      setStatus("ok");
-      setMessage("Thanks — you're on the list.");
-      setEmail("");
-    }
-  }
-
-  return (
-    <section className="bg-ink text-paper">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-3 sm:flex-row sm:gap-6">
-        <div className="text-center sm:text-left">
-          <p className="font-display text-sm font-semibold uppercase tracking-wide">
-            First launch drops soon
-          </p>
-          <p className="mono text-[10px] uppercase tracking-widest text-paper/70">
-            Batch releases, lab reports, no spam
-          </p>
-        </div>
-        <form onSubmit={onSubmit} className="flex w-full max-w-sm items-center overflow-hidden border border-paper/20 bg-paper/5 sm:w-auto">
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            disabled={status === "loading"}
-            className="mono flex-1 bg-transparent px-3 py-2 text-xs text-paper outline-none placeholder:text-paper/50 sm:flex-none"
-          />
-          <button
-            type="submit"
-            disabled={status === "loading"}
-            className="bg-brand px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-60"
-          >
-            {status === "loading" ? "…" : "Notify me"}
-          </button>
-        </form>
-      </div>
-      {status !== "idle" && status !== "loading" && (
-        <div className="mono border-t border-paper/10 px-6 py-1.5 text-center text-[10px] uppercase tracking-widest text-paper/80">
-          {message}
-        </div>
-      )}
-    </section>
-  );
-}
-
 function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number }) {
-  const { user, loading } = useSession();
   return (
     <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a href="#" className="flex items-center" aria-label="GumLab">
-          <img src={gumlabLogo.url} alt="GumLab" className="h-20 w-auto" />
+        <a href="#" className="font-display text-xl font-semibold tracking-tight">
+          GumLab
         </a>
         <nav className="hidden items-center gap-8 text-sm md:flex">
           <a href="#products" className="hover:opacity-70">Shop</a>
           <a href="#verification" className="hover:opacity-70">Verification</a>
           <a href="#reviews" className="hover:opacity-70">Reviews</a>
           <a href="#faq" className="hover:opacity-70">FAQ</a>
-          <a href="#about" className="hover:opacity-70">About us</a>
         </nav>
         <div className="flex items-center gap-2">
-          {!loading && (
-            user ? (
-              <Link to="/account" className="hairline px-3 py-2 text-xs uppercase tracking-widest hover:bg-paper-2">
-                Account
-              </Link>
-            ) : (
-              <Link to="/auth" className="hairline px-3 py-2 text-xs uppercase tracking-widest hover:bg-paper-2">
-                Sign in
-              </Link>
-            )
-          )}
           <a
             href="#stack"
-            aria-label={`Cart: ${cartCount} item${cartCount === 1 ? "" : "s"}, €${fmt(cartTotal)} per 28-day cycle`}
             className="hairline flex items-center gap-2 bg-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
           >
             <span>Cart</span>
@@ -342,136 +200,59 @@ function Nav({ cartCount, cartTotal }: { cartCount: number; cartTotal: number })
 }
 
 function Hero() {
+  const heroProduct = PRODUCTS.find((p) => p.image);
   return (
-    <section
-      className="relative overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(ellipse at 15% 20%, rgba(181,101,46,0.18) 0%, transparent 45%), radial-gradient(ellipse at 85% 30%, rgba(46,42,84,0.20) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(84,97,63,0.22) 0%, transparent 55%)",
-      }}
-    >
-      {/* colorful blurred blobs behind everything */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -left-24 top-10 h-80 w-80 blob"
-        style={{ background: "#B5652E", opacity: 0.25, filter: "blur(60px)" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[-6rem] top-24 h-96 w-96 blob"
-        style={{ background: "#2E2A54", opacity: 0.22, filter: "blur(70px)" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-[-4rem] left-1/3 h-72 w-72 blob"
-        style={{ background: "#54613F", opacity: 0.28, filter: "blur(65px)" }}
-      />
-
-      <div className="relative mx-auto max-w-7xl px-6 pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="grid items-center gap-10 md:grid-cols-[1.15fr_1fr] md:gap-8">
-          {/* Left: rotating 3D Perform batch */}
-          <div
-            className="relative flex items-center justify-center py-4 md:-ml-10 md:min-h-[640px]"
-            style={{ perspective: "1600px" }}
-          >
-            {/* focused spotlight behind bag */}
+    <section className="mx-auto max-w-7xl px-6 pt-14 pb-16 md:pt-20 md:pb-24">
+      <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
+        <div className="order-2 md:order-1">
+          {heroProduct?.image ? (
             <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse at 50% 55%, rgba(255,251,235,0.9) 0%, rgba(245,244,230,0.6) 30%, transparent 60%)",
-              }}
-            />
-            {/* multi-color halo */}
-            <div
-              aria-hidden
-              className="halo pointer-events-none absolute inset-8"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 40%, rgba(181,101,46,0.55) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(216,242,78,0.4) 0%, transparent 55%), radial-gradient(circle at 50% 80%, rgba(84,97,63,0.35) 0%, transparent 60%)",
-                filter: "blur(18px)",
-              }}
-            />
-            <div
-              aria-hidden
-              className="contact-shadow absolute left-1/2 bottom-0 h-10 w-[78%] -translate-x-1/2 rounded-[50%] bg-ink"
-            />
-            <img
-              src={performCover.url}
-              alt="PERFORM batch — creatine gummies"
-              className="spin3d relative w-full max-w-[720px] select-none md:scale-125"
-              draggable={false}
-              style={{
-                mixBlendMode: "multiply",
-                filter:
-                  "contrast(1.12) saturate(1.1) drop-shadow(0 42px 34px rgba(21,20,15,0.34)) drop-shadow(0 10px 14px rgba(21,20,15,0.22))",
-              }}
-            />
-
-            <div
-              className="mono absolute left-4 top-4 px-2 py-1 text-[10px] uppercase tracking-widest text-paper"
-              style={{ background: "#B5652E", borderRadius: 3 }}
+              className="hairline relative overflow-hidden"
+              style={{ backgroundColor: `color-mix(in srgb, ${heroProduct.accent} 16%, var(--paper))` }}
             >
-              Batch PF-26-0001 · 99.4%
+              <div
+                className="blob absolute -left-10 -top-10 h-36 w-36 opacity-40"
+                style={{ backgroundColor: heroProduct.accent }}
+                aria-hidden
+              />
+              <img
+                src={heroProduct.image}
+                alt="GumLab Perform creatine gummies, 28-day bag"
+                className="relative w-full object-contain"
+              />
             </div>
+          ) : null}
+        </div>
+
+        <div className="order-1 md:order-2">
+          <div className="mb-8 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
+            <span className="mono">EU / 001</span>
+            <span className="hairline-t inline-block h-px w-8" />
+            <span>Third-party assayed · every batch</span>
           </div>
-
-          {/* Right: copy */}
-          <div>
-            <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-ink">
-              <span
-                className="mono px-2 py-0.5 text-paper"
-                style={{ background: "#2E2A54", borderRadius: 2 }}
-              >
-                EU / 001
-              </span>
-              <span className="hairline-t inline-block h-px w-8" />
-              <span>Third-party assayed</span>
-            </div>
-            <h1 className="font-display text-4xl leading-[1.05] tracking-tight text-ink md:text-6xl">
-              <span style={{ color: "#B5652E" }}>Morning.</span>{" "}
-              <span style={{ color: "#54613F" }}>Anytime.</span>{" "}
-              <span style={{ color: "#2E2A54" }}>Night.</span>
-            </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-muted-ink">
-              Three gummies for the shape of your day. Precisely dosed,
-              independently assayed, delivered in{" "}
-              <span className="mono text-ink">28</span>-day bags.
-            </p>
-
-            {/* colorful day-arc chips */}
-            <div className="mt-6 flex flex-wrap gap-2">
-              {[
-                { t: "06:00", l: "Perform", c: "#B5652E" },
-                { t: "Anytime", l: "Calm", c: "#54613F" },
-                { t: "22:00", l: "Sleep", c: "#2E2A54" },
-              ].map((c) => (
-                <div
-                  key={c.l}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-paper"
-                  style={{ background: c.c, borderRadius: 3 }}
-                >
-                  <span className="mono">{c.t}</span>
-                  <span className="uppercase tracking-widest">{c.l}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href="#stack"
-                className="hairline bg-brand px-6 py-3 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
-              >
-                Shop the stack →
-              </a>
-              <a
-                href="#verification"
-                className="hairline px-5 py-3 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
-              >
-                Lab results
-              </a>
-            </div>
+          <h1 className="font-display text-4xl leading-[1.05] tracking-tight text-ink md:text-6xl lg:text-7xl">
+            One for the morning.<br />
+            One for whenever.<br />
+            <span style={{ color: "var(--recover)" }}>One for the night.</span>
+          </h1>
+          <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-ink">
+            Three gummies, built for the actual shape of your day — not a shelf of ten things that
+            overlap. Precisely dosed, independently assayed before every shipment, delivered in{" "}
+            <span className="mono text-ink">28</span>-day bags matched to your cycle.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <a
+              href="#stack"
+              className="hairline bg-brand px-7 py-3.5 text-sm font-bold uppercase tracking-widest text-ink shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+            >
+              Shop the stack →
+            </a>
+            <a
+              href="#verification"
+              className="hairline px-6 py-3.5 text-sm font-medium uppercase tracking-widest text-ink hover:bg-paper-2"
+            >
+              See the lab results
+            </a>
           </div>
         </div>
       </div>
@@ -479,55 +260,79 @@ function Hero() {
   );
 }
 
+function Stats() {
+  // Real, sourced market data — same "prove the category" move Gruns makes on
+  // their own site, not invented numbers. Swap sources if you find newer data,
+  // but never replace these with unsourced or made-up figures.
+  const stats = [
+    {
+      value: "+48%",
+      label: "More European brands sold creatine gummies in the year to Jan 2026",
+      source: "Nutrition Integrated, via NutraIngredients (Jan 2026)",
+    },
+    {
+      value: "3%",
+      label: "Share of the European creatine market gummies hold today — still early",
+      source: "Nutrition Integrated (Jan 2026)",
+    },
+    {
+      value: "$1.2B",
+      label: "What Unilever paid for Grüns, the category's biggest acquisition so far",
+      source: "Unilever, announced April 2026",
+    },
+    {
+      value: "3g/day",
+      label: "The EFSA-set minimum dose behind the only creatine claim the EU allows us to make",
+      source: "EU Regulation (EC) No 432/2012",
+    },
+  ];
+  return (
+    <section className="hairline-t hairline-b bg-ink text-paper">
+      <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+        <div className="mb-10 max-w-xl">
+          <div className="mono text-xs uppercase tracking-[0.2em] text-paper/60">
+            Why now, not just why us
+          </div>
+          <h2 className="font-display mt-3 text-3xl md:text-4xl">
+            The category is real. Here's the data, not our opinion of it.
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.label} className="border-t-2 border-brand pt-4">
+              <div className="font-display text-4xl md:text-5xl">{s.value}</div>
+              <p className="mt-3 text-sm leading-snug text-paper/80">{s.label}</p>
+              <p className="mono mt-3 text-[10px] uppercase tracking-wider text-paper/45">
+                {s.source}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function TrustRow() {
   const items = [
-    { k: "Free EU shipping 🚚", v: "Orders over €40", color: "#B5652E" },
-    { k: "60-day guarantee ✅", v: "Full refund, no questions", color: "#54613F" },
-    { k: "Cancel anytime ❌", v: "Manage from your dashboard", color: "#2E2A54" },
-    { k: "Batch certificate", v: "Ships with every order", color: "#B5652E" },
-    { k: "Third-party assayed", v: "Every batch, every time", color: "#54613F" },
-    { k: "Made in EU 🇪🇺", v: "GMP-certified facilities", color: "#2E2A54" },
-    { k: "28-day cycle", v: "One bag, one cycle", color: "#B5652E" },
-    { k: "No hidden additives", v: "Clean, disclosed formulas", color: "#54613F" },
+    { k: "Free EU shipping", v: "Orders over €40" },
+    { k: "60-day guarantee", v: "Full refund, no questions" },
+    { k: "Cancel anytime", v: "Manage from your dashboard" },
+    { k: "Batch certificate", v: "Ships with every order" },
   ];
-  const loop = [...items, ...items];
   return (
-    <section
-      className="hairline-t hairline-b relative overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(90deg, #EDEAE2 0%, #E6E0D0 25%, #E4E4DC 50%, #E0DAE4 75%, #EDEAE2 100%)",
-      }}
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24"
-        style={{ background: "linear-gradient(90deg, #EDEAE2, transparent)" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24"
-        style={{ background: "linear-gradient(270deg, #EDEAE2, transparent)" }}
-      />
-      <div className="marquee-track flex w-max">
-        {loop.map((it, i) => (
+    <section className="hairline-t hairline-b bg-paper-2/40">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4">
+        {items.map((it, i) => (
           <div
-            key={i}
-            className="flex w-[280px] shrink-0 items-start gap-4 border-l border-hairline px-6 py-7"
+            key={it.k}
+            className={`px-6 py-6 ${i > 0 ? "border-l border-hairline" : ""}`}
           >
-            <span
-              className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ backgroundColor: it.color, boxShadow: `0 0 0 4px ${it.color}22` }}
-              aria-hidden
-            />
-            <div>
-              <div className="mono text-[10px] uppercase tracking-widest" style={{ color: it.color }}>
-                0{(i % items.length) + 1}
-              </div>
-              <div className="mt-1.5 text-sm font-medium">{it.k}</div>
-              <div className="mt-1 text-xs text-muted-ink">{it.v}</div>
+            <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
+              0{i + 1}
             </div>
+            <div className="mt-2 text-sm font-medium">{it.k}</div>
+            <div className="mt-1 text-xs text-muted-ink">{it.v}</div>
           </div>
         ))}
       </div>
@@ -535,6 +340,34 @@ function TrustRow() {
   );
 }
 
+function DayArc() {
+  return (
+    <section className="hairline-b bg-paper">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3">
+        {PRODUCTS.map((p, i) => (
+          <div
+            key={p.id}
+            className={`px-6 py-10 md:py-14 ${i > 0 ? "md:border-l md:border-hairline" : ""} ${i > 0 ? "hairline-t md:border-t-0" : ""}`}
+          >
+            <div className="flex items-baseline gap-3">
+              <span className="mono text-sm text-muted-ink">{p.timeTag}</span>
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: p.accent }}
+                aria-hidden
+              />
+              <span className="text-xs uppercase tracking-widest text-muted-ink">
+                {p.timeLabel}
+              </span>
+            </div>
+            <div className="mt-4 font-display text-3xl">{p.name}</div>
+            <div className="mono mt-2 text-xs text-muted-ink">{p.ingredient}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function Verification() {
   return (
@@ -637,42 +470,47 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 }
 
 function ProductVisual({ product }: { product: Product }) {
-  // Playful "gummy blob" hero shape per product, still carrying the batch/verification
-  // info that keeps the credibility the clinical version had — just friendlier.
+  // Real package photo when we have one; illustrated placeholder otherwise —
+  // swap in real photos here as they're shot, one product at a time.
+  if (product.image) {
+    return (
+      <div
+        className="relative aspect-[4/3] overflow-hidden"
+        style={{ backgroundColor: `color-mix(in srgb, ${product.accent} 14%, var(--paper))` }}
+      >
+        <img
+          src={product.image}
+          alt={`${product.name} package, 28-day supply`}
+          className="h-full w-full object-cover object-top"
+        />
+        <div className="mono absolute right-4 top-4 rounded-full bg-paper/85 px-2.5 py-1 text-[10px] uppercase tracking-widest text-ink">
+          {product.timeTag}
+        </div>
+        <div className="mono absolute bottom-3 left-4 rounded-full bg-paper/85 px-2.5 py-1 text-[10px] text-ink">
+          Batch {product.batch}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="relative aspect-[4/3] overflow-hidden"
-      style={{
-        backgroundColor: product.cover
-          ? "transparent"
-          : `color-mix(in srgb, ${product.accent} 14%, var(--paper))`,
-      }}
+      style={{ backgroundColor: `color-mix(in srgb, ${product.accent} 14%, var(--paper))` }}
     >
-      {product.cover ? (
-        <img
-          src={product.cover}
-          alt={`${product.name} packaging`}
-          className="absolute inset-0 h-full w-full object-contain p-4"
-          loading="lazy"
-        />
-      ) : (
-        <>
-          <div
-            className="blob absolute -right-8 -top-10 h-40 w-40 opacity-90"
-            style={{ backgroundColor: product.accent }}
-            aria-hidden
-          />
-          <div
-            className="blob absolute -bottom-10 -left-10 h-32 w-32 opacity-40"
-            style={{ backgroundColor: product.accent }}
-            aria-hidden
-          />
-        </>
-      )}
+      <div
+        className="blob absolute -right-8 -top-10 h-40 w-40 opacity-90"
+        style={{ backgroundColor: product.accent }}
+        aria-hidden
+      />
+      <div
+        className="blob absolute -bottom-10 -left-10 h-32 w-32 opacity-40"
+        style={{ backgroundColor: product.accent }}
+        aria-hidden
+      />
       <div className="absolute left-4 top-4 flex items-center gap-2">
-
         <span className="mono rounded-full bg-ink/85 px-2.5 py-1 text-[10px] uppercase tracking-widest text-paper">
-          {product.name} · 28 ct
+          {product.name} · {product.bagCount ?? 28} ct
         </span>
       </div>
       <div className="mono absolute right-4 top-4 rounded-full bg-paper/80 px-2.5 py-1 text-[10px] uppercase tracking-widest text-ink">
@@ -793,28 +631,46 @@ function ProductCard({
           {product.description}
         </p>
 
-        <div className="mt-6">
-          <div className="mono mb-2 text-[10px] uppercase tracking-widest text-muted-ink">
-            Daily dose
+        {product.fixedDose ? (
+          <div className="mt-6">
+            <div className="mono mb-2 text-[10px] uppercase tracking-widest text-muted-ink">
+              Daily dose
+            </div>
+            <div className="hairline bg-paper-2 px-4 py-2.5 text-sm">
+              <span className="mono">2</span> gummies / day — fixed
+            </div>
+            <div className="mono mt-2 text-[11px] text-muted-ink">
+              → 1 bag ({product.bagCount ?? 28} ct) / 28-day cycle · 13 bags / year
+            </div>
+            <p className="mt-2 text-[11px] leading-snug text-muted-ink">
+              This one's a fixed 2-a-day: 1 gummy doesn't reach the 3g/day the performance claim
+              is based on, so we don't sell a half-dose version of it.
+            </p>
           </div>
-          <div className="hairline grid grid-cols-2 text-sm">
-            <button
-              onClick={() => onDose(1)}
-              className={`px-4 py-2.5 ${state.dose === 1 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-            >
-              <span className="mono">1</span> gummy / day
-            </button>
-            <button
-              onClick={() => onDose(2)}
-              className={`px-4 py-2.5 border-l border-hairline ${state.dose === 2 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-            >
-              <span className="mono">2</span> gummies / day
-            </button>
+        ) : (
+          <div className="mt-6">
+            <div className="mono mb-2 text-[10px] uppercase tracking-widest text-muted-ink">
+              Daily dose
+            </div>
+            <div className="hairline grid grid-cols-2 text-sm">
+              <button
+                onClick={() => onDose(1)}
+                className={`px-4 py-2.5 ${state.dose === 1 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+              >
+                <span className="mono">1</span> gummy / day
+              </button>
+              <button
+                onClick={() => onDose(2)}
+                className={`px-4 py-2.5 border-l border-hairline ${state.dose === 2 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+              >
+                <span className="mono">2</span> gummies / day
+              </button>
+            </div>
+            <div className="mono mt-2 text-[11px] text-muted-ink">
+              → {bags} bag{bags > 1 ? "s" : ""} / 28-day cycle · {bagsYear} bags / year
+            </div>
           </div>
-          <div className="mono mt-2 text-[11px] text-muted-ink">
-            → {bags} bag{bags > 1 ? "s" : ""} / 28-day cycle · {bagsYear} bags / year
-          </div>
-        </div>
+        )}
 
         <div className="hairline-t mt-6 flex items-end justify-between pt-5">
           <div>
@@ -829,7 +685,6 @@ function ProductCard({
           {state.on ? (
             <button
               onClick={onRemove}
-              aria-label={`Remove ${product.name} from cart`}
               className="hairline px-4 py-2.5 text-xs font-medium uppercase tracking-widest hover:bg-paper-2"
             >
               In cart ✓
@@ -837,7 +692,6 @@ function ProductCard({
           ) : (
             <button
               onClick={onAdd}
-              aria-label={`Add ${product.name} to cart`}
               className="bg-ink px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-paper hover:opacity-90"
             >
               Add to cart
@@ -923,81 +777,6 @@ function StackBuilder({
   selectedCount: number;
 }) {
   const isSub = mode === "subscribe";
-  const { user } = useSession();
-  const navigate = useNavigate();
-  const [checkoutBusy, setCheckoutBusy] = useState(false);
-  const [checkoutMsg, setCheckoutMsg] = useState<string | null>(null);
-
-  async function handleCheckout() {
-    if (selectedCount === 0) return;
-    if (!user) {
-      // Preserve intent by dropping them at auth
-      navigate({ to: "/auth" });
-      return;
-    }
-    setCheckoutBusy(true);
-    setCheckoutMsg(null);
-    try {
-      const selectedProducts = PRODUCTS.filter((p) => stack[p.id].on);
-      if (isSub) {
-        // Distribute stack discount across products
-        const factor = 1 - discountPct / 100;
-        const subRows = selectedProducts.map((p) => {
-          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
-          return {
-            user_id: user.id,
-            product_id: p.id,
-            dose: stack[p.id].dose,
-            price_eur: Number(price.toFixed(2)),
-            status: "active" as const,
-          };
-        });
-        const { data: created, error } = await supabase
-          .from("subscriptions")
-          .insert(subRows)
-          .select("id, product_id, dose, price_eur");
-        if (error) throw error;
-        // First-cycle orders
-        const orders = (created ?? []).map((s) => ({
-          user_id: user.id,
-          subscription_id: s.id,
-          product_id: s.product_id,
-          dose: s.dose,
-          bags: s.dose,
-          amount_eur: s.price_eur,
-          batch_code:
-            s.product_id === "perform" ? "PF-26-0001" :
-            s.product_id === "calm" ? "CA-26-0001" : "RC-26-0001",
-          status: "paid" as const,
-        }));
-        if (orders.length) await supabase.from("orders").insert(orders);
-      } else {
-        // One-time: only orders, no subs
-        const factor = 1 + ONETIME_MARKUP;
-        const orders = selectedProducts.map((p) => {
-          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
-          return {
-            user_id: user.id,
-            product_id: p.id,
-            dose: stack[p.id].dose,
-            bags: stack[p.id].dose,
-            amount_eur: Number(price.toFixed(2)),
-            batch_code:
-              p.id === "perform" ? "PF-26-0001" :
-              p.id === "calm" ? "CA-26-0001" : "RC-26-0001",
-            status: "paid" as const,
-          };
-        });
-        await supabase.from("orders").insert(orders);
-      }
-      navigate({ to: "/account" });
-    } catch (err) {
-      setCheckoutMsg(err instanceof Error ? err.message : "Checkout failed");
-    } finally {
-      setCheckoutBusy(false);
-    }
-  }
-
   return (
     <section id="stack" className="hairline-t bg-paper">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-28">
@@ -1008,6 +787,13 @@ function StackBuilder({
           <h2 className="font-display text-4xl leading-tight md:text-5xl">
             Choose your products.<br />Choose your dose.
           </h2>
+          <p className="mt-6 text-sm text-muted-ink">
+            Every subscription bills on a{" "}
+            <span className="mono text-ink">28</span>-day cycle — not a calendar month — which
+            works out to <span className="mono text-ink">13</span> cycles per year. Each bag
+            contains <span className="mono text-ink">28</span> gummies, one per day, matched to
+            your cycle.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_420px]">
@@ -1018,28 +804,17 @@ function StackBuilder({
               return (
                 <div
                   key={p.id}
-                  className={`grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4 px-6 py-6 sm:grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] ${i > 0 ? "hairline-t" : ""}`}
+                  className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-6 py-6 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] ${i > 0 ? "hairline-t" : ""}`}
                 >
                   <button
                     onClick={() =>
                       setStack((s) => ({ ...s, [p.id]: { ...s[p.id], on: !s[p.id].on } }))
                     }
                     className={`hairline flex h-6 w-6 shrink-0 items-center justify-center ${st.on ? "bg-ink text-paper" : ""}`}
-                    aria-label={`${st.on ? "Remove" : "Add"} ${p.name}`}
-                    aria-pressed={st.on}
+                    aria-label={`Toggle ${p.name}`}
                   >
                     {st.on && <span className="text-[11px]">✓</span>}
                   </button>
-                  {p.cover ? (
-                    <img
-                      src={p.cover}
-                      alt={p.name}
-                      className="hairline h-14 w-14 shrink-0 object-cover bg-paper-2"
-                      style={{ mixBlendMode: "multiply" }}
-                    />
-                  ) : (
-                    <div className="hairline h-14 w-14 shrink-0 bg-paper-2" />
-                  )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span
@@ -1052,8 +827,7 @@ function StackBuilder({
                       {p.ingredient} · {p.dose}
                     </div>
                   </div>
-
-                  <div className="hairline col-span-3 grid grid-cols-2 text-xs sm:col-span-1">
+                  <div className="hairline col-span-2 grid grid-cols-2 text-xs sm:col-span-1">
                     <button
                       onClick={() =>
                         setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 1 } }))
@@ -1155,21 +929,11 @@ function StackBuilder({
             </div>
             <div className="border-t border-white/10 px-6 py-6">
               <button
-                onClick={handleCheckout}
-                disabled={selectedCount === 0 || checkoutBusy}
+                disabled={selectedCount === 0}
                 className="w-full bg-paper px-4 py-3 text-xs font-medium uppercase tracking-widest text-ink hover:opacity-90 disabled:opacity-30"
               >
-                {checkoutBusy
-                  ? "Processing…"
-                  : !user
-                    ? isSub ? "Sign in to subscribe" : "Sign in to order"
-                    : isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
+                {isSub ? "Checkout · Start subscription" : "Checkout · One-time order"}
               </button>
-              {checkoutMsg && (
-                <div className="mono mt-3 text-[10px] uppercase tracking-widest text-perform">
-                  {checkoutMsg}
-                </div>
-              )}
               <div className="mono mt-4 flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest text-paper/50">
                 <span>Visa</span>
                 <span>·</span>
@@ -1226,7 +990,7 @@ function Faq() {
       q: "Shipping and returns?",
       // NOTE: shipping fee, dispatch time, and guarantee length below are placeholders —
       // set these to your actual fulfilment terms before launch, don't ship this copy as-is.
-      a: "Free EU shipping over €40, otherwise €3.90. Ships within 24h of your order. 30-day satisfaction guarantee — full refund, no questions asked.",
+      a: "Free EU shipping over €40, otherwise €3.90. Ships within 48h of your order. 60-day satisfaction guarantee — full refund, no questions asked.",
     },
   ];
   return (
@@ -1261,112 +1025,6 @@ function Faq() {
   );
 }
 
-function About() {
-  return (
-    <section id="about" className="hairline-t bg-card">
-      <div className="mx-auto max-w-5xl px-6 py-20 md:py-28">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
-          <div className="md:col-span-7">
-            <div className="mono mb-4 text-xs uppercase tracking-[0.2em] text-muted-ink">
-              § 07 — ABOUT GUMLAB
-            </div>
-            <h2 className="font-display text-4xl leading-tight md:text-5xl">
-              Europe deserves better supplements.
-            </h2>
-            <div className="mt-8 space-y-5 text-sm leading-relaxed text-ink/80">
-              <p className="font-medium text-ink">
-                Europe deserves better supplements.
-              </p>
-              <p>
-                GumLab was founded in Sweden on a simple frustration: most of the industry asks you to trust it, without giving you a reason to.
-              </p>
-              <p>
-                I'm Aron Leijon, the founder of GumLab. I've spent alot of time thinking about how training, nutrition, and recovery actually work — and how rarely that translates into products you can actually verify, not just believe.
-              </p>
-              <p>
-                Look closely at most gummy supplements and you'll find the same pattern: full ingredient lists buried in a product photo instead of written out in plain text, lab reports with the important details blacked out, and formulas built more for the label than for the dose. It's not that the category is bad — it's that almost nothing in it is checkable. We wanted to build the opposite of that.
-              </p>
-              <p>
-                So GumLab is built around one non-negotiable rule: if we can't show it, we don't say it.
-              </p>
-              <ul className="space-y-3 pl-4">
-                <li className="flex gap-3">
-                  <span className="text-muted-ink">—</span>
-                  <span>Every batch is assayed by an independent, EU-accredited laboratory — before it ships, not after a complaint.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-muted-ink">—</span>
-                  <span>The full Certificate of Analysis is published on the product page itself, unredacted.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-muted-ink">—</span>
-                  <span>Every ingredient, and its exact dose, is written out in plain text — never hidden in an image that can quietly change.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-muted-ink">—</span>
-                  <span>No proprietary blends. No dose you can't verify against the label.</span>
-                </li>
-              </ul>
-              <p>
-                But honesty isn't just something we put on a batch certificate — it's how we want to run this whole company. That means being upfront when something isn't perfect yet, not just when it's convenient. We're a new, small team building this from scratch, and we will get things wrong sometimes. What we promise is that we'll say so plainly when we do, and fix it, rather than quietly hoping no one notices.
-              </p>
-              <p>
-                That's also why your feedback matters more to us than almost anything else. We're not interested in five-star reviews we haven't earned — we'd rather hear the honest, slightly annoying feedback that actually makes the product better. Tell us the flavor's off, the dose feels wrong, the shipping was too slow, or the copy on this very page doesn't make sense. We read every message ourselves, and we'd genuinely rather know than not.
-              </p>
-              <p>
-                Because at the end of the day, none of this — the lab tests, the transparency, the packaging — means anything if it doesn't actually serve the people taking these gummies every morning, afternoon, or night. You're not a review count or a subscription number to us. You're the reason any of this is worth building carefully in the first place.
-              </p>
-              <p>
-                We make three gummies — Perform, Calm, Sleep — one for each part of the day. No powders, no pills, no guesswork. Just a product built to survive being checked, not just believed.
-              </p>
-              <p>
-                This is only the beginning, and we'd love for you to help shape where it goes. Welcome to GumLab.
-              </p>
-            </div>
-            <div className="hairline mt-10 inline-block bg-paper px-6 py-5">
-              <div className="text-sm font-medium">ARON LEIJON</div>
-              <div className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-ink">
-                FOUNDER, GUMLAB
-              </div>
-            </div>
-          </div>
-          <div className="md:col-span-5">
-            <div className="hairline bg-paper p-6 md:sticky md:top-32">
-              <div className="mono mb-4 text-[11px] uppercase tracking-widest text-muted-ink">
-                What we believe
-              </div>
-              <ul className="space-y-4 text-sm">
-                <li className="flex gap-3">
-                  <span className="mono text-muted-ink">01</span>
-                  <span>Transparency is non-negotiable — every batch is third-party assayed.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="mono text-muted-ink">02</span>
-                  <span>Every ingredient must have a purpose — no fillers or marketing fluff.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="mono text-muted-ink">03</span>
-                  <span>Quality over quantity — premium sourcing, EU manufacturing.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="mono text-muted-ink">04</span>
-                  <span>Wellness should be effortless — no pills, no powders, no friction.</span>
-                </li>
-              </ul>
-              <div className="hairline-t mt-6 pt-6">
-                <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-                  Founded
-                </div>
-                <div className="mt-1 font-display text-2xl">Sweden · 2026</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function StickyCart({ count, total, isSub }: { count: number; total: number; isSub: boolean }) {
   return (
     <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
@@ -1390,21 +1048,35 @@ function Footer() {
   return (
     <footer className="hairline-t">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-6">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
-            <img src={gumlabLogo.url} alt="GumLab" className="h-14 w-auto" />
+            <div className="font-display text-2xl">GumLab</div>
             <div className="mono mt-2 text-[11px] uppercase tracking-widest text-muted-ink">
               EU / 001
             </div>
             <p className="mt-4 max-w-sm text-sm text-muted-ink">
               Precision-dosed functional gummies. Third-party assayed, published batch-by-batch.
             </p>
-            <NewsletterForm />
-
+            <form className="hairline mt-6 flex max-w-sm items-center bg-card">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="mono flex-1 bg-transparent px-3 py-2.5 text-xs outline-none placeholder:text-muted-ink"
+              />
+              <button
+                type="button"
+                className="bg-ink px-4 py-2.5 text-[11px] font-medium uppercase tracking-widest text-paper hover:opacity-90"
+              >
+                Subscribe
+              </button>
+            </form>
+            <div className="mono mt-2 text-[10px] uppercase tracking-widest text-muted-ink">
+              Batch releases · lab reports · no spam
+            </div>
           </div>
           <FooterCol
             title="Shop"
-            links={["Perform", "Calm", "Sleep", "Build your stack"]}
+            links={["Perform", "Calm", "Recover", "Build your stack"]}
           />
           <FooterCol
             title="Verification"
@@ -1412,9 +1084,8 @@ function Footer() {
           />
           <FooterCol
             title="Help"
-            links={["Shipping (EU)", "Returns", "Contact\u00a0us", "Terms & privacy"]}
+            links={["Shipping (EU)", "Returns", "Contact", "Terms & privacy"]}
           />
-          <SocialLinks />
         </div>
 
         <div className="hairline-t mt-16 pt-8">
@@ -1423,8 +1094,8 @@ function Footer() {
             and a healthy lifestyle. Consult a doctor before use if you are pregnant,
             breastfeeding, on medication, or have a medical condition. These products are not
             intended to diagnose, treat, cure or prevent any disease. Claims used are limited to
-            those authorised under EU Regulation (EC) No 1924/2006. Keep out of reach of children
-            under age of 6.
+            those authorised under EU Regulation (EC) No 1924/2006. Keep out of reach of
+            children.
           </p>
           <div className="mono mt-8 flex flex-wrap items-center justify-between gap-4 text-[10px] uppercase tracking-widest text-muted-ink">
             <span>© 2026 GumLab · Made in the EU</span>
@@ -1437,11 +1108,6 @@ function Footer() {
 }
 
 function FooterCol({ title, links }: { title: string; links: string[] }) {
-  const hrefFor = (label: string): string => {
-    const normalized = label.replace(/\u00a0/g, " ").toLowerCase();
-    if (normalized === "contact us" || normalized === "contact") return "/contact";
-    return "#";
-  };
   return (
     <div>
       <div className="mono mb-4 text-[11px] uppercase tracking-widest text-muted-ink">
@@ -1450,102 +1116,13 @@ function FooterCol({ title, links }: { title: string; links: string[] }) {
       <ul className="space-y-2 text-sm">
         {links.map((l) => (
           <li key={l}>
-            <a href={hrefFor(l)} className="hover:opacity-70">
+            <a href="#" className="hover:opacity-70">
               {l}
             </a>
           </li>
         ))}
       </ul>
     </div>
-  );
-}
-
-function SocialLinks() {
-  const links = [
-    { label: "TikTok", href: "https://www.tiktok.com/@israelofficialgovernment" },
-    { label: "LinkedIn", href: "#" },
-    { label: "Instagram", href: "https://www.instagram.com/gumlab.se/?hl=en" },
-  ];
-  return (
-    <div>
-      <div className="mono mb-4 text-[11px] uppercase tracking-widest text-muted-ink">
-        Social
-      </div>
-      <ul className="space-y-2 text-sm">
-        {links.map((l) => (
-          <li key={l.label}>
-            <a
-              href={l.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-70"
-            >
-              {l.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function NewsletterForm() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
-  const [message, setMessage] = useState<string>("");
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (status === "loading") return;
-    setStatus("loading");
-    setMessage("");
-    const { error } = await supabase.from("newsletter_signups").insert({
-      email: email.trim().toLowerCase(),
-      source: "footer",
-      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-    });
-    if (error) {
-      const dup = error.code === "23505" || /duplicate/i.test(error.message);
-      setStatus(dup ? "ok" : "error");
-      setMessage(dup ? "You're already on the list." : error.message);
-      if (dup) setEmail("");
-    } else {
-      setStatus("ok");
-      setMessage("Thanks — you're on the list.");
-      setEmail("");
-    }
-  }
-
-  return (
-    <>
-      <form onSubmit={onSubmit} className="hairline mt-6 flex max-w-sm items-center bg-card">
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your email"
-          disabled={status === "loading"}
-          className="mono flex-1 bg-transparent px-3 py-2.5 text-xs outline-none placeholder:text-muted-ink"
-        />
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="bg-ink px-4 py-2.5 text-[11px] font-medium uppercase tracking-widest text-paper hover:opacity-90 disabled:opacity-60"
-        >
-          {status === "loading" ? "…" : "Subscribe"}
-        </button>
-      </form>
-      <div
-        className={`mono mt-2 text-[10px] uppercase tracking-widest ${
-          status === "error" ? "text-perform" : "text-muted-ink"
-        }`}
-      >
-        {status === "idle" || status === "loading"
-          ? "Batch releases · lab reports · no spam"
-          : message}
-      </div>
-    </>
   );
 }
 
