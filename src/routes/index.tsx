@@ -201,7 +201,7 @@ function Index() {
       ? subtotal * (1 + ONETIME_MARKUP)
       : subtotal * (1 - discountPct / 100);
   const annual = cycleTotal * 13;
-  const bagsPerCycle = selected.reduce((s, p) => s + stack[p.id].dose, 0);
+  const bagsPerCycle = selected.reduce((s, p) => s + bagsForDose(p, stack[p.id].dose), 0);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
