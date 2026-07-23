@@ -59,11 +59,18 @@ const PRODUCT_META: Record<ProductId, { name: string; cover: string; accent: str
   recover: { name: "SLEEP", cover: sleepCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
 };
 
-const PRICE = {
-  perform: { 1: 25, 2: 45 },
+const PRICE: Record<ProductId, Partial<Record<1 | 2 | 3, number>>> = {
+  perform: { 2: 45, 3: 63 },
   calm: { 1: 23, 2: 41 },
   recover: { 1: 25, 2: 45 },
-} as const;
+};
+
+const DOSE_OPTIONS: Record<ProductId, (1 | 2 | 3)[]> = {
+  perform: [2, 3],
+  calm: [1, 2],
+  recover: [1, 2],
+};
+
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
