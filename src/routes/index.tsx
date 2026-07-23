@@ -775,7 +775,8 @@ function ProductCard({
   onRemove: () => void;
 }) {
   const price = priceForDose(product, state.dose);
-  const bags = state.dose;
+  const bags = bagsForDose(product, state.dose);
+
 
   const bagsYear = bags * 13;
 
