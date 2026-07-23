@@ -1079,24 +1079,23 @@ function StackBuilder({
                     </div>
                   </div>
 
-                  <div className="hairline col-span-3 grid grid-cols-2 text-xs sm:col-span-1">
-                    <button
-                      onClick={() =>
-                        setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 1 } }))
-                      }
-                      className={`px-3 py-2 ${st.dose === 1 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-                    >
-                      <span className="mono">1</span>×/day
-                    </button>
-                    <button
-                      onClick={() =>
-                        setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: 2 } }))
-                      }
-                      className={`px-3 py-2 border-l border-hairline ${st.dose === 2 ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
-                    >
-                      <span className="mono">2</span>×/day
-                    </button>
+                  <div
+                    className="hairline col-span-3 grid text-xs sm:col-span-1"
+                    style={{ gridTemplateColumns: `repeat(${p.allowedDoses.length}, minmax(0, 1fr))` }}
+                  >
+                    {p.allowedDoses.map((d, idx) => (
+                      <button
+                        key={d}
+                        onClick={() =>
+                          setStack((s) => ({ ...s, [p.id]: { ...s[p.id], dose: d } }))
+                        }
+                        className={`px-3 py-2 ${idx > 0 ? "border-l border-hairline" : ""} ${st.dose === d ? "bg-ink text-paper" : "hover:bg-paper-2"}`}
+                      >
+                        <span className="mono">{d}</span>×/day
+                      </button>
+                    ))}
                   </div>
+
                   <div className="mono text-right text-sm">
                     <div>€{fmt(isSub ? price : price * (1 + ONETIME_MARKUP))}</div>
                     <div className="text-[10px] uppercase tracking-widest text-muted-ink">
