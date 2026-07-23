@@ -181,9 +181,10 @@ function Index() {
 
   const selected = PRODUCTS.filter((p) => stack[p.id].on);
   const subtotal = selected.reduce(
-    (sum, p) => sum + (stack[p.id].dose === 2 ? p.price2 : p.price1),
+    (sum, p) => sum + priceForDose(p, stack[p.id].dose),
     0
   );
+
   const discountPct =
     mode === "subscribe" ? (selected.length === 3 ? 20 : selected.length === 2 ? 10 : 0) : 0;
   const markupPct = mode === "onetime" ? Math.round(ONETIME_MARKUP * 100) : 0;
