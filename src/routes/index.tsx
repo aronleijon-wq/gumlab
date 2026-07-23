@@ -969,7 +969,7 @@ function StackBuilder({
         // Distribute stack discount across products
         const factor = 1 - discountPct / 100;
         const subRows = selectedProducts.map((p) => {
-          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          const price = priceForDose(p, stack[p.id].dose) * factor;
           return {
             user_id: user.id,
             product_id: p.id,
@@ -1001,7 +1001,7 @@ function StackBuilder({
         // One-time: only orders, no subs
         const factor = 1 + ONETIME_MARKUP;
         const orders = selectedProducts.map((p) => {
-          const price = (stack[p.id].dose === 2 ? p.price2 : p.price1) * factor;
+          const price = priceForDose(p, stack[p.id].dose) * factor;
           return {
             user_id: user.id,
             product_id: p.id,
