@@ -998,7 +998,7 @@ function StackBuilder({
           subscription_id: s.id,
           product_id: s.product_id,
           dose: s.dose,
-          bags: s.dose,
+          bags: bagsForDose(PRODUCTS.find(p => p.id === s.product_id)!, s.dose as Dose),
           amount_eur: s.price_eur,
           batch_code:
             s.product_id === "perform" ? "PF-26-0001" :
