@@ -126,10 +126,11 @@ function AccountPage() {
     refresh();
   }
 
-  async function changeDose(sub: Sub, dose: 1 | 2) {
-    const price = PRICE[sub.product_id][dose];
+  async function changeDose(sub: Sub, dose: 1 | 2 | 3) {
+    const price = PRICE[sub.product_id][dose] ?? sub.price_eur;
     await updateSub(sub.id, { dose, price_eur: price });
   }
+
 
   async function saveProfile() {
     setSaving(true);
