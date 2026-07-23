@@ -787,7 +787,12 @@ function ProductCard({
           style={{ backgroundColor: product.accent }}
         />
         <div className="mt-4 text-sm text-muted-ink">{product.ingredient}</div>
-        <div className="mono mt-1 text-sm">{product.dose} per gummy</div>
+        <div className="mono mt-1 text-sm">
+          {product.dose} per gummy
+          {product.id === "perform" && (
+            <span className="text-muted-ink"> · 2 gummies/day = 3g creatine</span>
+          )}
+        </div>
 
         <p className="mt-5 text-sm leading-relaxed text-muted-ink">
           {product.description}
