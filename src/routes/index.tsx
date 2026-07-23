@@ -1019,9 +1019,8 @@ function StackBuilder({
         if (orders.length) await supabase.from("orders").insert(orders);
       } else {
         // One-time: only orders, no subs
-        const factor = 1 + ONETIME_MARKUP;
         const orders = selectedProducts.map((p) => {
-          const price = priceForDose(p, stack[p.id].dose) * factor;
+          const price = onetimePriceForDose(p, stack[p.id].dose);
           return {
             user_id: user.id,
             product_id: p.id,
