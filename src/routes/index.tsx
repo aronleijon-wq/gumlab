@@ -167,6 +167,13 @@ function priceForDose(p: Product, dose: Dose): number {
   return p.price1;
 }
 
+function bagsForDose(p: Product, dose: Dose): number {
+  // PERFORM ships one bag per cycle regardless of dose (larger bag for 3/day).
+  if (p.id === "perform") return 1;
+  return dose;
+}
+
+
 
 function fmt(n: number) {
   return n.toFixed(2).replace(/\.00$/, "");
@@ -194,7 +201,7 @@ function Index() {
       ? subtotal * (1 + ONETIME_MARKUP)
       : subtotal * (1 - discountPct / 100);
   const annual = cycleTotal * 13;
-  const bagsPerCycle = selected.reduce((s, p) => s + stack[p.id].dose, 0);
+  const bagsPerCycle = selected.reduce((s, p) => s + bagsForDose(p, stack[p.id].dose), 0);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -768,7 +775,8 @@ function ProductCard({
   onRemove: () => void;
 }) {
   const price = priceForDose(product, state.dose);
-  const bags = state.dose;
+  const bags = bagsForDose(product, state.dose);
+
 
   const bagsYear = bags * 13;
 
@@ -990,7 +998,7 @@ function StackBuilder({
           subscription_id: s.id,
           product_id: s.product_id,
           dose: s.dose,
-          bags: s.dose,
+          bags: bagsForDose(PRODUCTS.find(p => p.id === s.product_id)!, s.dose as Dose),
           amount_eur: s.price_eur,
           batch_code:
             s.product_id === "perform" ? "PF-26-0001" :
@@ -1007,7 +1015,7 @@ function StackBuilder({
             user_id: user.id,
             product_id: p.id,
             dose: stack[p.id].dose,
-            bags: stack[p.id].dose,
+            bags: bagsForDose(p, stack[p.id].dose),
             amount_eur: Number(price.toFixed(2)),
             batch_code:
               p.id === "perform" ? "PF-26-0001" :
