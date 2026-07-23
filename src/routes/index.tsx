@@ -1015,7 +1015,7 @@ function StackBuilder({
             user_id: user.id,
             product_id: p.id,
             dose: stack[p.id].dose,
-            bags: stack[p.id].dose,
+            bags: bagsForDose(p, stack[p.id].dose),
             amount_eur: Number(price.toFixed(2)),
             batch_code:
               p.id === "perform" ? "PF-26-0001" :
