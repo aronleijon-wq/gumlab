@@ -169,6 +169,11 @@ function priceForDose(p: Product, dose: Dose): number {
   return p.price1;
 }
 
+function onetimePriceForDose(p: Product, dose: Dose): number {
+  if (dose === 3 && p.price3Onetime != null) return p.price3Onetime;
+  return priceForDose(p, dose) * (1 + ONETIME_MARKUP);
+}
+
 function bagsForDose(p: Product, dose: Dose): number {
   // PERFORM ships one bag per cycle regardless of dose (larger bag for 3/day).
   if (p.id === "perform") return 1;
