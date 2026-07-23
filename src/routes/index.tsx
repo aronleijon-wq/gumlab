@@ -106,7 +106,10 @@ const PRODUCTS: Product[] = [
     claim: "Supports performance in high-intensity exercise.",
     price1: 25,
     price2: 45,
+    price3: 63,
+    allowedDoses: [2, 3],
     accent: "var(--perform)",
+
     batch: "PF-26-0001",
     potency: "99.4%",
     lab: "Independent EU-accredited laboratory",
