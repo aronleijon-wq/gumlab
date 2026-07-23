@@ -60,7 +60,7 @@ const PRODUCT_META: Record<ProductId, { name: string; cover: string; accent: str
 };
 
 const PRICE: Record<ProductId, Partial<Record<1 | 2 | 3, number>>> = {
-  perform: { 2: 29, 3: 29 },
+  perform: { 2: 29, 3: 36 },
   calm: { 1: 23, 2: 41 },
   recover: { 1: 25, 2: 45 },
 };
