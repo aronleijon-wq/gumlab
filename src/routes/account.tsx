@@ -288,7 +288,8 @@ function SubCard({
   sub, onChangeDose, onUpdate,
 }: {
   sub: Sub;
-  onChangeDose: (d: 1 | 2) => void;
+  onChangeDose: (d: 1 | 2 | 3) => void;
+
   onUpdate: (p: Partial<Sub>) => void;
 }) {
   const meta = PRODUCT_META[sub.product_id];
