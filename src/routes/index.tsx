@@ -68,7 +68,7 @@ export const Route = createFileRoute("/")({
 });
 
 type ProductId = "perform" | "calm" | "recover";
-type Dose = 1 | 2;
+type Dose = 1 | 2 | 3;
 type PurchaseMode = "subscribe" | "onetime";
 
 const ONETIME_MARKUP = 0.35; // +35% vs subscription
@@ -83,6 +83,8 @@ type Product = {
   claim: string;
   price1: number;
   price2: number;
+  price3?: number;
+  allowedDoses: Dose[];
   accent: string;
   batch: string;
   potency: string;
@@ -91,6 +93,7 @@ type Product = {
   badge?: string;
   cover?: string;
 };
+
 
 const PRODUCTS: Product[] = [
   {
