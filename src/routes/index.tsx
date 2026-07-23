@@ -107,7 +107,8 @@ const PRODUCTS: Product[] = [
     claim: "Supports performance in high-intensity exercise.",
     price1: 29,
     price2: 29,
-    price3: 29,
+    price3: 36,
+    price3Onetime: 42,
     allowedDoses: [2, 3],
     accent: "var(--perform)",
 
@@ -115,7 +116,7 @@ const PRODUCTS: Product[] = [
     potency: "99.4%",
     lab: "Independent EU-accredited laboratory",
     description:
-      "1.5 g creatine monohydrate per gummy. Choose 2/day (3 g total) or 3/day (4.5 g total). Either way you get one bag per 28-day cycle: 2/day = 56 gummies, 3/day = 84 gummies. Same €29 price.",
+      "1.5 g creatine monohydrate per gummy. Choose 2/day (3 g total) or 3/day (4.5 g total). One bag per 28-day cycle: 2/day = 56 gummies (€29 sub / €39.15 one-time), 3/day = 84 gummies (€36 sub / €42 one-time).", 
 
     badge: "Hero product",
     cover: performCover.url,
