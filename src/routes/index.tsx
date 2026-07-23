@@ -1061,6 +1061,7 @@ function StackBuilder({
             {PRODUCTS.map((p, i) => {
               const st = stack[p.id];
               const price = priceForDose(p, st.dose);
+              const oneTimePrice = onetimePriceForDose(p, st.dose);
               return (
                 <div
                   key={p.id}
