@@ -902,10 +902,9 @@ function ProductCard({
   );
 }
 
+const TRUSTPILOT_URL = "https://www.trustpilot.com/review/gumlab.se";
+
 function Reviews() {
-  // Honest placeholder: no fabricated names, quotes, or counts. Wire this up to
-  // your real review platform (Trustpilot, Judge.me, Yotpo, etc.) once you have
-  // actual verified-purchase reviews — don't replace these with invented ones.
   return (
     <section id="reviews" className="hairline-t bg-paper-2/40">
       <div className="mx-auto max-w-7xl px-6 py-20 md:py-24">
@@ -934,6 +933,30 @@ function Reviews() {
             className="hairline shrink-0 bg-ink px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-paper hover:opacity-90"
           >
             Leave a review
+          </a>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-4 hairline bg-card p-6">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: "#00B67A" }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2L14.4 9.2H22L15.8 13.6L18.2 20.8L12 16.4L5.8 20.8L8.2 13.6L2 9.2H9.6L12 2Z" fill="white" />
+              </svg>
+            </div>
+            <div>
+              <div className="font-display text-lg">GumLab on Trustpilot</div>
+              <div className="mt-1 text-sm text-muted-ink">
+                Read verified reviews and leave your own.
+              </div>
+            </div>
+          </div>
+          <a
+            href={TRUSTPILOT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 bg-[#00B67A] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:opacity-90"
+          >
+            Read more reviews →
           </a>
         </div>
       </div>
