@@ -921,22 +921,7 @@ function Reviews() {
           </p>
         </div>
 
-        <div className="hairline flex items-center justify-between bg-card p-6">
-          <div>
-            <div className="font-display text-lg">Bought a bag? Tell us how it went.</div>
-            <div className="mt-1 text-sm text-muted-ink">
-              Verified buyers get an email invite 14 days after delivery.
-            </div>
-          </div>
-          <a
-            href="#"
-            className="hairline shrink-0 bg-ink px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-paper hover:opacity-90"
-          >
-            Leave a review
-          </a>
-        </div>
-
-        <div className="mt-6 flex items-center justify-between gap-4 hairline bg-card p-6">
+        <div className="flex items-center justify-between gap-4 hairline bg-card p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: "#00B67A" }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
