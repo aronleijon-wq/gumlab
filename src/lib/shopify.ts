@@ -9,7 +9,7 @@ export const CREATINE_PRODUCT = {
   handle: "creatine-gummies-180-gummies",
   variants: {
     subscribe: "gid://shopify/ProductVariant/56567088447828",
-    onetime: "gid://shopify/ProductVariant/56567088480596",
+    onetime: "gid://shopify/ProductVariant/56567129080148",
   },
 };
 
