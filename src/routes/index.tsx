@@ -76,7 +76,6 @@ function Index() {
       <Faq />
       <About />
       <Newsletter />
-      <LegalNotice />
       <Footer />
       <StickyBuy mode={mode} />
       <CartDrawer />
@@ -988,7 +987,7 @@ function Footer() {
               { l: "About", h: "#about" },
               { l: "FAQ", h: "#faq" },
               { l: "Contact us", h: "/contact" },
-              { l: "Legal notice", h: "#legal" },
+              { l: "Legal notice", h: "/legal" },
             ]}
           />
           <div>
