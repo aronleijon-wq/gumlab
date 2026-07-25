@@ -232,20 +232,101 @@ function Hero() {
 
 function TrustRow() {
   const items = [
-    "Third-party assayed",
-    "Made in EU",
-    "Free shipping in Sweden",
-    "Cancel anytime",
-    "60-day supply",
-    "Ships within 24h",
+    {
+      label: "Third-party assayed",
+      icon: "check",
+      bg: "bg-trust-sage",
+      ink: "text-trust-sage-ink",
+      hover: "group-hover:bg-trust-sage-ink group-hover:text-trust-sage",
+    },
+    {
+      label: "Made in EU",
+      icon: "globe",
+      bg: "bg-trust-clay",
+      ink: "text-trust-clay-ink",
+      hover: "group-hover:bg-trust-clay-ink group-hover:text-trust-clay",
+    },
+    {
+      label: "Free shipping in Sweden",
+      icon: "package",
+      bg: "bg-trust-slate",
+      ink: "text-trust-slate-ink",
+      hover: "group-hover:bg-trust-slate-ink group-hover:text-trust-slate",
+    },
+    {
+      label: "Cancel anytime",
+      icon: "close",
+      bg: "bg-trust-gold",
+      ink: "text-trust-gold-ink",
+      hover: "group-hover:bg-trust-gold-ink group-hover:text-trust-gold",
+    },
+    {
+      label: "60-day supply",
+      icon: "calendar",
+      bg: "bg-trust-sky",
+      ink: "text-trust-sky-ink",
+      hover: "group-hover:bg-trust-sky-ink group-hover:text-trust-sky",
+    },
+    {
+      label: "Ships within 24h",
+      icon: "lightning",
+      bg: "bg-trust-rose",
+      ink: "text-trust-rose-ink",
+      hover: "group-hover:bg-trust-rose-ink group-hover:text-trust-rose",
+    },
   ];
+
+  const iconSvg: Record<string, JSX.Element> = {
+    check: (
+      <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    ),
+    globe: (
+      <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+    ),
+    package: (
+      <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    ),
+    close: (
+      <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    ),
+    calendar: (
+      <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    lightning: (
+      <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+  };
+
+  const track = [...items, ...items];
+
   return (
-    <section className="border-y border-hairline/70 bg-paper-2/40">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-4 px-6 py-6 sm:grid-cols-3 md:grid-cols-6">
-        {items.map((t) => (
-          <div key={t} className="mono flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-ink">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-ink/60" aria-hidden />
-            <span className="truncate">{t}</span>
+    <section className="relative overflow-hidden border-y border-hairline/70 bg-paper-2/40 py-8">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-paper-2/40 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-paper-2/40 to-transparent" />
+      <div className="marquee-track flex w-max items-center gap-12">
+        {track.map((item, i) => (
+          <div
+            key={`${item.label}-${i}`}
+            className="group flex shrink-0 items-center gap-4"
+          >
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-500 group-hover:scale-110 ${item.bg} ${item.ink} ${item.hover}`}
+            >
+              {iconSvg[item.icon]}
+            </div>
+            <span className="font-display text-xl italic text-ink">{item.label}</span>
           </div>
         ))}
       </div>
