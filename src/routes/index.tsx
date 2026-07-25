@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import creatineCover from "@/assets/creatine-cover.png.asset.json";
-import creatineFront from "@/assets/creatine-front.png.asset.json";
-import creatineBack from "@/assets/creatine-back.png.asset.json";
+import creatineBenefits from "@/assets/creatine-benefits.png.asset.json";
+import creatineVerification from "@/assets/creatine-verification.png.asset.json";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
@@ -257,8 +257,8 @@ function TrustRow() {
 
 const GALLERY_IMAGES = [
   { src: creatineCover.url, alt: "Creatine gummies — pack" },
-  { src: creatineFront.url, alt: "Creatine gummies — front of pouch, 180 gummies" },
-  { src: creatineBack.url, alt: "Creatine gummies — ingredients and nutrition panel" },
+  { src: creatineBenefits.url, alt: "Creatine gummies — benefits: physical performance, no artificial flavours, 3g creatine per serving" },
+  { src: creatineVerification.url, alt: "Creatine gummies — independently verified dosage by Eurofins" },
 ];
 
 function ProductGallery() {
