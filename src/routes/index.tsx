@@ -421,7 +421,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
               selected={mode === "subscribe"}
               onSelect={() => setMode("subscribe")}
               label="Subscription"
-              badge="Recommended"
+              badge="BEST SELLER"
               price={SUB_PRICE_SEK}
               cadence="Delivered every 2 months"
               savings={`Save ${savings} SEK vs one-time`}
