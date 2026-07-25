@@ -676,7 +676,7 @@ function Faq() {
     },
     {
       q: "What flavour are Creatine Gummies?",
-      a: "Our Creatine Gummies come in a delicious Lemon, Peach, or Raspberry flavour.",
+      a: "Our Creatine Gummies come in a delicious Raspberry flavour. Maybe more flavours comming soon..\u00a0",
     },
     {
       q: "Are there any side effects of taking Creatine Gummies?",
