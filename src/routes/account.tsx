@@ -2,17 +2,15 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
-import performCover from "@/assets/perform-cover.png.asset.json";
-import calmCover from "@/assets/calm-cover.png.asset.json";
-import sleepCover from "@/assets/sleep-cover.png.asset.json";
+import creatineCover from "@/assets/creatine-cover.png.asset.json";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "Your account · GumLab" },
-      { name: "description", content: "Manage your GumLab subscriptions, orders, dose, and shipping details from one place." },
+      { name: "description", content: "Manage your GumLab creatine gummies subscription, orders and shipping details." },
       { property: "og:title", content: "Your account · GumLab" },
-      { property: "og:description", content: "Manage subscriptions and orders." },
+      { property: "og:description", content: "Manage your creatine gummies subscription." },
       { property: "og:url", content: "https://gumlab.se/account" },
       { property: "og:type", content: "website" },
       { name: "robots", content: "noindex, nofollow" },
@@ -23,19 +21,20 @@ export const Route = createFileRoute("/account")({
   component: AccountPage,
 });
 
-type ProductId = "perform" | "calm" | "recover";
+const SUB_PRICE_SEK = 385;
+
 type Sub = {
   id: string;
-  product_id: ProductId;
-  dose: 1 | 2 | 3;
+  product_id: string;
+  dose: number;
   status: "active" | "paused" | "cancelled";
-  price_eur: number;
+  price_eur: number; // stored numeric — we display as SEK now
   next_bill_at: string;
   created_at: string;
 };
 type Order = {
   id: string;
-  product_id: ProductId;
+  product_id: string;
   dose: number;
   bags: number;
   amount_eur: number;
@@ -53,27 +52,12 @@ type Profile = {
   country: string | null;
 };
 
-const PRODUCT_META: Record<ProductId, { name: string; cover: string; accent: string; timeLabel: string }> = {
-  perform: { name: "PERFORM", cover: performCover.url, accent: "var(--perform)", timeLabel: "Morning · 06:00" },
-  calm: { name: "CALM", cover: calmCover.url, accent: "var(--calm)", timeLabel: "Anytime" },
-  recover: { name: "SLEEP", cover: sleepCover.url, accent: "var(--recover)", timeLabel: "Night · 22:00" },
-};
-
-const PRICE: Record<ProductId, Partial<Record<1 | 2 | 3, number>>> = {
-  perform: { 2: 29, 3: 36 },
-  calm: { 1: 23, 2: 41 },
-  recover: { 1: 25, 2: 45 },
-};
-
-const DOSE_OPTIONS: Record<ProductId, (1 | 2 | 3)[]> = {
-  perform: [2, 3],
-  calm: [1, 2],
-  recover: [1, 2],
-};
-
-
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString("sv-SE", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function fmtSEK(n: number) {
+  return `${Number(n).toLocaleString("sv-SE")} SEK`;
 }
 
 function AccountPage() {
@@ -126,12 +110,6 @@ function AccountPage() {
     refresh();
   }
 
-  async function changeDose(sub: Sub, dose: 1 | 2 | 3) {
-    const price = PRICE[sub.product_id][dose] ?? sub.price_eur;
-    await updateSub(sub.id, { dose, price_eur: price });
-  }
-
-
   async function saveProfile() {
     setSaving(true);
     const { data: sess } = await supabase.auth.getSession();
@@ -141,7 +119,7 @@ function AccountPage() {
   }
 
   const activeCount = useMemo(() => subs.filter((s) => s.status === "active").length, [subs]);
-  const monthly = useMemo(
+  const bimonthly = useMemo(
     () => subs.filter((s) => s.status === "active").reduce((a, s) => a + Number(s.price_eur), 0),
     [subs]
   );
@@ -152,35 +130,39 @@ function AccountPage() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <header className="hairline-b sticky top-0 z-40 bg-paper/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-hairline/60 bg-paper/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center">
             <img src={gumlabLogo.url} alt="GumLab" className="h-14 w-auto" />
           </Link>
-          <div className="flex items-center gap-4 text-xs uppercase tracking-widest">
+          <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
             <Link to="/" className="hover:opacity-70">Shop</Link>
-            <button onClick={signOut} className="hairline px-3 py-2 hover:bg-paper-2">Sign out</button>
+            <button onClick={signOut} className="rounded-full border border-hairline px-4 py-2 hover:bg-paper-2">Sign out</button>
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-12">
-        <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink">Your account</div>
-        <h1 className="mt-1 text-3xl">Hi{profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}.</h1>
+        <div className="mono text-[10px] uppercase tracking-[0.28em] text-muted-ink">Your account</div>
+        <h1 className="mt-1 font-display text-3xl md:text-4xl">
+          Hi{profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}.
+        </h1>
         <p className="mt-1 text-sm text-muted-ink">{email}</p>
 
         <div className="mt-8 grid grid-cols-3 gap-3">
           <Stat label="Active subs" value={String(activeCount)} />
-          <Stat label="Per 28-day cycle" value={`€${monthly.toFixed(2).replace(/\.00$/, "")}`} />
+          <Stat label="Per 60-day cycle" value={fmtSEK(bimonthly)} />
           <Stat label="Orders" value={String(orders.length)} />
         </div>
 
-        <div className="mt-10 flex gap-1 text-xs uppercase tracking-widest">
+        <div className="mt-10 flex flex-wrap gap-2 text-xs uppercase tracking-widest">
           {(["subs", "orders", "profile"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2 ${tab === t ? "bg-ink text-paper" : "hairline hover:bg-paper-2"}`}
+              className={`rounded-full px-5 py-2 transition ${
+                tab === t ? "bg-ink text-paper" : "border border-hairline hover:bg-paper-2"
+              }`}
             >
               {t === "subs" ? "Subscriptions" : t === "orders" ? "Orders" : "Profile"}
             </button>
@@ -192,13 +174,13 @@ function AccountPage() {
             {subs.length === 0 ? (
               <EmptyState
                 title="No subscriptions yet"
-                body="Build your stack on the home page and subscribe to start."
-                cta={<Link to="/" className="mt-3 inline-block bg-ink px-4 py-2 text-xs uppercase tracking-widest text-paper">Build your stack</Link>}
+                body="Subscribe to Creatine Gummies to start."
+                cta={<Link to="/" className="mt-4 inline-block rounded-full bg-ink px-5 py-2 text-xs uppercase tracking-widest text-paper">Shop now</Link>}
               />
             ) : (
               <div className="space-y-3">
                 {subs.map((s) => (
-                  <SubCard key={s.id} sub={s} onChangeDose={(d) => changeDose(s, d)} onUpdate={(p) => updateSub(s.id, p)} />
+                  <SubCard key={s.id} sub={s} onUpdate={(p) => updateSub(s.id, p)} />
                 ))}
               </div>
             )}
@@ -208,19 +190,24 @@ function AccountPage() {
         {tab === "orders" && (
           <section className="mt-6">
             {orders.length === 0 ? (
-              <EmptyState title="No orders yet" body="Once your first subscription bills, orders will appear here with batch codes and lab reports." />
+              <EmptyState title="No orders yet" body="Your first order will appear here once it ships." />
             ) : (
-              <div className="hairline divide-y divide-hairline overflow-hidden">
-                {orders.map((o) => (
-                  <div key={o.id} className="grid grid-cols-[auto,1fr,auto] items-center gap-4 bg-paper px-4 py-3">
-                    <img src={PRODUCT_META[o.product_id].cover} alt="" className="h-12 w-12 object-contain" />
+              <div className="overflow-hidden rounded-2xl border border-hairline">
+                {orders.map((o, i) => (
+                  <div
+                    key={o.id}
+                    className={`grid grid-cols-[auto,1fr,auto] items-center gap-4 bg-card px-4 py-3 ${
+                      i > 0 ? "border-t border-hairline" : ""
+                    }`}
+                  >
+                    <img src={creatineCover.url} alt="" className="h-12 w-12 object-contain" />
                     <div>
-                      <div className="text-sm font-medium">{PRODUCT_META[o.product_id].name} · {o.bags} bag{o.bags > 1 ? "s" : ""}</div>
+                      <div className="text-sm font-medium">Creatine Gummies · 180 ct</div>
                       <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
                         {fmtDate(o.ordered_at)} · Batch {o.batch_code ?? "—"} · {o.status}
                       </div>
                     </div>
-                    <div className="mono text-sm">€{Number(o.amount_eur).toFixed(2)}</div>
+                    <div className="mono text-sm">{fmtSEK(o.amount_eur)}</div>
                   </div>
                 ))}
               </div>
@@ -243,7 +230,7 @@ function AccountPage() {
               <button
                 onClick={saveProfile}
                 disabled={saving}
-                className="bg-ink px-4 py-2 text-xs uppercase tracking-widest text-paper disabled:opacity-60"
+                className="rounded-full bg-ink px-6 py-2.5 text-xs uppercase tracking-widest text-paper disabled:opacity-60"
               >
                 {saving ? "Saving…" : "Save profile"}
               </button>
@@ -257,18 +244,18 @@ function AccountPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="hairline bg-paper p-4">
+    <div className="rounded-2xl border border-hairline bg-card p-4">
       <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink">{label}</div>
-      <div className="mt-1 mono text-2xl">{value}</div>
+      <div className="mono mt-1 text-2xl">{value}</div>
     </div>
   );
 }
 
 function EmptyState({ title, body, cta }: { title: string; body: string; cta?: React.ReactNode }) {
   return (
-    <div className="hairline bg-paper p-10 text-center">
-      <div className="text-sm font-medium">{title}</div>
-      <div className="mt-1 text-xs text-muted-ink">{body}</div>
+    <div className="rounded-3xl border border-hairline bg-card p-10 text-center">
+      <div className="font-display text-lg">{title}</div>
+      <div className="mt-1 text-sm text-muted-ink">{body}</div>
       {cta}
     </div>
   );
@@ -279,79 +266,62 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
     <label className="block">
       <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink">{label}</div>
       <input value={value} onChange={(e) => onChange(e.target.value)}
-        className="hairline mt-1 w-full bg-paper px-3 py-2 text-sm outline-none focus:border-ink" />
+        className="mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-2.5 text-sm outline-none transition focus:border-ink" />
     </label>
   );
 }
 
-function SubCard({
-  sub, onChangeDose, onUpdate,
-}: {
-  sub: Sub;
-  onChangeDose: (d: 1 | 2 | 3) => void;
-
-  onUpdate: (p: Partial<Sub>) => void;
-}) {
-  const meta = PRODUCT_META[sub.product_id];
+function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (p: Partial<Sub>) => void }) {
   const cancelled = sub.status === "cancelled";
   const paused = sub.status === "paused";
   return (
-    <div className="hairline bg-paper p-4">
+    <div className="rounded-3xl border border-hairline bg-card p-5">
       <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
-        <img src={meta.cover} alt="" className="h-16 w-16 object-contain" />
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="text-base font-medium">{meta.name}</div>
+        <img src={creatineCover.url} alt="" className="h-16 w-16 object-contain" />
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="font-display text-lg">Creatine Gummies</div>
             <span
-              className="mono text-[10px] uppercase tracking-widest px-2 py-0.5"
-              style={{ background: cancelled ? "transparent" : meta.accent, color: cancelled ? "var(--muted-ink)" : "var(--paper)", border: cancelled ? "1px solid var(--hairline)" : "none" }}
+              className="mono rounded-full px-2 py-0.5 text-[10px] uppercase tracking-widest"
+              style={{
+                background: cancelled ? "transparent" : "var(--ink)",
+                color: cancelled ? "var(--muted-ink)" : "var(--paper)",
+                border: cancelled ? "1px solid var(--hairline)" : "none",
+              }}
             >
               {sub.status}
             </span>
           </div>
-          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink mt-1">
-            {meta.timeLabel} · {sub.dose} gummy/day · {sub.dose} bag{sub.dose > 1 ? "s" : ""} per 28-day cycle
+          <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
+            3 gummies / day · 180 gummies · 60-day supply
           </div>
           <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-            {cancelled ? "Cancelled" : `Next bill: ${fmtDate(sub.next_bill_at)}`}
+            {cancelled ? "Cancelled" : `Next delivery: ${fmtDate(sub.next_bill_at)}`}
           </div>
         </div>
         <div className="text-right">
-          <div className="mono text-lg">€{Number(sub.price_eur).toFixed(2)}</div>
-          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">per 28-day cycle</div>
+          <div className="mono text-lg">{fmtSEK(sub.price_eur || SUB_PRICE_SEK)}</div>
+          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">per 60-day cycle</div>
         </div>
       </div>
 
       {!cancelled && (
-        <div className="hairline-t mt-4 pt-4 flex flex-wrap items-center gap-2">
-          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink mr-1">Dose</div>
-          {DOSE_OPTIONS[sub.product_id].map((d) => (
-            <button
-              key={d}
-              onClick={() => onChangeDose(d)}
-              className={`px-3 py-1.5 text-xs ${sub.dose === d ? "bg-ink text-paper" : "hairline hover:bg-paper-2"}`}
-            >
-              {d} {d === 1 ? "gummy" : "gummies"}/day
-            </button>
-          ))}
-
-          <div className="ml-auto flex gap-2">
-            {paused ? (
-              <button onClick={() => onUpdate({ status: "active" })} className="hairline px-3 py-1.5 text-xs hover:bg-paper-2">Resume</button>
-            ) : (
-              <button onClick={() => onUpdate({ status: "paused" })} className="hairline px-3 py-1.5 text-xs hover:bg-paper-2">Pause</button>
-            )}
-            <button
-              onClick={() => {
-                if (confirm("Cancel this subscription? You can restart anytime.")) {
-                  onUpdate({ status: "cancelled", cancelled_at: new Date().toISOString() } as Partial<Sub>);
-                }
-              }}
-              className="hairline px-3 py-1.5 text-xs hover:bg-paper-2"
-            >
-              Cancel
-            </button>
-          </div>
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-hairline pt-4">
+          {paused ? (
+            <button onClick={() => onUpdate({ status: "active" })} className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2">Resume</button>
+          ) : (
+            <button onClick={() => onUpdate({ status: "paused" })} className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2">Pause</button>
+          )}
+          <button
+            onClick={() => {
+              if (confirm("Cancel this subscription? You can restart anytime.")) {
+                onUpdate({ status: "cancelled", cancelled_at: new Date().toISOString() } as Partial<Sub>);
+              }
+            }}
+            className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2"
+          >
+            Cancel
+          </button>
         </div>
       )}
     </div>
