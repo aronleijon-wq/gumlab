@@ -262,16 +262,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   return (
     <section id="buy" className="mx-auto max-w-7xl px-6 py-20 md:py-28">
       <div className="grid gap-12 md:grid-cols-[1fr_1.05fr] md:gap-16">
-        <div className="flex items-center justify-center">
-          <div className="relative w-full max-w-[520px] rounded-[36px] bg-card p-6 shadow-[0_20px_60px_-30px_rgba(28,26,16,0.4)]">
-            <img
-              src={creatineCover.url}
-              alt="Creatine gummies — 180 count"
-              className="w-full"
-              style={{ filter: "drop-shadow(0 20px 30px rgba(28,26,16,0.15))" }}
-            />
-          </div>
-        </div>
+        <ProductGallery />
 
         <div>
           <div className="mono mb-4 text-[11px] uppercase tracking-[0.28em] text-muted-ink">
