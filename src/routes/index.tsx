@@ -468,6 +468,14 @@ function Whats() {
               </div>
             ))}
           </dl>
+          <div className="mt-6 border-t border-hairline pt-6">
+            <div className="text-sm text-muted-ink">Ingredients</div>
+            <p className="mt-2 text-sm leading-relaxed text-ink">
+              Sugar, Glucose Syrup, Creatine Monohydrate, Humectant (Glycerol), Water, Gelling Agent (Pectins),
+              Acidity Regulators (Trisodium Citrate, Tricalcium Phosphate), Acid (Citric Acid), Natural Flavourings,
+              Colour (Anthocyanins).
+            </p>
+          </div>
         </div>
       </div>
     </section>
