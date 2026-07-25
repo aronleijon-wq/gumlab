@@ -210,20 +210,22 @@ function Hero() {
             <div className="relative w-full max-w-[560px]">
               <div
                 aria-hidden
-                className="absolute inset-x-8 bottom-6 h-10 rounded-[50%]"
+                className="hero-shadow absolute inset-x-8 bottom-6 h-10 rounded-[50%]"
                 style={{
                   background:
                     "radial-gradient(ellipse at center, rgba(28,26,16,0.28) 0%, transparent 70%)",
                   filter: "blur(18px)",
                 }}
               />
-              <img
-                src={creatineCover.url}
-                alt="GumLab creatine gummies — 180 count bag with loose gummies at the base"
-                className="relative w-full select-none"
-                draggable={false}
-                style={{ filter: "drop-shadow(0 30px 40px rgba(28,26,16,0.18))" }}
-              />
+              <div className="hero-float relative">
+                <img
+                  src={creatineCover.url}
+                  alt="GumLab creatine gummies — 180 count bag with loose gummies at the base"
+                  className="relative w-full select-none"
+                  draggable={false}
+                  style={{ filter: "drop-shadow(0 30px 40px rgba(28,26,16,0.18))" }}
+                />
+              </div>
             </div>
           </div>
         </div>
