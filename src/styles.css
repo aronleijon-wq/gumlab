@@ -173,14 +173,14 @@
   will-change: opacity, transform;
 }
 
-@keyframes gumlab-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+@keyframes gumlab-badge-glow {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.05); }
 }
-@utility marquee-track {
-  animation: gumlab-marquee 30s linear infinite;
-  will-change: transform;
+@utility badge-glow {
+  animation: gumlab-badge-glow 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: opacity, transform;
 }
-.marquee-track:hover { animation-play-state: paused; }
+
 
 
