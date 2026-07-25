@@ -61,6 +61,7 @@ function fmtSEK(n: number) {
 
 function Index() {
   const [mode, setMode] = useState<Mode>("subscribe");
+  useCartSync();
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -77,9 +78,11 @@ function Index() {
       <Newsletter />
       <Footer />
       <StickyBuy mode={mode} />
+      <CartDrawer />
     </div>
   );
 }
+
 
 /* ============================== NAV ============================== */
 
