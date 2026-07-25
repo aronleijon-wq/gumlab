@@ -700,7 +700,7 @@ function Faq() {
     },
     {
       q: "What if I don't like the taste of creatine powder?",
-      a: "If you find the taste or texture of creatine powder unpleasant, our Creatine Gummies are a fantastic alternative. They offer a delicious Lemon, Peach, or Raspberry flavour and a convenient chewable format, so you can easily get your daily dose of creatine.",
+      a: "If you find the taste or texture of creatine powder unpleasant, our Creatine Gummies are a fantastic alternative. They offer a delicious Raspberry flavour and a convenient chewable format, so you can easily get your daily dose of creatine.",
     },
   ];
   return (
