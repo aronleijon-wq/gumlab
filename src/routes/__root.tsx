@@ -134,22 +134,13 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function ConstructionBanner() {
-  return (
-    <div className="w-full bg-[#B91C1C] px-4 py-5 text-center">
-      <p className="mx-auto max-w-4xl font-display text-base font-semibold uppercase tracking-wide text-[#fffdf2] sm:text-lg whitespace-pre-line">
-        WE ARE UNDER CONSTRUCTION AND ARE NOT AVAILABLE FOR PURCHASE YET.{"\n"}
-      </p>
-    </div>
-  );
-}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ConstructionBanner />
+      
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
