@@ -6,6 +6,11 @@ import creatineVerification from "@/assets/creatine-verification.png.asset.json"
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
+import { CartButton, CartDrawer } from "@/components/CartDrawer";
+import { useCartSync } from "@/hooks/useCartSync";
+import { useCartStore } from "@/stores/cartStore";
+import { CREATINE_PRODUCT } from "@/lib/shopify";
+
 
 const OG_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp";
 
@@ -130,12 +135,8 @@ function Nav() {
               </Link>
             )
           )}
-          <a
-            href="#buy"
-            className="rounded-full bg-ink px-5 py-2 text-xs font-medium uppercase tracking-widest text-paper transition hover:opacity-90"
-          >
-            Buy
-          </a>
+          <CartButton />
+
         </div>
       </div>
     </header>
