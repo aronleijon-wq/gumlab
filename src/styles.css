@@ -34,6 +34,8 @@
   --color-trust-sky-ink: var(--trust-sky-ink);
   --color-trust-rose: var(--trust-rose);
   --color-trust-rose-ink: var(--trust-rose-ink);
+  --color-cta-rose: var(--cta-rose);
+  --color-cta-rose-ink: var(--cta-rose-ink);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -80,6 +82,8 @@
   --trust-sky-ink: #0369a1;
   --trust-rose: #fce7f3;
   --trust-rose-ink: #be185d;
+  --cta-rose: #e11d48;
+  --cta-rose-ink: #ffffff;
 
   --background: #f5f4e6;
   --foreground: #1c1a10;

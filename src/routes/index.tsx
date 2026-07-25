@@ -178,7 +178,7 @@ function Hero() {
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <a
                 href="#buy"
-                className="rounded-full bg-ink px-7 py-4 text-sm font-medium uppercase tracking-widest text-paper shadow-[0_8px_24px_-8px_rgba(28,26,16,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-10px_rgba(28,26,16,0.45)]"
+                className="rounded-full bg-cta-rose px-7 py-4 text-sm font-medium uppercase tracking-widest text-cta-rose-ink shadow-[0_8px_24px_-8px_rgba(225,29,72,0.35)] transition hover:-translate-y-0.5 hover:bg-[#c2185b] hover:shadow-[0_14px_32px_-10px_rgba(225,29,72,0.45)]"
               >
                 Shop now — {SUB_PRICE_SEK} SEK
               </a>
