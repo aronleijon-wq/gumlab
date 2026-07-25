@@ -765,7 +765,7 @@ function About() {
             a single, well-studied ingredient, at a real dose, in a form you actually enjoy.
           </p>
           <p className="text-ink">
-            GumLab is a Myprotein company. I did not create or manufacture these products myself —
+            The product is from Myprotein company. I did not create or manufacture these products myself —
             that work is done by the Myprotein team. What I can stand behind is that they are made in
             the EU under strict quality standards, and every batch is third-party assayed.
           </p>
