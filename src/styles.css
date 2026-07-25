@@ -22,6 +22,19 @@
   --color-recover: var(--recover);
   --color-brand: var(--brand);
 
+  --color-trust-sage: var(--trust-sage);
+  --color-trust-sage-ink: var(--trust-sage-ink);
+  --color-trust-clay: var(--trust-clay);
+  --color-trust-clay-ink: var(--trust-clay-ink);
+  --color-trust-slate: var(--trust-slate);
+  --color-trust-slate-ink: var(--trust-slate-ink);
+  --color-trust-gold: var(--trust-gold);
+  --color-trust-gold-ink: var(--trust-gold-ink);
+  --color-trust-sky: var(--trust-sky);
+  --color-trust-sky-ink: var(--trust-sky-ink);
+  --color-trust-rose: var(--trust-rose);
+  --color-trust-rose-ink: var(--trust-rose-ink);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-card: var(--card);
