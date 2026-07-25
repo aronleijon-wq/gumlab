@@ -634,24 +634,52 @@ function Reviews() {
 function Faq() {
   const items = [
     {
-      q: "How many gummies come in a bag?",
-      a: "180 gummies. At 3 gummies per day, one bag is a 60-day supply.",
+      q: "What are Creatine Gummies?",
+      a: "Our Creatine Gummies are a tasty and convenient way to supplement with creatine. Each serving delivers 3g of creatine monohydrate, which is scientifically proven to increase physical performance in successive bursts of short-term, high-intensity exercise. They're perfect for those who struggle to take creatine powder and prefer a tastier, chewable supplement.",
     },
     {
-      q: "How much creatine will I get?",
-      a: "Each gummy contains 1 g of creatine monohydrate. Three gummies a day gives you a 3 g daily serving.",
+      q: "How do Creatine Gummies work?",
+      a: "Creatine increases your body's stores of phosphocreatine, a molecule used to produce energy during high-intensity exercise. By increasing these stores, our Creatine Gummies can help you perform better in activities like weightlifting and sprinting. This means you could potentially lift heavier, sprint faster, and recover quicker.",
     },
     {
-      q: "How does the subscription work?",
-      a: "Your bag ships automatically every 60 days at 385 SEK. Skip, pause, or cancel anytime from your account.",
+      q: "What are the benefits of using Creatine Gummies?",
+      a: "Creatine is one of the most researched sports supplements, and its benefits are well established. By supplementing with our Creatine Gummies, you can expect improvements in high-intensity exercise performance, such as increased strength, power, and speed. The convenient gummy format also makes them easy to take on the go.",
     },
     {
-      q: "Shipping and returns?",
-      a: "Free shipping in Sweden. Orders ship within 24h. 30-day satisfaction guarantee — full refund, no questions asked.",
+      q: "How do I take Creatine Gummies?",
+      a: "Simply chew up to three gummies per day. They're easy to incorporate into your routine and can be taken at any time that suits you.",
     },
     {
-      q: "Are they suitable for everyone?",
-      a: "Adults only. Not recommended for children under 6, pregnant or breastfeeding women. Consult your doctor if you take medication or have a medical condition.",
+      q: "Are Creatine Gummies suitable for vegetarians and vegans?",
+      a: "Yes, our Creatine Gummies are suitable for both vegetarians and vegans, making them a great option for those following plant-based diets.",
+    },
+    {
+      q: "What flavour are Creatine Gummies?",
+      a: "Our Creatine Gummies come in a delicious Lemon, Peach, or Raspberry flavour.",
+    },
+    {
+      q: "Are there any side effects of taking Creatine Gummies?",
+      a: "Creatine is a very safe and well-tolerated supplement. Some people may experience minor digestive discomfort if they take too much at once, but this is usually temporary. We recommend sticking to the recommended dose of 3 gummies per day.",
+    },
+    {
+      q: "How long does it take to see results from Creatine Gummies?",
+      a: "While everyone is different, some people notice improvements in their performance within a few days, while others may take a couple of weeks. Consistency is key, so make sure you take your creatine gummies daily to maximise their benefits.",
+    },
+    {
+      q: "Can I take Creatine Gummies with other supplements?",
+      a: "Yes, creatine can be safely combined with other supplements. Many athletes take creatine alongside protein powder, pre-workout, or BCAAs.",
+    },
+    {
+      q: "Are Creatine Gummies suitable for women?",
+      a: "Absolutely! Creatine can be just as beneficial for women as it is for men. It can help with strength training, power output, and overall athletic performance, regardless of gender.",
+    },
+    {
+      q: "How are Creatine Gummies different from creatine powder?",
+      a: "The main difference is the format. Our Creatine Gummies offer a convenient and tasty alternative to traditional creatine powder. They deliver the same creatine monohydrate but in a chewable form, which can be more appealing to some.",
+    },
+    {
+      q: "What if I don't like the taste of creatine powder?",
+      a: "If you find the taste or texture of creatine powder unpleasant, our Creatine Gummies are a fantastic alternative. They offer a delicious Lemon, Peach, or Raspberry flavour and a convenient chewable format, so you can easily get your daily dose of creatine.",
     },
   ];
   return (
