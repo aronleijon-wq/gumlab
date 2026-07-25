@@ -255,6 +255,48 @@ function TrustRow() {
 
 /* ============================== BUY ============================== */
 
+const GALLERY_IMAGES = [
+  { src: creatineCover.url, alt: "Creatine gummies — pack" },
+  { src: creatineFront.url, alt: "Creatine gummies — front of pouch, 180 gummies" },
+  { src: creatineBack.url, alt: "Creatine gummies — ingredients and nutrition panel" },
+];
+
+function ProductGallery() {
+  const [active, setActive] = useState(0);
+  const current = GALLERY_IMAGES[active];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="relative w-full overflow-hidden rounded-[36px] bg-card p-6 shadow-[0_20px_60px_-30px_rgba(28,26,16,0.4)]">
+        <img
+          src={current.src}
+          alt={current.alt}
+          className="mx-auto w-full max-w-[520px] object-contain transition-opacity duration-300"
+          style={{ filter: "drop-shadow(0 20px 30px rgba(28,26,16,0.15))" }}
+        />
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {GALLERY_IMAGES.map((img, i) => (
+          <button
+            key={img.src}
+            type="button"
+            onClick={() => setActive(i)}
+            aria-label={`View image ${i + 1}`}
+            aria-current={i === active}
+            className={`relative overflow-hidden rounded-2xl bg-card p-2 transition ${
+              i === active
+                ? "ring-2 ring-ink"
+                : "ring-1 ring-hairline hover:ring-ink/40"
+            }`}
+          >
+            <img src={img.src} alt="" className="h-20 w-full object-contain sm:h-24" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const savings = ONETIME_PRICE_SEK - SUB_PRICE_SEK;
