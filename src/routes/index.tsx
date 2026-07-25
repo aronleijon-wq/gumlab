@@ -257,8 +257,8 @@ function TrustRow() {
 
 const GALLERY_IMAGES = [
   { src: creatineCover.url, alt: "Creatine gummies — pack" },
-  { src: creatineFront.url, alt: "Creatine gummies — front of pouch, 180 gummies" },
-  { src: creatineBack.url, alt: "Creatine gummies — ingredients and nutrition panel" },
+  { src: creatineBenefits.url, alt: "Creatine gummies — benefits: physical performance, no artificial flavours, 3g creatine per serving" },
+  { src: creatineVerification.url, alt: "Creatine gummies — independently verified dosage by Eurofins" },
 ];
 
 function ProductGallery() {
