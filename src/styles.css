@@ -22,6 +22,19 @@
   --color-recover: var(--recover);
   --color-brand: var(--brand);
 
+  --color-trust-sage: var(--trust-sage);
+  --color-trust-sage-ink: var(--trust-sage-ink);
+  --color-trust-clay: var(--trust-clay);
+  --color-trust-clay-ink: var(--trust-clay-ink);
+  --color-trust-slate: var(--trust-slate);
+  --color-trust-slate-ink: var(--trust-slate-ink);
+  --color-trust-gold: var(--trust-gold);
+  --color-trust-gold-ink: var(--trust-gold-ink);
+  --color-trust-sky: var(--trust-sky);
+  --color-trust-sky-ink: var(--trust-sky-ink);
+  --color-trust-rose: var(--trust-rose);
+  --color-trust-rose-ink: var(--trust-rose-ink);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-card: var(--card);
@@ -53,6 +66,20 @@
 
   /* Big bright "brand" color for the logo / primary CTAs, Gruns-style high-contrast pop */
   --brand: #d8f24e;
+
+  /* Trust-row kinetic marquee accent colors */
+  --trust-sage: #e5e9e0;
+  --trust-sage-ink: #4a5d4e;
+  --trust-clay: #f2e8e4;
+  --trust-clay-ink: #8c6d62;
+  --trust-slate: #e2e8f0;
+  --trust-slate-ink: #475569;
+  --trust-gold: #fdf2d5;
+  --trust-gold-ink: #854d0e;
+  --trust-sky: #e0f2fe;
+  --trust-sky-ink: #0369a1;
+  --trust-rose: #fce7f3;
+  --trust-rose-ink: #be185d;
 
   --background: #f5f4e6;
   --foreground: #1c1a10;
@@ -151,7 +178,7 @@
   to   { transform: translateX(-50%); }
 }
 @utility marquee-track {
-  animation: gumlab-marquee 38s linear infinite;
+  animation: gumlab-marquee 30s linear infinite;
   will-change: transform;
 }
 .marquee-track:hover { animation-play-state: paused; }
