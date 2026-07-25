@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import creatineCover from "@/assets/creatine-cover.png.asset.json";
+import creatineFront from "@/assets/creatine-front.png.asset.json";
+import creatineBack from "@/assets/creatine-back.png.asset.json";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
