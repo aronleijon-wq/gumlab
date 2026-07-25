@@ -14,7 +14,7 @@ import { CREATINE_PRODUCT } from "@/lib/shopify";
 
 const OG_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp";
 
-const SUB_PRICE_SEK = 385;
+const SUB_PRICE_SEK = 390;
 const ONETIME_PRICE_SEK = 449;
 
 export const Route = createFileRoute("/")({
