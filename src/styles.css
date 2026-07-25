@@ -192,6 +192,23 @@
 }
 .marquee-track:hover { animation-play-state: paused; }
 
+@keyframes gumlab-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-22px); }
+}
+@utility hero-float {
+  animation: gumlab-float 5s ease-in-out infinite;
+  will-change: transform;
+}
 
+@keyframes gumlab-hero-shadow {
+  0%, 100% { transform: scale(1); opacity: 0.28; }
+  50%      { transform: scale(0.78); opacity: 0.12; }
+}
+@utility hero-shadow {
+  animation: gumlab-hero-shadow 5s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
 
 
