@@ -276,7 +276,7 @@ function TrustRow() {
     },
   ];
 
-  const iconSvg: Record<string, JSX.Element> = {
+  const iconSvg: Record<string, ReactNode> = {
     check: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
