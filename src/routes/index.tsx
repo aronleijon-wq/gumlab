@@ -412,7 +412,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
             §&nbsp;01 — Shop
           </div>
           <h2 className="font-display text-4xl leading-tight md:text-5xl">
-            Creatine Gummies
+            Creatine Gummies&nbsp;
           </h2>
           <p className="mt-3 max-w-md text-sm text-muted-ink md:text-base">
             180 gummies · 1&nbsp;g creatine monohydrate per gummy · 3 gummies daily · 60-day supply.
