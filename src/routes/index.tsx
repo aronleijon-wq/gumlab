@@ -385,6 +385,20 @@ function ProductGallery() {
 function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const savings = ONETIME_PRICE_SEK - SUB_PRICE_SEK;
+  const addItem = useCartStore((s) => s.addItem);
+  const isLoading = useCartStore((s) => s.isLoading);
+
+  const handleAdd = async () => {
+    const variantId = mode === "subscribe" ? CREATINE_PRODUCT.variants.subscribe : CREATINE_PRODUCT.variants.onetime;
+    await addItem({
+      variantId,
+      productTitle: "Creatine Gummies — 180",
+      variantTitle: mode === "subscribe" ? "Subscription (every 2 months)" : "One-time purchase",
+      image: creatineCover.url,
+      price: { amount: String(price), currencyCode: "SEK" },
+      quantity: 1,
+    });
+  };
 
   return (
     <section id="buy" className="mx-auto max-w-7xl px-6 py-20 md:py-28">
@@ -430,9 +444,11 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
               type="button"
-              className="rounded-full bg-ink px-8 py-4 text-sm font-medium uppercase tracking-widest text-paper transition hover:-translate-y-0.5 hover:shadow-lg"
+              onClick={handleAdd}
+              disabled={isLoading}
+              className="rounded-full bg-ink px-8 py-4 text-sm font-medium uppercase tracking-widest text-paper transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60"
             >
-              Add to cart — {fmtSEK(price)}
+              {isLoading ? "Adding…" : `Add to cart — ${fmtSEK(price)}`}
             </button>
             <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
               Secure checkout · Free SE shipping
@@ -443,6 +459,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
     </section>
   );
 }
+
 
 function PlanOption({
   selected,
@@ -908,15 +925,34 @@ function FooterCol({ title, links }: { title: string; links: { l: string; h: str
 function StickyBuy({ mode }: { mode: Mode }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const label = mode === "subscribe" ? "Subscribe" : "Buy once";
+  const addItem = useCartStore((s) => s.addItem);
+  const isLoading = useCartStore((s) => s.isLoading);
+  const handleAdd = async () => {
+    const variantId = mode === "subscribe" ? CREATINE_PRODUCT.variants.subscribe : CREATINE_PRODUCT.variants.onetime;
+    await addItem({
+      variantId,
+      productTitle: "Creatine Gummies — 180",
+      variantTitle: mode === "subscribe" ? "Subscription (every 2 months)" : "One-time purchase",
+      image: creatineCover.url,
+      price: { amount: String(price), currencyCode: "SEK" },
+      quantity: 1,
+    });
+  };
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-hairline bg-paper/95 px-4 py-3 backdrop-blur-xl md:hidden">
-      <a
-        href="#buy"
-        className="flex w-full items-center justify-between rounded-full bg-ink px-5 py-3 text-sm font-medium uppercase tracking-widest text-paper"
+      <button
+        type="button"
+        onClick={handleAdd}
+        disabled={isLoading}
+        className="flex w-full items-center justify-between rounded-full bg-ink px-5 py-3 text-sm font-medium uppercase tracking-widest text-paper disabled:opacity-60"
       >
-        <span>{label}</span>
+        <span>{isLoading ? "Adding…" : label}</span>
         <span className="mono">{price} SEK</span>
-      </a>
+      </button>
+    </div>
+  );
+}
+
     </div>
   );
 }
