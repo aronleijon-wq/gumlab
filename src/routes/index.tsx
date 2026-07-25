@@ -505,8 +505,17 @@ function PlanOption({
             <div className="flex items-center gap-2">
               <div className="font-display text-lg">{label}</div>
               {badge && (
-                <span className="mono rounded-full bg-brand px-2 py-0.5 text-[10px] uppercase tracking-widest text-ink">
-                  {badge}
+                <span className="relative inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-paper shadow-[0_4px_14px_-4px_rgba(28,26,16,0.35)]">
+                  <span
+                    aria-hidden
+                    className="badge-glow absolute -inset-1 rounded-full bg-gradient-to-r from-perform via-brand to-calm opacity-70 blur-sm"
+                  />
+                  <span className="relative flex items-center gap-1">
+                    <svg className="relative h-3 w-3 text-brand" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    {badge}
+                  </span>
                 </span>
               )}
             </div>
