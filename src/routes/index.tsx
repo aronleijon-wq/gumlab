@@ -755,7 +755,7 @@ function About() {
             §&nbsp;06 — About GumLab
           </div>
           <h2 className="font-display text-4xl leading-tight md:text-5xl">
-            Swedish craft.<br />No theatre.
+            About&nbsp;<br />GumLab
           </h2>
         </div>
         <div className="space-y-5 text-base leading-relaxed text-muted-ink">
