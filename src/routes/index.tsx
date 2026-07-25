@@ -952,7 +952,3 @@ function StickyBuy({ mode }: { mode: Mode }) {
     </div>
   );
 }
-
-    </div>
-  );
-}
