@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import creatineCover from "@/assets/creatine-cover.png.asset.json";
 import creatineBenefits from "@/assets/creatine-benefits.png.asset.json";
 import creatineVerification from "@/assets/creatine-verification.png.asset.json";
