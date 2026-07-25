@@ -448,7 +448,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
               type="button"
               onClick={handleAdd}
               disabled={isLoading}
-              className="rounded-full bg-ink px-8 py-4 text-sm font-medium uppercase tracking-widest text-paper transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60"
+              className="rounded-full bg-cta-rose px-8 py-4 text-sm font-medium uppercase tracking-widest text-cta-rose-ink transition hover:-translate-y-0.5 hover:bg-cta-rose-hover hover:shadow-lg disabled:opacity-60"
             >
               {isLoading ? "Adding…" : `Add to cart — ${fmtSEK(price)}`}
             </button>
