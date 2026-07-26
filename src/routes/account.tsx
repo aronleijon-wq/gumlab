@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { syncShopifyOrders } from "@/lib/orders.functions";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import creatineCover from "@/assets/creatine-cover.png.asset.json";
 
@@ -80,6 +81,8 @@ function AccountPage() {
         return;
       }
       setEmail(sess.session.user.email ?? "");
+      // Pull any Shopify orders for this email into the account (guest checkouts, prior purchases)
+      try { await syncShopifyOrders(); } catch (e) { console.warn("syncShopifyOrders failed", e); }
       await refresh();
       setLoading(false);
     })();
