@@ -56,6 +56,11 @@ export async function storefrontApiRequest<T = any>(query: string, variables: an
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
+    // Force the Shopify-hosted checkout domain. If the shop has a custom
+    // primary domain (e.g. gumlab.se) Shopify returns that host, which routes
+    // back into this app and 404s instead of hitting Shopify's checkout.
+    url.host = SHOPIFY_STORE_PERMANENT_DOMAIN;
+    url.protocol = "https:";
     url.searchParams.set("channel", "online_store");
     return url.toString();
   } catch {
