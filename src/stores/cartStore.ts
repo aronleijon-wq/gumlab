@@ -137,7 +137,7 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: "gumlab-cart",
+      name: "gumlab-cart-v2",
       storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : (undefined as any))),
       partialize: (s) => ({ items: s.items, cartId: s.cartId, checkoutUrl: s.checkoutUrl }),
     }
