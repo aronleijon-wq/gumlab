@@ -15,6 +15,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicWebhooksShopifyOrdersRouteImport } from './routes/api/public/webhooks/shopify/orders'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -46,6 +47,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksShopifyOrdersRoute =
+  ApiPublicWebhooksShopifyOrdersRouteImport.update({
+    id: '/api/public/webhooks/shopify/orders',
+    path: '/api/public/webhooks/shopify/orders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/legal': typeof LegalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/public/webhooks/shopify/orders': typeof ApiPublicWebhooksShopifyOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +70,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/legal': typeof LegalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/public/webhooks/shopify/orders': typeof ApiPublicWebhooksShopifyOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,12 +80,27 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/legal': typeof LegalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/public/webhooks/shopify/orders': typeof ApiPublicWebhooksShopifyOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/auth' | '/contact' | '/legal' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/auth'
+    | '/contact'
+    | '/legal'
+    | '/sitemap.xml'
+    | '/api/public/webhooks/shopify/orders'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/auth' | '/contact' | '/legal' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/account'
+    | '/auth'
+    | '/contact'
+    | '/legal'
+    | '/sitemap.xml'
+    | '/api/public/webhooks/shopify/orders'
   id:
     | '__root__'
     | '/'
@@ -85,6 +109,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/legal'
     | '/sitemap.xml'
+    | '/api/public/webhooks/shopify/orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,6 +119,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   LegalRoute: typeof LegalRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicWebhooksShopifyOrdersRoute: typeof ApiPublicWebhooksShopifyOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -140,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/shopify/orders': {
+      id: '/api/public/webhooks/shopify/orders'
+      path: '/api/public/webhooks/shopify/orders'
+      fullPath: '/api/public/webhooks/shopify/orders'
+      preLoaderRoute: typeof ApiPublicWebhooksShopifyOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -150,17 +183,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   LegalRoute: LegalRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicWebhooksShopifyOrdersRoute: ApiPublicWebhooksShopifyOrdersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
