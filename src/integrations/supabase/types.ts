@@ -43,37 +43,46 @@ export type Database = {
           amount_eur: number
           bags: number
           batch_code: string | null
+          currency: string
           dose: number
+          email: string | null
           id: string
           ordered_at: string
           product_id: string
+          shopify_order_id: string | null
           status: string
           subscription_id: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           amount_eur: number
           bags: number
           batch_code?: string | null
+          currency?: string
           dose: number
+          email?: string | null
           id?: string
           ordered_at?: string
           product_id: string
+          shopify_order_id?: string | null
           status?: string
           subscription_id?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           amount_eur?: number
           bags?: number
           batch_code?: string | null
+          currency?: string
           dose?: number
+          email?: string | null
           id?: string
           ordered_at?: string
           product_id?: string
+          shopify_order_id?: string | null
           status?: string
           subscription_id?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
