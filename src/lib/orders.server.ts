@@ -92,8 +92,11 @@ async function fetchShopifyOrdersByEmail(email: string) {
 }
 
 export async function upsertShopifyOrdersForAccount({ email, userId }: SyncInput) {
+  const attemptedAt = new Date().toISOString();
   const { orders, error } = await fetchShopifyOrdersByEmail(email);
-  if (error || orders.length === 0) return { synced: 0, subscriptionsSynced: 0, error };
+  if (error) return { synced: 0, subscriptionsSynced: 0, error, attemptedAt, ok: false };
+  if (orders.length === 0) return { synced: 0, subscriptionsSynced: 0, attemptedAt, ok: true };
+
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
