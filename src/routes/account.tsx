@@ -426,3 +426,169 @@ function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (status: "active" | "p
 }
 
 
+
+function fmtMoney(n: number | undefined, currency = "SEK") {
+  const v = Number(n ?? 0);
+  return `${v.toLocaleString("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+}
+
+function fulfillmentLabel(o: Order): { label: string; tone: "ok" | "pending" | "muted" } {
+  const s = (o.details?.fulfillment?.shipment_status || o.fulfillment_status || o.details?.fulfillment_status || "").toLowerCase();
+  if (!s || s === "unfulfilled" || s === "pending") return { label: "Preparing", tone: "pending" };
+  if (s === "in_transit" || s === "out_for_delivery" || s === "attempted_delivery") return { label: "On its way", tone: "ok" };
+  if (s === "delivered" || s === "fulfilled") return { label: "Delivered", tone: "ok" };
+  if (s === "cancelled" || s === "canceled") return { label: "Cancelled", tone: "muted" };
+  return { label: s.replaceAll("_", " "), tone: "pending" };
+}
+
+function formatAddress(a?: OrderAddress | null) {
+  if (!a) return null;
+  const name = a.name || [a.first_name, a.last_name].filter(Boolean).join(" ");
+  const lines = [name, a.address1, a.address2, [a.zip, a.city].filter(Boolean).join(" "), [a.province, a.country].filter(Boolean).join(", "), a.phone].filter(Boolean) as string[];
+  return lines;
+}
+
+function OrderCard({ order, onRequestCancel }: { order: Order; onRequestCancel: () => void }) {
+  const [open, setOpen] = useState(false);
+  const d = order.details ?? {};
+  const currency = d.currency || order.currency || "SEK";
+  const items = d.line_items ?? [];
+  const ship = formatAddress(d.shipping_address);
+  const status = fulfillmentLabel(order);
+  const title = order.order_number || (order.shopify_order_id ? `#${order.shopify_order_id}` : "Order");
+  const tracking = d.fulfillment?.tracking_url;
+  return (
+    <div className="overflow-hidden rounded-3xl border border-hairline bg-card">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="grid w-full grid-cols-[auto,1fr,auto] items-center gap-4 px-5 py-4 text-left"
+      >
+        <img src={creatineCover.url} alt="" className="h-14 w-14 object-contain" />
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="font-display text-lg">Order {title}</div>
+            <span
+              className="mono rounded-full px-2 py-0.5 text-[10px] uppercase tracking-widest"
+              style={{
+                background: status.tone === "ok" ? "var(--ink)" : "transparent",
+                color: status.tone === "ok" ? "var(--paper)" : "var(--muted-ink)",
+                border: status.tone === "ok" ? "none" : "1px solid var(--hairline)",
+              }}
+            >
+              {status.label}
+            </span>
+          </div>
+          <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
+            Confirmed {fmtDate(order.ordered_at)}
+            {d.fulfillment?.estimated_delivery_at ? ` · Expected by ${fmtDate(d.fulfillment.estimated_delivery_at)}` : ""}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="mono text-base">{fmtMoney(d.total ?? order.amount_eur, currency)}</div>
+          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">{open ? "Hide details" : "View details"}</div>
+        </div>
+      </button>
+
+      {open && (
+        <div className="border-t border-hairline px-5 py-5 space-y-6 text-sm">
+          <div>
+            <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink mb-2">Order items</div>
+            <div className="space-y-2">
+              {items.length === 0 && <div className="text-muted-ink">No line items available.</div>}
+              {items.map((li, idx) => (
+                <div key={idx} className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="font-medium">{li.title ?? "Item"}</div>
+                    {li.variant_title && <div className="text-xs text-muted-ink">{li.variant_title}</div>}
+                    <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">Quantity {li.quantity ?? 1}</div>
+                  </div>
+                  <div className="mono text-sm whitespace-nowrap">{fmtMoney((li.price ?? 0) * (li.quantity ?? 1), currency)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink mb-2">Order totals</div>
+            <div className="space-y-1">
+              <TotalsRow label="Subtotal" value={fmtMoney(d.subtotal, currency)} />
+              {Number(d.discount_total ?? 0) > 0 && (
+                <TotalsRow
+                  label={`Order discount${d.discount_codes?.[0]?.code ? ` · ${d.discount_codes[0].code}` : ""}`}
+                  value={`-${fmtMoney(d.discount_total, currency)}`}
+                />
+              )}
+              <TotalsRow label="Shipping" value={Number(d.shipping_total ?? 0) === 0 ? "Free" : fmtMoney(d.shipping_total, currency)} />
+              {Number(d.total_tax ?? 0) > 0 && <TotalsRow label="Tax" value={fmtMoney(d.total_tax, currency)} />}
+              <div className="border-t border-hairline pt-2 mt-2 flex items-center justify-between">
+                <div className="font-medium">Total</div>
+                <div className="mono">{fmtMoney(d.total ?? order.amount_eur, currency)}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink mb-2">Contact</div>
+              <div>{d.shipping_address?.phone || "—"}</div>
+            </div>
+            <div>
+              <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink mb-2">Ship to</div>
+              {ship ? (
+                <div className="space-y-0.5">{ship.map((l, i) => <div key={i}>{l}</div>)}</div>
+              ) : (
+                <div className="text-muted-ink">No shipping address on file.</div>
+              )}
+            </div>
+            <div>
+              <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink mb-2">Payment</div>
+              <div>{(d.payment_gateways && d.payment_gateways.length > 0) ? d.payment_gateways.join(", ") : "—"}</div>
+              {d.financial_status && <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">{d.financial_status}</div>}
+            </div>
+            <div>
+              <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink mb-2">Fulfillment</div>
+              <div>{status.label}</div>
+              {tracking && (
+                <a href={tracking} target="_blank" rel="noreferrer" className="mono text-[10px] uppercase tracking-widest underline">
+                  Track parcel{d.fulfillment?.tracking_company ? ` · ${d.fulfillment.tracking_company}` : ""}
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 border-t border-hairline pt-4">
+            {d.order_status_url && (
+              <a
+                href={d.order_status_url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-hairline px-4 py-2 text-[10px] uppercase tracking-widest hover:bg-paper-2"
+              >
+                Open receipt
+              </a>
+            )}
+            {!order.status.includes("cancel") && (
+              <button
+                type="button"
+                onClick={onRequestCancel}
+                className="rounded-full border border-hairline px-4 py-2 text-[10px] uppercase tracking-widest hover:bg-paper-2"
+              >
+                Request cancel
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TotalsRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <div className="text-muted-ink">{label}</div>
+      <div className="mono">{value}</div>
+    </div>
+  );
+}
