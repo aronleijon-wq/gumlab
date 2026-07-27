@@ -116,6 +116,64 @@ function productIdFromLine(line: ShopifyLineItem | undefined) {
   return String(line?.product_id ?? line?.sku ?? "creatine-gummies");
 }
 
+function buildOrderRow(order: ShopifyOrder, id: string, userId: string | null, email: string) {
+  const line = firstLine(order);
+  const orderedAt = order.processed_at ?? order.created_at ?? new Date().toISOString();
+  const shippingAmount = numberOr(order.total_shipping_price_set?.shop_money?.amount, 0);
+  const fulfillment = order.fulfillments?.[0];
+  const details = {
+    order_name: order.name ?? null,
+    order_number: order.order_number ?? null,
+    order_status_url: order.order_status_url ?? null,
+    subtotal: numberOr(order.subtotal_price, 0),
+    discount_total: numberOr(order.total_discounts, 0),
+    shipping_total: shippingAmount,
+    total_tax: numberOr(order.total_tax, 0),
+    total: numberOr(order.total_price ?? order.current_total_price, 0),
+    currency: String(order.currency ?? "SEK"),
+    financial_status: order.financial_status ?? null,
+    fulfillment_status: order.fulfillment_status ?? null,
+    payment_gateways: order.payment_gateway_names ?? [],
+    discount_codes: order.discount_codes ?? [],
+    shipping_address: order.shipping_address ?? null,
+    billing_address: order.billing_address ?? null,
+    line_items: (order.line_items ?? []).map((li) => ({
+      title: li.title ?? null,
+      variant_title: li.variant_title ?? null,
+      quantity: numberOr(li.quantity, 1),
+      price: numberOr(li.price, 0),
+      sku: li.sku ?? null,
+    })),
+    fulfillment: fulfillment
+      ? {
+          status: fulfillment.status ?? null,
+          shipment_status: fulfillment.shipment_status ?? null,
+          tracking_number: fulfillment.tracking_number ?? null,
+          tracking_url: fulfillment.tracking_url ?? null,
+          tracking_company: fulfillment.tracking_company ?? null,
+          estimated_delivery_at: fulfillment.estimated_delivery_at ?? null,
+          created_at: fulfillment.created_at ?? null,
+          updated_at: fulfillment.updated_at ?? null,
+        }
+      : null,
+  };
+  return {
+    shopify_order_id: id,
+    user_id: userId,
+    email,
+    product_id: productIdFromLine(line),
+    dose: 3,
+    bags: numberOr(line?.quantity, 1),
+    amount_eur: numberOr(order.total_price ?? order.current_total_price, 0),
+    currency: String(order.currency ?? "SEK"),
+    status: String(order.cancelled_at ? "cancelled" : order.financial_status ?? order.fulfillment_status ?? "paid"),
+    ordered_at: orderedAt,
+    order_number: order.name ?? (order.order_number != null ? `#${order.order_number}` : null),
+    fulfillment_status: order.fulfillment_status ?? fulfillment?.shipment_status ?? null,
+    details,
+  };
+}
+
 async function fetchShopifyOrdersByEmail(email: string) {
   // Prefer a manually-managed admin token; fall back to the integration token.
   const token = process.env.SHOPIFY_ADMIN_TOKEN || process.env.SHOPIFY_ACCESS_TOKEN;
