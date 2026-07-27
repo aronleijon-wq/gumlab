@@ -403,7 +403,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   };
 
   const summaryChips = [
-    { icon: "💪", label: "4.5 g Creatine Daily" },
+    { icon: "💪", label: "3 G CREATINE DAILY" },
     { icon: "🍬", label: "Delicious Gummies" },
     { icon: "🚫", label: "Sugar Free" },
     { icon: "🇸🇪", label: "Swedish Founded" },
@@ -422,7 +422,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
             Creatine Gummies&nbsp;
           </h2>
           <p className="mt-3 max-w-md text-sm text-muted-ink md:text-base">
-            180 gummies · 1.5&nbsp;g creatine monohydrate per gummy · 3 gummies daily (4.5&nbsp;g) · 60-day supply.
+            180 gummies · 1 g creatine monohydrate per gummy · 3 gummies daily (3 g) · 60-day supply.
           </p>
 
           <ul className="mt-6 flex flex-wrap gap-2">
