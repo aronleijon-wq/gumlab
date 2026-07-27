@@ -599,8 +599,8 @@ function OneTimeCard({
 function Whats() {
   const rows = [
     { k: "Active ingredient", v: "Creatine Monohydrate" },
-    { k: "Per gummy", v: "1 g" },
-    { k: "Daily serving", v: "3 gummies (3 g)" },
+    { k: "Per gummy", v: "1.5 g" },
+    { k: "Daily serving", v: "3 gummies (4.5 g)" },
     { k: "Per bag", v: "180 gummies" },
     { k: "Supply", v: "60 days" },
   ];
