@@ -83,7 +83,20 @@ function AccountPage() {
   const [tab, setTab] = useState<"subs" | "orders" | "profile">("subs");
   const [saving, setSaving] = useState(false);
   const [syncNote, setSyncNote] = useState<string | null>(null);
+  const [syncInfo, setSyncInfo] = useState<{
+    attemptedAt: string | null;
+    lastSuccessAt: string | null;
+    ok: boolean;
+    synced: number;
+    subscriptionsSynced: number;
+    error?: string;
+  }>({ attemptedAt: null, lastSuccessAt: null, ok: true, synced: 0, subscriptionsSynced: 0 });
+  const [nextAttemptAt, setNextAttemptAt] = useState<string | null>(null);
+  const [now, setNow] = useState<number>(Date.now());
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const SYNC_INTERVAL_MS = 5 * 60 * 1000; // auto re-sync every 5 minutes
 
   useEffect(() => {
     (async () => {
@@ -94,10 +107,27 @@ function AccountPage() {
       }
       await refresh();
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
+
+  // Tick every second so the countdown updates live.
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Auto-refresh when the scheduled next attempt time is reached.
+  useEffect(() => {
+    if (!nextAttemptAt) return;
+    const delay = new Date(nextAttemptAt).getTime() - Date.now();
+    const id = window.setTimeout(() => { refresh(); }, Math.max(delay, 1000));
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextAttemptAt]);
 
   async function refresh() {
     setError(null);
+    setSyncing(true);
     try {
       const data = await loadAccount();
       setEmail(data.email ?? "");
@@ -112,7 +142,25 @@ function AccountPage() {
       });
       setSubs(data.subscriptions as Sub[]);
       setOrders(data.orders as Order[]);
-      const sync = data.sync as { synced?: number; subscriptionsSynced?: number; error?: string } | undefined;
+      const sync = data.sync as {
+        synced?: number;
+        subscriptionsSynced?: number;
+        error?: string;
+        attemptedAt?: string;
+        lastSuccessAt?: string | null;
+        ok?: boolean;
+      } | undefined;
+      const attemptedAt = sync?.attemptedAt ?? new Date().toISOString();
+      const ok = sync?.ok ?? !sync?.error;
+      setSyncInfo({
+        attemptedAt,
+        lastSuccessAt: sync?.lastSuccessAt ?? (ok ? attemptedAt : null),
+        ok,
+        synced: sync?.synced ?? 0,
+        subscriptionsSynced: sync?.subscriptionsSynced ?? 0,
+        error: sync?.error,
+      });
+      setNextAttemptAt(new Date(new Date(attemptedAt).getTime() + SYNC_INTERVAL_MS).toISOString());
       if (sync?.error) {
         setSyncNote("Order sync is temporarily unavailable. Saved account data is still shown.");
       } else if ((sync?.synced ?? 0) > 0 || (sync?.subscriptionsSynced ?? 0) > 0) {
@@ -124,8 +172,10 @@ function AccountPage() {
       setError(err instanceof Error ? err.message : "Could not load account");
     } finally {
       setLoading(false);
+      setSyncing(false);
     }
   }
+
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -214,6 +264,16 @@ function AccountPage() {
             {error}
           </div>
         )}
+
+        <SyncTimeline
+          info={syncInfo}
+          nextAttemptAt={nextAttemptAt}
+          now={now}
+          syncing={syncing}
+          onSyncNow={refresh}
+        />
+
+
 
         <div className="mt-8 grid grid-cols-3 gap-3">
           <Stat label="Active subs" value={String(activeCount)} />
@@ -404,3 +464,115 @@ function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (status: "active" | "p
     </div>
   );
 }
+
+function fmtDateTime(iso: string) {
+  return new Date(iso).toLocaleString("sv-SE", {
+    day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+  });
+}
+
+function fmtRelative(target: number, now: number) {
+  const diffSec = Math.round((target - now) / 1000);
+  const abs = Math.abs(diffSec);
+  const past = diffSec < 0;
+  if (abs < 60) return past ? `${abs}s ago` : `in ${abs}s`;
+  const min = Math.round(abs / 60);
+  if (min < 60) return past ? `${min} min ago` : `in ${min} min`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return past ? `${hr} h ago` : `in ${hr} h`;
+  const d = Math.round(hr / 24);
+  return past ? `${d} d ago` : `in ${d} d`;
+}
+
+type SyncInfoState = {
+  attemptedAt: string | null;
+  lastSuccessAt: string | null;
+  ok: boolean;
+  synced: number;
+  subscriptionsSynced: number;
+  error?: string;
+};
+
+function SyncTimeline({
+  info, nextAttemptAt, now, syncing, onSyncNow,
+}: {
+  info: SyncInfoState;
+  nextAttemptAt: string | null;
+  now: number;
+  syncing: boolean;
+  onSyncNow: () => void;
+}) {
+  const lastSuccess = info.lastSuccessAt ? new Date(info.lastSuccessAt) : null;
+  const lastAttempt = info.attemptedAt ? new Date(info.attemptedAt) : null;
+  const next = nextAttemptAt ? new Date(nextAttemptAt) : null;
+  const statusColor = syncing
+    ? "bg-amber-500"
+    : info.ok
+      ? "bg-emerald-500"
+      : "bg-cta-rose";
+  const statusLabel = syncing ? "Syncing…" : info.ok ? "Healthy" : "Attention needed";
+
+  return (
+    <div className="mt-4 rounded-2xl border border-hairline bg-card p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className={`inline-block h-2 w-2 rounded-full ${statusColor} ${syncing ? "animate-pulse" : ""}`} />
+          <div className="mono text-[10px] uppercase tracking-[0.28em] text-muted-ink">Order sync</div>
+          <span className="mono text-[10px] uppercase tracking-widest">{statusLabel}</span>
+        </div>
+        <button
+          onClick={onSyncNow}
+          disabled={syncing}
+          className="rounded-full border border-hairline px-3 py-1.5 text-[10px] uppercase tracking-widest hover:bg-paper-2 disabled:opacity-50"
+        >
+          {syncing ? "Syncing…" : "Sync now"}
+        </button>
+      </div>
+
+      <ol className="mt-4 space-y-3">
+        <TimelineRow
+          dotClass="bg-emerald-500"
+          label="Last successful sync"
+          primary={lastSuccess ? fmtDateTime(lastSuccess.toISOString()) : "No successful sync yet"}
+          secondary={lastSuccess ? fmtRelative(lastSuccess.getTime(), now) : undefined}
+        />
+        <TimelineRow
+          dotClass={info.ok ? "bg-ink/40" : "bg-cta-rose"}
+          label="Last attempt"
+          primary={lastAttempt ? fmtDateTime(lastAttempt.toISOString()) : "—"}
+          secondary={
+            lastAttempt
+              ? `${fmtRelative(lastAttempt.getTime(), now)} · ${info.ok
+                  ? `${info.synced} orders, ${info.subscriptionsSynced} subs updated`
+                  : info.error ?? "Failed"}`
+              : undefined
+          }
+        />
+        <TimelineRow
+          dotClass="bg-ink/20"
+          label="Next attempt"
+          primary={next ? fmtDateTime(next.toISOString()) : "—"}
+          secondary={next ? fmtRelative(next.getTime(), now) : undefined}
+        />
+      </ol>
+    </div>
+  );
+}
+
+function TimelineRow({
+  dotClass, label, primary, secondary,
+}: { dotClass: string; label: string; primary: string; secondary?: string }) {
+  return (
+    <li className="grid grid-cols-[auto,1fr,auto] items-center gap-3">
+      <span className={`inline-block h-2.5 w-2.5 rounded-full ${dotClass}`} />
+      <div>
+        <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink">{label}</div>
+        <div className="text-sm">{primary}</div>
+      </div>
+      {secondary && (
+        <div className="mono text-[10px] uppercase tracking-widest text-muted-ink text-right">{secondary}</div>
+      )}
+    </li>
+  );
+}
+

@@ -92,8 +92,11 @@ async function fetchShopifyOrdersByEmail(email: string) {
 }
 
 export async function upsertShopifyOrdersForAccount({ email, userId }: SyncInput) {
+  const attemptedAt = new Date().toISOString();
   const { orders, error } = await fetchShopifyOrdersByEmail(email);
-  if (error || orders.length === 0) return { synced: 0, subscriptionsSynced: 0, error };
+  if (error) return { synced: 0, subscriptionsSynced: 0, error, attemptedAt, ok: false };
+  if (orders.length === 0) return { synced: 0, subscriptionsSynced: 0, attemptedAt, ok: true };
+
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -121,7 +124,7 @@ export async function upsertShopifyOrdersForAccount({ email, userId }: SyncInput
     const { error: orderError } = await supabaseAdmin
       .from("orders")
       .upsert(orderRows, { onConflict: "shopify_order_id" });
-    if (orderError) return { synced: 0, subscriptionsSynced: 0, error: orderError.message };
+    if (orderError) return { synced: 0, subscriptionsSynced: 0, error: orderError.message, attemptedAt, ok: false };
   }
 
   const subscriptionRows = orders
@@ -143,7 +146,7 @@ export async function upsertShopifyOrdersForAccount({ email, userId }: SyncInput
         currency: String(order.currency ?? "SEK"),
         plan_title: line.variant_title ?? line.title ?? "Subscription",
         cadence_days: 60,
-        last_synced_at: new Date().toISOString(),
+        last_synced_at: attemptedAt,
       };
     })
     .filter((row): row is NonNullable<typeof row> => Boolean(row));
@@ -152,11 +155,12 @@ export async function upsertShopifyOrdersForAccount({ email, userId }: SyncInput
     const { error: subError } = await supabaseAdmin
       .from("subscriptions")
       .upsert(subscriptionRows, { onConflict: "shopify_order_id" });
-    if (subError) return { synced: orderRows.length, subscriptionsSynced: 0, error: subError.message };
+    if (subError) return { synced: orderRows.length, subscriptionsSynced: 0, error: subError.message, attemptedAt, ok: false };
   }
 
-  return { synced: orderRows.length, subscriptionsSynced: subscriptionRows.length };
+  return { synced: orderRows.length, subscriptionsSynced: subscriptionRows.length, attemptedAt, ok: true };
 }
+
 
 export async function upsertShopifyWebhookOrder(order: ShopifyOrder) {
   const email = order.email ?? order.contact_email;

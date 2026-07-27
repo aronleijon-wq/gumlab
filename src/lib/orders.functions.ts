@@ -30,7 +30,9 @@ export const getAccountOverview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const email = (context.claims?.email as string | undefined) ?? "";
-    const sync = email ? await upsertShopifyOrdersForAccount({ email, userId: context.userId }) : { synced: 0 };
+    const sync = email
+      ? await upsertShopifyOrdersForAccount({ email, userId: context.userId })
+      : { synced: 0, subscriptionsSynced: 0, attemptedAt: new Date().toISOString(), ok: true };
 
     const [{ data: profile, error: profileError }, { data: subscriptions, error: subError }, { data: orders, error: orderError }] =
       await Promise.all([
@@ -47,9 +49,19 @@ export const getAccountOverview = createServerFn({ method: "POST" })
     if (subError) throw new Error(subError.message);
     if (orderError) throw new Error(orderError.message);
 
+    // Derive last successful sync: prefer this attempt if it succeeded, otherwise
+    // fall back to the newest last_synced_at recorded on any subscription row.
+    const lastSuccessAt = sync.ok
+      ? sync.attemptedAt
+      : (subscriptions ?? [])
+          .map((s) => (s as { last_synced_at?: string | null }).last_synced_at)
+          .filter((v): v is string => Boolean(v))
+          .sort()
+          .at(-1) ?? null;
+
     return {
       email,
-      sync,
+      sync: { ...sync, lastSuccessAt },
       profile: profile ?? {
         full_name: null,
         phone: null,
@@ -63,6 +75,7 @@ export const getAccountOverview = createServerFn({ method: "POST" })
       orders: orders ?? [],
     };
   });
+
 
 export const saveAccountProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
