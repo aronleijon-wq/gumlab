@@ -302,39 +302,15 @@ function AccountPage() {
             {orders.length === 0 ? (
               <EmptyState title="No orders yet" body="Your first order will appear here once it ships." />
             ) : (
-              <div className="overflow-hidden rounded-2xl border border-hairline">
-                {orders.map((o, i) => (
-                  <div
-                    key={o.id}
-                    className={`grid grid-cols-[auto,1fr,auto] items-center gap-4 bg-card px-4 py-3 ${
-                      i > 0 ? "border-t border-hairline" : ""
-                    }`}
-                  >
-                    <img src={creatineCover.url} alt="" className="h-12 w-12 object-contain" />
-                    <div className="min-w-0">
-                      <div className="text-sm font-medium">Creatine Gummies · 180 ct</div>
-                      <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-                        {fmtDate(o.ordered_at)} · {o.shopify_order_id ? `Shopify #${o.shopify_order_id}` : `Batch ${o.batch_code ?? "—"}`} · {o.status.replaceAll("_", " ")}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2 text-right">
-                      <div className="mono text-sm">{fmtSEK(o.amount_eur)}</div>
-                      {!o.status.includes("cancel") && (
-                        <button
-                          type="button"
-                          onClick={() => requestCancelOrder(o.id)}
-                          className="rounded-full border border-hairline px-3 py-1 text-[10px] uppercase tracking-widest hover:bg-paper-2"
-                        >
-                          Request cancel
-                        </button>
-                      )}
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                {orders.map((o) => (
+                  <OrderCard key={o.id} order={o} onRequestCancel={() => requestCancelOrder(o.id)} />
                 ))}
               </div>
             )}
           </section>
         )}
+
 
         {tab === "profile" && (
           <section className="mt-6 max-w-xl">
