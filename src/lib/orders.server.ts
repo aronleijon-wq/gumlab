@@ -1,5 +1,6 @@
 type ShopifyLineItem = {
   product_id?: number | string | null;
+  variant_id?: number | string | null;
   variant_title?: string | null;
   title?: string | null;
   name?: string | null;
@@ -8,13 +9,49 @@ type ShopifyLineItem = {
   price?: number | string | null;
 };
 
+type ShopifyAddress = {
+  first_name?: string | null;
+  last_name?: string | null;
+  name?: string | null;
+  address1?: string | null;
+  address2?: string | null;
+  city?: string | null;
+  province?: string | null;
+  zip?: string | null;
+  country?: string | null;
+  phone?: string | null;
+};
+
+type ShopifyFulfillment = {
+  status?: string | null;
+  shipment_status?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
+  tracking_company?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  estimated_delivery_at?: string | null;
+};
+
+type ShopifyDiscount = {
+  code?: string | null;
+  amount?: string | number | null;
+  type?: string | null;
+};
+
 type ShopifyOrder = {
   id?: number | string | null;
   admin_graphql_api_id?: string | null;
+  name?: string | null;
+  order_number?: number | string | null;
   email?: string | null;
   contact_email?: string | null;
   total_price?: number | string | null;
   current_total_price?: number | string | null;
+  subtotal_price?: number | string | null;
+  total_discounts?: number | string | null;
+  total_tax?: number | string | null;
+  total_shipping_price_set?: { shop_money?: { amount?: string | null; currency_code?: string | null } } | null;
   currency?: string | null;
   financial_status?: string | null;
   fulfillment_status?: string | null;
@@ -22,7 +59,14 @@ type ShopifyOrder = {
   created_at?: string | null;
   cancelled_at?: string | null;
   line_items?: ShopifyLineItem[] | null;
+  shipping_address?: ShopifyAddress | null;
+  billing_address?: ShopifyAddress | null;
+  payment_gateway_names?: string[] | null;
+  discount_codes?: ShopifyDiscount[] | null;
+  fulfillments?: ShopifyFulfillment[] | null;
+  order_status_url?: string | null;
 };
+
 
 type SyncInput = {
   email: string;
