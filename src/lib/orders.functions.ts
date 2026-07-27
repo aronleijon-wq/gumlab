@@ -1,8 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { z } from "zod";
+import { upsertShopifyOrdersForAccount } from "./orders.server";
 
-const SHOPIFY_STORE_DOMAIN = "saveeruope.myshopify.com";
-const SHOPIFY_API_VERSION = "2025-07";
+export type AccountProfile = {
+  full_name: string | null;
+  phone: string | null;
+  shipping_line1: string | null;
+  shipping_line2: string | null;
+  city: string | null;
+  postal_code: string | null;
+  country: string | null;
+};
 
 /**
  * Fetches Shopify orders for the signed-in user's email and upserts them into
@@ -14,41 +23,111 @@ export const syncShopifyOrders = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const email = (context.claims?.email as string | undefined) ?? undefined;
     if (!email) return { synced: 0 };
+    return upsertShopifyOrdersForAccount({ email, userId: context.userId });
+  });
 
-    const token = process.env.SHOPIFY_ACCESS_TOKEN;
-    if (!token) return { synced: 0, error: "SHOPIFY_ACCESS_TOKEN not set" };
+export const getAccountOverview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const email = (context.claims?.email as string | undefined) ?? "";
+    const sync = email ? await upsertShopifyOrdersForAccount({ email, userId: context.userId }) : { synced: 0 };
 
-    const url =
-      `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/orders.json` +
-      `?status=any&email=${encodeURIComponent(email)}&limit=50`;
+    const [{ data: profile, error: profileError }, { data: subscriptions, error: subError }, { data: orders, error: orderError }] =
+      await Promise.all([
+        context.supabase
+          .from("profiles")
+          .select("full_name, phone, shipping_line1, shipping_line2, city, postal_code, country")
+          .eq("id", context.userId)
+          .maybeSingle(),
+        context.supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
+        context.supabase.from("orders").select("*").order("ordered_at", { ascending: false }),
+      ]);
 
-    const res = await fetch(url, {
-      headers: { "X-Shopify-Access-Token": token, "Content-Type": "application/json" },
-    });
-    if (!res.ok) return { synced: 0, error: `shopify ${res.status}` };
-    const { orders = [] } = (await res.json()) as { orders?: any[] };
-    if (!orders.length) return { synced: 0 };
+    if (profileError) throw new Error(profileError.message);
+    if (subError) throw new Error(subError.message);
+    if (orderError) throw new Error(orderError.message);
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const rows = orders.map((o) => {
-      const firstLine = o.line_items?.[0];
-      return {
-        shopify_order_id: String(o.id),
-        user_id: context.userId,
-        email: o.email ?? email,
-        product_id: String(firstLine?.product_id ?? firstLine?.sku ?? "creatine-gummies"),
-        dose: 3,
-        bags: Number(firstLine?.quantity ?? 1),
-        amount_eur: Number(o.total_price ?? 0),
-        currency: String(o.currency ?? "SEK"),
-        status: String(o.financial_status ?? "paid"),
-        ordered_at: o.processed_at ?? o.created_at ?? new Date().toISOString(),
-      };
-    });
+    return {
+      email,
+      sync,
+      profile: profile ?? {
+        full_name: null,
+        phone: null,
+        shipping_line1: null,
+        shipping_line2: null,
+        city: null,
+        postal_code: null,
+        country: null,
+      },
+      subscriptions: subscriptions ?? [],
+      orders: orders ?? [],
+    };
+  });
 
-    const { error } = await supabaseAdmin
+export const saveAccountProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        full_name: z.string().max(120).nullable().optional(),
+        phone: z.string().max(40).nullable().optional(),
+        shipping_line1: z.string().max(180).nullable().optional(),
+        shipping_line2: z.string().max(180).nullable().optional(),
+        city: z.string().max(100).nullable().optional(),
+        postal_code: z.string().max(40).nullable().optional(),
+        country: z.string().max(100).nullable().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const email = (context.claims?.email as string | undefined) ?? null;
+    const { data: profile, error } = await context.supabase
+      .from("profiles")
+      .upsert({ id: context.userId, email, ...data })
+      .select("full_name, phone, shipping_line1, shipping_line2, city, postal_code, country")
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { profile };
+  });
+
+export const updateSubscriptionStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["active", "paused", "cancelled"]),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const patch = data.status === "cancelled"
+      ? { status: data.status, cancelled_at: new Date().toISOString() }
+      : { status: data.status, cancelled_at: null };
+
+    const { data: subscription, error } = await context.supabase
+      .from("subscriptions")
+      .update(patch)
+      .eq("id", data.id)
+      .select("*")
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { subscription };
+  });
+
+export const requestOrderCancellation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: order, error } = await context.supabase
       .from("orders")
-      .upsert(rows, { onConflict: "shopify_order_id" });
-    if (error) return { synced: 0, error: error.message };
-    return { synced: rows.length };
+      .update({ status: "cancel_requested" })
+      .eq("id", data.id)
+      .select("*")
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { order };
   });
