@@ -45,6 +45,44 @@ type Sub = {
   cadence_days?: number;
   shopify_order_id?: string | null;
 };
+type OrderAddress = {
+  first_name?: string | null;
+  last_name?: string | null;
+  name?: string | null;
+  address1?: string | null;
+  address2?: string | null;
+  city?: string | null;
+  province?: string | null;
+  zip?: string | null;
+  country?: string | null;
+  phone?: string | null;
+};
+type OrderDetails = {
+  order_name?: string | null;
+  order_number?: number | string | null;
+  order_status_url?: string | null;
+  subtotal?: number;
+  discount_total?: number;
+  shipping_total?: number;
+  total_tax?: number;
+  total?: number;
+  currency?: string;
+  financial_status?: string | null;
+  fulfillment_status?: string | null;
+  payment_gateways?: string[];
+  discount_codes?: { code?: string | null; amount?: string | number | null; type?: string | null }[];
+  shipping_address?: OrderAddress | null;
+  billing_address?: OrderAddress | null;
+  line_items?: { title?: string | null; variant_title?: string | null; quantity?: number; price?: number; sku?: string | null }[];
+  fulfillment?: {
+    status?: string | null;
+    shipment_status?: string | null;
+    tracking_number?: string | null;
+    tracking_url?: string | null;
+    tracking_company?: string | null;
+    estimated_delivery_at?: string | null;
+  } | null;
+};
 type Order = {
   id: string;
   product_id: string;
@@ -56,7 +94,11 @@ type Order = {
   ordered_at: string;
   currency?: string;
   shopify_order_id?: string | null;
+  order_number?: string | null;
+  fulfillment_status?: string | null;
+  details?: OrderDetails | null;
 };
+
 type Profile = AccountProfile;
 
 function fmtDate(iso: string) {
