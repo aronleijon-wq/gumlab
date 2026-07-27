@@ -148,21 +148,10 @@ export async function upsertShopifyOrdersForAccount({ email, userId }: SyncInput
     .map((order) => {
       const id = orderId(order);
       if (!id) return null;
-      const line = firstLine(order);
-      return {
-        shopify_order_id: id,
-        user_id: userId,
-        email: orderEmail(order, email),
-        product_id: productIdFromLine(line),
-        dose: 3,
-        bags: numberOr(line?.quantity, 1),
-        amount_eur: numberOr(order.total_price ?? order.current_total_price, 0),
-        currency: String(order.currency ?? "SEK"),
-        status: String(order.cancelled_at ? "cancelled" : order.financial_status ?? order.fulfillment_status ?? "paid"),
-        ordered_at: order.processed_at ?? order.created_at ?? new Date().toISOString(),
-      };
+      return buildOrderRow(order, id, userId, orderEmail(order, email));
     })
     .filter((row): row is NonNullable<typeof row> => Boolean(row));
+
 
   if (orderRows.length > 0) {
     const { error: orderError } = await supabaseAdmin
