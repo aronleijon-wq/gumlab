@@ -402,6 +402,13 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
     });
   };
 
+  const summaryChips = [
+    { icon: "💪", label: "4.5 g Creatine Daily" },
+    { icon: "🍬", label: "Delicious Gummies" },
+    { icon: "🚫", label: "Sugar Free" },
+    { icon: "🇸🇪", label: "Swedish Founded" },
+  ];
+
   return (
     <section id="buy" className="mx-auto max-w-7xl px-6 py-20 md:py-28">
       <div className="grid gap-12 md:grid-cols-[1fr_1.05fr] md:gap-16">
@@ -415,31 +422,30 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
             Creatine Gummies&nbsp;
           </h2>
           <p className="mt-3 max-w-md text-sm text-muted-ink md:text-base">
-            180 gummies · 1&nbsp;g creatine monohydrate per gummy · 3 gummies daily · 60-day supply.
+            180 gummies · 1.5&nbsp;g creatine monohydrate per gummy · 3 gummies daily (4.5&nbsp;g) · 60-day supply.
           </p>
 
-          <div className="mt-8 space-y-3">
-            <PlanOption
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {summaryChips.map((c) => (
+              <li
+                key={c.label}
+                className="mono inline-flex items-center gap-1.5 rounded-full border border-hairline bg-paper px-3 py-1.5 text-[11px] uppercase tracking-widest text-ink"
+              >
+                <span aria-hidden className="text-sm leading-none">{c.icon}</span>
+                {c.label}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 space-y-4">
+            <SubscriptionCard
               selected={mode === "subscribe"}
               onSelect={() => setMode("subscribe")}
-              label="Subscription"
-              badge="BEST SELLER"
-              price={SUB_PRICE_SEK}
-              cadence="Delivered every 2 months"
-              savings={`Save ${savings} SEK vs one-time`}
-              perks={[
-                "Automatic delivery every 60 days",
-                "Cancel anytime",
-                "Secure checkout",
-              ]}
+              savings={savings}
             />
-            <PlanOption
+            <OneTimeCard
               selected={mode === "onetime"}
               onSelect={() => setMode("onetime")}
-              label="One-time purchase"
-              price={ONETIME_PRICE_SEK}
-              cadence="One-time payment"
-              perks={["180 gummies · 60-day supply"]}
             />
           </div>
 
@@ -463,24 +469,98 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
 }
 
 
-function PlanOption({
+function SelectRadio({ selected }: { selected: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border transition ${
+        selected ? "border-ink bg-ink" : "border-hairline"
+      }`}
+    >
+      {selected && <span className="h-2 w-2 rounded-full bg-paper" />}
+    </span>
+  );
+}
+
+function SubscriptionCard({
   selected,
   onSelect,
-  label,
-  badge,
-  price,
-  cadence,
   savings,
-  perks,
 }: {
   selected: boolean;
   onSelect: () => void;
-  label: string;
-  badge?: string;
-  price: number;
-  cadence: string;
-  savings?: string;
-  perks: string[];
+  savings: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`relative block w-full rounded-3xl border p-6 text-left transition ${
+        selected
+          ? "border-ink bg-card shadow-[0_24px_60px_-28px_rgba(28,26,16,0.55)]"
+          : "border-ink/60 bg-card/60 shadow-[0_14px_40px_-28px_rgba(28,26,16,0.35)] hover:border-ink hover:bg-card"
+      }`}
+    >
+      <span className="absolute -top-3 left-6 inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-paper shadow-[0_6px_18px_-6px_rgba(28,26,16,0.5)]">
+        <svg className="h-3 w-3 text-brand" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        Best Value
+      </span>
+
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <SelectRadio selected={selected} />
+          <div>
+            <div className="font-display text-lg leading-tight">Subscribe & Save</div>
+            <div className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-ink">
+              2 Months Supply · Save 13%
+            </div>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="mono text-2xl leading-none">195 SEK<span className="text-xs text-muted-ink">/mo</span></div>
+          <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
+            Save {savings} SEK
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-2xl bg-paper/70 px-4 py-3">
+        <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
+          390 SEK today, then every 60 days
+        </div>
+        <div className="mono mt-1 text-[11px] uppercase tracking-widest text-ink">
+          Only 6.50 SEK/day
+        </div>
+      </div>
+
+      <ul className="mt-4 grid grid-cols-1 gap-2 text-sm text-ink sm:grid-cols-2">
+        {[
+          "Free shipping",
+          "Auto-delivery every 60 days",
+          "Pause, skip or cancel anytime",
+          "Never run out of creatine",
+        ].map((p) => (
+          <li key={p} className="flex items-start gap-2">
+            <svg className="mt-0.5 h-4 w-4 shrink-0 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+    </button>
+  );
+}
+
+function OneTimeCard({
+  selected,
+  onSelect,
+}: {
+  selected: boolean;
+  onSelect: () => void;
 }) {
   return (
     <button
@@ -494,55 +574,22 @@ function PlanOption({
       }`}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span
-            aria-hidden
-            className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border ${
-              selected ? "border-ink bg-ink" : "border-hairline"
-            }`}
-          >
-            {selected && <span className="h-2 w-2 rounded-full bg-paper" />}
-          </span>
+        <div className="flex items-start gap-3">
+          <SelectRadio selected={selected} />
           <div>
-            <div className="flex items-center gap-2">
-              <div className="font-display text-lg">{label}</div>
-              {badge && (
-                <span className="relative inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-paper shadow-[0_4px_14px_-4px_rgba(28,26,16,0.35)]">
-                  <span
-                    aria-hidden
-                    className="badge-glow absolute -inset-1 rounded-full bg-gradient-to-r from-perform via-brand to-calm opacity-70 blur-sm"
-                  />
-                  <span className="relative flex items-center gap-1">
-                    <svg className="relative h-3 w-3 text-brand" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                    {badge}
-                  </span>
-                </span>
-              )}
-            </div>
+            <div className="font-display text-lg leading-tight">One-time purchase</div>
             <div className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-ink">
-              {cadence}
+              180 gummies · 60-day supply
             </div>
           </div>
         </div>
         <div className="text-right">
-          <div className="mono text-2xl">{price} SEK</div>
-          {savings && (
-            <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
-              {savings}
-            </div>
-          )}
+          <div className="mono text-2xl leading-none">449 SEK</div>
+          <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
+            Only 7.50 SEK/day
+          </div>
         </div>
       </div>
-      <ul className="mono mt-4 space-y-1.5 pl-8 text-[11px] uppercase tracking-widest text-muted-ink">
-        {perks.map((p) => (
-          <li key={p} className="flex items-start gap-2">
-            <span aria-hidden className="mt-1 h-1 w-1 shrink-0 rounded-full bg-ink/40" />
-            <span>{p}</span>
-          </li>
-        ))}
-      </ul>
     </button>
   );
 }
@@ -552,8 +599,8 @@ function PlanOption({
 function Whats() {
   const rows = [
     { k: "Active ingredient", v: "Creatine Monohydrate" },
-    { k: "Per gummy", v: "1 g" },
-    { k: "Daily serving", v: "3 gummies (3 g)" },
+    { k: "Per gummy", v: "1.5 g" },
+    { k: "Daily serving", v: "3 gummies (4.5 g)" },
     { k: "Per bag", v: "180 gummies" },
     { k: "Supply", v: "60 days" },
   ];
