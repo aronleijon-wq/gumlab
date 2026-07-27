@@ -7,6 +7,10 @@ type ShopifyLineItem = {
   sku?: string | null;
   quantity?: number | string | null;
   price?: number | string | null;
+  properties?: Array<{ name?: string | null; value?: string | null }> | null;
+  selling_plan_allocation?: {
+    selling_plan?: { id?: number | string | null; name?: string | null } | null;
+  } | null;
 };
 
 type ShopifyAddress = {
@@ -75,6 +79,12 @@ type SyncInput = {
 
 const SHOPIFY_STORE_DOMAIN = "saveeruope.myshopify.com";
 const SHOPIFY_API_VERSION = "2025-07";
+const SUBSCRIPTION_VARIANT_ID = "56567088447828";
+const SUBSCRIPTION_SKU = "gumlab-creatine-sub";
+
+function normalizeId(value: unknown) {
+  return String(value ?? "").split("/").at(-1)?.trim() ?? "";
+}
 
 function numberOr(value: unknown, fallback: number) {
   const next = Number(value);
@@ -82,14 +92,29 @@ function numberOr(value: unknown, fallback: number) {
 }
 
 function textFromLine(line: ShopifyLineItem | undefined) {
-  return [line?.variant_title, line?.title, line?.name, line?.sku]
+  const propertyText = line?.properties?.map((property) => `${property.name ?? ""} ${property.value ?? ""}`).join(" ");
+  return [
+    line?.variant_title,
+    line?.title,
+    line?.name,
+    line?.sku,
+    propertyText,
+    line?.selling_plan_allocation?.selling_plan?.name,
+  ]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
 }
 
 function isSubscriptionLine(line: ShopifyLineItem | undefined) {
-  return textFromLine(line).includes("subscription");
+  if (!line) return false;
+  const variantId = normalizeId(line.variant_id);
+  if (variantId === SUBSCRIPTION_VARIANT_ID) return true;
+  if (String(line.sku ?? "").trim().toLowerCase() === SUBSCRIPTION_SKU) return true;
+  if (line.selling_plan_allocation) return true;
+
+  const text = textFromLine(line);
+  return text.includes("subscription") || text.includes("subscribe") || text.includes("every 2 months") || text.includes("60 days");
 }
 
 function addDays(date: string, days: number) {

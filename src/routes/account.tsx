@@ -29,7 +29,7 @@ export const Route = createFileRoute("/account")({
   component: AccountPage,
 });
 
-const SUB_PRICE_SEK = 385;
+const SUB_PRICE_SEK = 390;
 
 type Sub = {
   id: string;
