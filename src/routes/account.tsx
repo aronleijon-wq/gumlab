@@ -159,10 +159,9 @@ function AccountPage() {
       setOrders(data.orders as Order[]);
       const sync = data.sync as { error?: string } | undefined;
       if (sync?.error) {
-        setSyncNote("Order sync is temporarily unavailable. Saved account data is still shown.");
-      } else {
-        setSyncNote(null);
+        // sync error is handled silently; saved account data is still shown
       }
+      setSyncNote(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load account");
     } finally {
