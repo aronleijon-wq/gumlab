@@ -406,7 +406,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
     { icon: "💪", label: "3 G CREATINE DAILY" },
     { icon: "🍬", label: "Delicious Gummies" },
     { icon: "🚫", label: "Sugar Free" },
-    { icon: "🇸🇪", label: "Swedish Founded" },
+    { icon: "🇸🇪", label: "SWEDISH BASED" },
   ];
 
   return (
