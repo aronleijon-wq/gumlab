@@ -138,40 +138,58 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          cadence_days: number
           cancelled_at: string | null
           created_at: string
+          currency: string
           dose: number
+          email: string | null
           id: string
+          last_synced_at: string | null
           next_bill_at: string
+          plan_title: string | null
           price_eur: number
           product_id: string
+          shopify_order_id: string | null
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          cadence_days?: number
           cancelled_at?: string | null
           created_at?: string
+          currency?: string
           dose: number
+          email?: string | null
           id?: string
+          last_synced_at?: string | null
           next_bill_at?: string
+          plan_title?: string | null
           price_eur: number
           product_id: string
+          shopify_order_id?: string | null
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          cadence_days?: number
           cancelled_at?: string | null
           created_at?: string
+          currency?: string
           dose?: number
+          email?: string | null
           id?: string
+          last_synced_at?: string | null
           next_bill_at?: string
+          plan_title?: string | null
           price_eur?: number
           product_id?: string
+          shopify_order_id?: string | null
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
