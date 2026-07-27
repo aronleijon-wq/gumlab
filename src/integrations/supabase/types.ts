@@ -44,9 +44,12 @@ export type Database = {
           bags: number
           batch_code: string | null
           currency: string
+          details: Json | null
           dose: number
           email: string | null
+          fulfillment_status: string | null
           id: string
+          order_number: string | null
           ordered_at: string
           product_id: string
           shopify_order_id: string | null
@@ -59,9 +62,12 @@ export type Database = {
           bags: number
           batch_code?: string | null
           currency?: string
+          details?: Json | null
           dose: number
           email?: string | null
+          fulfillment_status?: string | null
           id?: string
+          order_number?: string | null
           ordered_at?: string
           product_id: string
           shopify_order_id?: string | null
@@ -74,9 +80,12 @@ export type Database = {
           bags?: number
           batch_code?: string | null
           currency?: string
+          details?: Json | null
           dose?: number
           email?: string | null
+          fulfillment_status?: string | null
           id?: string
+          order_number?: string | null
           ordered_at?: string
           product_id?: string
           shopify_order_id?: string | null
