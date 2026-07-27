@@ -83,7 +83,20 @@ function AccountPage() {
   const [tab, setTab] = useState<"subs" | "orders" | "profile">("subs");
   const [saving, setSaving] = useState(false);
   const [syncNote, setSyncNote] = useState<string | null>(null);
+  const [syncInfo, setSyncInfo] = useState<{
+    attemptedAt: string | null;
+    lastSuccessAt: string | null;
+    ok: boolean;
+    synced: number;
+    subscriptionsSynced: number;
+    error?: string;
+  }>({ attemptedAt: null, lastSuccessAt: null, ok: true, synced: 0, subscriptionsSynced: 0 });
+  const [nextAttemptAt, setNextAttemptAt] = useState<string | null>(null);
+  const [now, setNow] = useState<number>(Date.now());
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const SYNC_INTERVAL_MS = 5 * 60 * 1000; // auto re-sync every 5 minutes
 
   useEffect(() => {
     (async () => {
@@ -94,10 +107,27 @@ function AccountPage() {
       }
       await refresh();
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
+
+  // Tick every second so the countdown updates live.
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Auto-refresh when the scheduled next attempt time is reached.
+  useEffect(() => {
+    if (!nextAttemptAt) return;
+    const delay = new Date(nextAttemptAt).getTime() - Date.now();
+    const id = window.setTimeout(() => { refresh(); }, Math.max(delay, 1000));
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextAttemptAt]);
 
   async function refresh() {
     setError(null);
+    setSyncing(true);
     try {
       const data = await loadAccount();
       setEmail(data.email ?? "");
@@ -112,7 +142,25 @@ function AccountPage() {
       });
       setSubs(data.subscriptions as Sub[]);
       setOrders(data.orders as Order[]);
-      const sync = data.sync as { synced?: number; subscriptionsSynced?: number; error?: string } | undefined;
+      const sync = data.sync as {
+        synced?: number;
+        subscriptionsSynced?: number;
+        error?: string;
+        attemptedAt?: string;
+        lastSuccessAt?: string | null;
+        ok?: boolean;
+      } | undefined;
+      const attemptedAt = sync?.attemptedAt ?? new Date().toISOString();
+      const ok = sync?.ok ?? !sync?.error;
+      setSyncInfo({
+        attemptedAt,
+        lastSuccessAt: sync?.lastSuccessAt ?? (ok ? attemptedAt : null),
+        ok,
+        synced: sync?.synced ?? 0,
+        subscriptionsSynced: sync?.subscriptionsSynced ?? 0,
+        error: sync?.error,
+      });
+      setNextAttemptAt(new Date(new Date(attemptedAt).getTime() + SYNC_INTERVAL_MS).toISOString());
       if (sync?.error) {
         setSyncNote("Order sync is temporarily unavailable. Saved account data is still shown.");
       } else if ((sync?.synced ?? 0) > 0 || (sync?.subscriptionsSynced ?? 0) > 0) {
@@ -124,8 +172,10 @@ function AccountPage() {
       setError(err instanceof Error ? err.message : "Could not load account");
     } finally {
       setLoading(false);
+      setSyncing(false);
     }
   }
+
 
   async function signOut() {
     await supabase.auth.signOut();
