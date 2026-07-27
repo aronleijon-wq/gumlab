@@ -83,17 +83,6 @@ function AccountPage() {
   const [tab, setTab] = useState<"subs" | "orders" | "profile">("subs");
   const [saving, setSaving] = useState(false);
   const [syncNote, setSyncNote] = useState<string | null>(null);
-  const [syncInfo, setSyncInfo] = useState<{
-    attemptedAt: string | null;
-    lastSuccessAt: string | null;
-    ok: boolean;
-    synced: number;
-    subscriptionsSynced: number;
-    error?: string;
-  }>({ attemptedAt: null, lastSuccessAt: null, ok: true, synced: 0, subscriptionsSynced: 0 });
-  const [nextAttemptAt, setNextAttemptAt] = useState<string | null>(null);
-  const [now, setNow] = useState<number>(Date.now());
-  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const SYNC_INTERVAL_MS = 5 * 60 * 1000; // auto re-sync every 5 minutes
