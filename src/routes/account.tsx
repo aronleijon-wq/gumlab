@@ -112,9 +112,10 @@ function AccountPage() {
       });
       setSubs(data.subscriptions as Sub[]);
       setOrders(data.orders as Order[]);
-      if (data.sync?.error) {
+      const sync = data.sync as { synced?: number; subscriptionsSynced?: number; error?: string } | undefined;
+      if (sync?.error) {
         setSyncNote("Order sync is temporarily unavailable. Saved account data is still shown.");
-      } else if ((data.sync?.synced ?? 0) > 0 || (data.sync?.subscriptionsSynced ?? 0) > 0) {
+      } else if ((sync?.synced ?? 0) > 0 || (sync?.subscriptionsSynced ?? 0) > 0) {
         setSyncNote("Latest Shopify purchases have been synced to your account.");
       } else {
         setSyncNote(null);
