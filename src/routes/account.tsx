@@ -1,7 +1,14 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { syncShopifyOrders } from "@/lib/orders.functions";
+import {
+  getAccountOverview,
+  requestOrderCancellation,
+  saveAccountProfile,
+  updateSubscriptionStatus,
+  type AccountProfile,
+} from "@/lib/orders.functions";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import creatineCover from "@/assets/creatine-cover.png.asset.json";
 
@@ -29,9 +36,14 @@ type Sub = {
   product_id: string;
   dose: number;
   status: "active" | "paused" | "cancelled";
-  price_eur: number; // stored numeric — we display as SEK now
+  price_eur: number; // legacy column name — displayed in the row currency
   next_bill_at: string;
   created_at: string;
+  cancelled_at?: string | null;
+  currency?: string;
+  plan_title?: string | null;
+  cadence_days?: number;
+  shopify_order_id?: string | null;
 };
 type Order = {
   id: string;
@@ -42,16 +54,10 @@ type Order = {
   batch_code: string | null;
   status: string;
   ordered_at: string;
+  currency?: string;
+  shopify_order_id?: string | null;
 };
-type Profile = {
-  full_name: string | null;
-  phone: string | null;
-  shipping_line1: string | null;
-  shipping_line2: string | null;
-  city: string | null;
-  postal_code: string | null;
-  country: string | null;
-};
+type Profile = AccountProfile;
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("sv-SE", { day: "2-digit", month: "short", year: "numeric" });
@@ -63,6 +69,10 @@ function fmtSEK(n: number) {
 
 function AccountPage() {
   const navigate = useNavigate();
+  const loadAccount = useServerFn(getAccountOverview);
+  const saveProfileFn = useServerFn(saveAccountProfile);
+  const updateSubFn = useServerFn(updateSubscriptionStatus);
+  const requestOrderCancelFn = useServerFn(requestOrderCancellation);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string>("");
   const [profile, setProfile] = useState<Profile>({
@@ -72,6 +82,8 @@ function AccountPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [tab, setTab] = useState<"subs" | "orders" | "profile">("subs");
   const [saving, setSaving] = useState(false);
+  const [syncNote, setSyncNote] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -80,27 +92,38 @@ function AccountPage() {
         navigate({ to: "/auth" });
         return;
       }
-      setEmail(sess.session.user.email ?? "");
-      // Pull any Shopify orders for this email into the account (guest checkouts, prior purchases)
-      try { await syncShopifyOrders(); } catch (e) { console.warn("syncShopifyOrders failed", e); }
       await refresh();
-      setLoading(false);
     })();
   }, [navigate]);
 
   async function refresh() {
-    const [{ data: p }, { data: s }, { data: o }] = await Promise.all([
-      supabase.from("profiles").select("full_name, phone, shipping_line1, shipping_line2, city, postal_code, country").maybeSingle(),
-      supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
-      supabase.from("orders").select("*").order("ordered_at", { ascending: false }),
-    ]);
-    if (p) setProfile({
-      full_name: p.full_name ?? "", phone: p.phone ?? "",
-      shipping_line1: p.shipping_line1 ?? "", shipping_line2: p.shipping_line2 ?? "",
-      city: p.city ?? "", postal_code: p.postal_code ?? "", country: p.country ?? "",
-    });
-    if (s) setSubs(s as Sub[]);
-    if (o) setOrders(o as Order[]);
+    setError(null);
+    try {
+      const data = await loadAccount();
+      setEmail(data.email ?? "");
+      setProfile({
+        full_name: data.profile.full_name ?? "",
+        phone: data.profile.phone ?? "",
+        shipping_line1: data.profile.shipping_line1 ?? "",
+        shipping_line2: data.profile.shipping_line2 ?? "",
+        city: data.profile.city ?? "",
+        postal_code: data.profile.postal_code ?? "",
+        country: data.profile.country ?? "",
+      });
+      setSubs(data.subscriptions as Sub[]);
+      setOrders(data.orders as Order[]);
+      if (data.sync?.error) {
+        setSyncNote("Order sync is temporarily unavailable. Saved account data is still shown.");
+      } else if ((data.sync?.synced ?? 0) > 0 || (data.sync?.subscriptionsSynced ?? 0) > 0) {
+        setSyncNote("Latest Shopify purchases have been synced to your account.");
+      } else {
+        setSyncNote(null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load account");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function signOut() {
@@ -108,17 +131,46 @@ function AccountPage() {
     navigate({ to: "/" });
   }
 
-  async function updateSub(id: string, patch: Partial<Sub>) {
-    await supabase.from("subscriptions").update(patch).eq("id", id);
-    refresh();
+  async function updateSub(id: string, status: "active" | "paused" | "cancelled") {
+    setError(null);
+    try {
+      const result = await updateSubFn({ data: { id, status } });
+      setSubs((current) => current.map((sub) => (sub.id === id ? (result.subscription as Sub) : sub)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update subscription");
+    }
+  }
+
+  async function requestCancelOrder(id: string) {
+    setError(null);
+    try {
+      const result = await requestOrderCancelFn({ data: { id } });
+      setOrders((current) => current.map((order) => (order.id === id ? (result.order as Order) : order)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update order");
+    }
   }
 
   async function saveProfile() {
     setSaving(true);
-    const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) return;
-    await supabase.from("profiles").upsert({ id: sess.session.user.id, email, ...profile });
-    setSaving(false);
+    setError(null);
+    try {
+      const result = await saveProfileFn({ data: profile });
+      setProfile({
+        full_name: result.profile.full_name ?? "",
+        phone: result.profile.phone ?? "",
+        shipping_line1: result.profile.shipping_line1 ?? "",
+        shipping_line2: result.profile.shipping_line2 ?? "",
+        city: result.profile.city ?? "",
+        postal_code: result.profile.postal_code ?? "",
+        country: result.profile.country ?? "",
+      });
+      setSyncNote("Profile saved.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save profile");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const activeCount = useMemo(() => subs.filter((s) => s.status === "active").length, [subs]);
@@ -151,6 +203,16 @@ function AccountPage() {
           Hi{profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}.
         </h1>
         <p className="mt-1 text-sm text-muted-ink">{email}</p>
+        {syncNote && (
+          <div className="mt-4 rounded-2xl border border-hairline bg-card px-4 py-3 text-sm text-muted-ink">
+            {syncNote}
+          </div>
+        )}
+        {error && (
+          <div className="mt-4 rounded-2xl border border-cta-rose/40 bg-cta-rose/10 px-4 py-3 text-sm text-cta-rose">
+            {error}
+          </div>
+        )}
 
         <div className="mt-8 grid grid-cols-3 gap-3">
           <Stat label="Active subs" value={String(activeCount)} />
@@ -183,7 +245,7 @@ function AccountPage() {
             ) : (
               <div className="space-y-3">
                 {subs.map((s) => (
-                  <SubCard key={s.id} sub={s} onUpdate={(p) => updateSub(s.id, p)} />
+                  <SubCard key={s.id} sub={s} onUpdate={(status) => updateSub(s.id, status)} />
                 ))}
               </div>
             )}
@@ -204,13 +266,24 @@ function AccountPage() {
                     }`}
                   >
                     <img src={creatineCover.url} alt="" className="h-12 w-12 object-contain" />
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-sm font-medium">Creatine Gummies · 180 ct</div>
                       <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
-                        {fmtDate(o.ordered_at)} · Batch {o.batch_code ?? "—"} · {o.status}
+                        {fmtDate(o.ordered_at)} · {o.shopify_order_id ? `Shopify #${o.shopify_order_id}` : `Batch ${o.batch_code ?? "—"}`} · {o.status.replaceAll("_", " ")}
                       </div>
                     </div>
-                    <div className="mono text-sm">{fmtSEK(o.amount_eur)}</div>
+                    <div className="flex flex-col items-end gap-2 text-right">
+                      <div className="mono text-sm">{fmtSEK(o.amount_eur)}</div>
+                      {!o.status.includes("cancel") && (
+                        <button
+                          type="button"
+                          onClick={() => requestCancelOrder(o.id)}
+                          className="rounded-full border border-hairline px-3 py-1 text-[10px] uppercase tracking-widest hover:bg-paper-2"
+                        >
+                          Request cancel
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -274,7 +347,7 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
   );
 }
 
-function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (p: Partial<Sub>) => void }) {
+function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (status: "active" | "paused" | "cancelled") => void }) {
   const cancelled = sub.status === "cancelled";
   const paused = sub.status === "paused";
   return (
@@ -296,7 +369,7 @@ function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (p: Partial<Sub>) => v
             </span>
           </div>
           <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
-            3 gummies / day · 180 gummies · 60-day supply
+            {sub.plan_title ?? "Subscription"} · 3 gummies / day · 180 gummies
           </div>
           <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">
             {cancelled ? "Cancelled" : `Next delivery: ${fmtDate(sub.next_bill_at)}`}
@@ -304,21 +377,21 @@ function SubCard({ sub, onUpdate }: { sub: Sub; onUpdate: (p: Partial<Sub>) => v
         </div>
         <div className="text-right">
           <div className="mono text-lg">{fmtSEK(sub.price_eur || SUB_PRICE_SEK)}</div>
-          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">per 60-day cycle</div>
+          <div className="mono text-[10px] uppercase tracking-widest text-muted-ink">every {sub.cadence_days ?? 60} days</div>
         </div>
       </div>
 
       {!cancelled && (
         <div className="mt-4 flex flex-wrap gap-2 border-t border-hairline pt-4">
           {paused ? (
-            <button onClick={() => onUpdate({ status: "active" })} className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2">Resume</button>
+            <button onClick={() => onUpdate("active")} className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2">Resume</button>
           ) : (
-            <button onClick={() => onUpdate({ status: "paused" })} className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2">Pause</button>
+            <button onClick={() => onUpdate("paused")} className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2">Pause</button>
           )}
           <button
             onClick={() => {
               if (confirm("Cancel this subscription? You can restart anytime.")) {
-                onUpdate({ status: "cancelled", cancelled_at: new Date().toISOString() } as Partial<Sub>);
+                onUpdate("cancelled");
               }
             }}
             className="rounded-full border border-hairline px-4 py-2 text-xs hover:bg-paper-2"
