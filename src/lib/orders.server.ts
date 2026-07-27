@@ -268,23 +268,12 @@ export async function upsertShopifyWebhookOrder(order: ShopifyOrder) {
     .maybeSingle();
   userId = profile?.id ?? null;
 
-  const line = firstLine(order);
   const orderedAt = order.processed_at ?? order.created_at ?? new Date().toISOString();
-  const { error: orderError } = await supabaseAdmin.from("orders").upsert(
-    {
-      shopify_order_id: id,
-      user_id: userId,
-      email,
-      product_id: productIdFromLine(line),
-      dose: 3,
-      bags: numberOr(line?.quantity, 1),
-      amount_eur: numberOr(order.total_price ?? order.current_total_price, 0),
-      currency: String(order.currency ?? "SEK"),
-      status: String(order.cancelled_at ? "cancelled" : order.financial_status ?? order.fulfillment_status ?? "paid"),
-      ordered_at: orderedAt,
-    },
-    { onConflict: "shopify_order_id" },
-  );
+  const row = buildOrderRow(order, id, userId, email);
+  const { error: orderError } = await supabaseAdmin
+    .from("orders")
+    .upsert(row, { onConflict: "shopify_order_id" });
+
 
   if (orderError) return { ok: false, error: orderError.message };
 
