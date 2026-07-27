@@ -217,16 +217,6 @@ function AccountPage() {
           </div>
         )}
 
-        <SyncTimeline
-          info={syncInfo}
-          nextAttemptAt={nextAttemptAt}
-          now={now}
-          syncing={syncing}
-          onSyncNow={refresh}
-        />
-
-
-
         <div className="mt-8 grid grid-cols-3 gap-3">
           <Stat label="Active subs" value={String(activeCount)} />
           <Stat label="Per 60-day cycle" value={fmtSEK(bimonthly)} />
