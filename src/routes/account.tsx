@@ -85,7 +85,7 @@ function AccountPage() {
   const [syncNote, setSyncNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const SYNC_INTERVAL_MS = 5 * 60 * 1000; // auto re-sync every 5 minutes
+  
 
   useEffect(() => {
     (async () => {
