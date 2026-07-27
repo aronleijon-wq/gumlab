@@ -490,6 +490,34 @@ function OrderCard({ order, onRequestCancel }: { order: Order; onRequestCancel: 
         </div>
       </button>
 
+      {(tracking || d.fulfillment?.tracking_number) && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline bg-paper-2 px-5 py-3">
+          <div className="min-w-0">
+            <div className="mono text-[10px] uppercase tracking-[0.25em] text-muted-ink">
+              Carrier{d.fulfillment?.tracking_company ? "" : " · pending"}
+            </div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="font-medium">{d.fulfillment?.tracking_company ?? "Awaiting carrier"}</span>
+              {d.fulfillment?.tracking_number && (
+                <span className="mono text-xs text-muted-ink">#{d.fulfillment.tracking_number}</span>
+              )}
+            </div>
+          </div>
+          {tracking && (
+            <a
+              href={tracking}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-[10px] uppercase tracking-widest text-paper hover:opacity-90"
+            >
+              Track parcel →
+            </a>
+          )}
+        </div>
+      )}
+
+
       {open && (
         <div className="border-t border-hairline px-5 py-5 space-y-6 text-sm">
           <div>
