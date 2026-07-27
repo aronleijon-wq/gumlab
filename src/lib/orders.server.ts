@@ -73,8 +73,9 @@ function productIdFromLine(line: ShopifyLineItem | undefined) {
 }
 
 async function fetchShopifyOrdersByEmail(email: string) {
-  const token = process.env.SHOPIFY_ACCESS_TOKEN;
-  if (!token) return { orders: [], error: "SHOPIFY_ACCESS_TOKEN not set" };
+  // Prefer a manually-managed admin token; fall back to the integration token.
+  const token = process.env.SHOPIFY_ADMIN_TOKEN || process.env.SHOPIFY_ACCESS_TOKEN;
+  if (!token) return { orders: [], error: "Shopify admin token not set" };
 
   const url =
     `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/orders.json` +
