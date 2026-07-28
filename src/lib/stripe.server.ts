@@ -97,9 +97,11 @@ async function upsertSubscription(sub: any, extras?: { email?: string | null; us
 
   if (existing?.id) {
     // Preserve existing user_id/email if already linked.
-    const patch: Record<string, unknown> = { ...row };
-    if (existing.user_id) patch.user_id = existing.user_id;
-    if (existing.email && !row.email) patch.email = existing.email;
+    const patch = {
+      ...row,
+      user_id: existing.user_id ?? row.user_id,
+      email: row.email ?? existing.email ?? null,
+    };
     await supabaseAdmin.from("subscriptions").update(patch).eq("id", existing.id);
   } else {
     await supabaseAdmin.from("subscriptions").insert(row);
