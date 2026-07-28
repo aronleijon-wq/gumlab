@@ -382,19 +382,22 @@ function ProductGallery() {
 function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const savings = ONETIME_PRICE_SEK - SUB_PRICE_SEK;
-  const addItem = useCartStore((s) => s.addItem);
-  const isLoading = useCartStore((s) => s.isLoading);
+  const { user } = useSession();
+  const startCheckout = useServerFn(createCheckoutSession);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAdd = async () => {
-    const variantId = mode === "subscribe" ? CREATINE_PRODUCT.variants.subscribe : CREATINE_PRODUCT.variants.onetime;
-    await addItem({
-      variantId,
-      productTitle: "Creatine Gummies — 180",
-      variantTitle: mode === "subscribe" ? "Subscription (every 2 months)" : "One-time purchase",
-      image: creatineCover.url,
-      price: { amount: String(price), currencyCode: "SEK" },
-      quantity: 1,
-    });
+  const handleCheckout = async () => {
+    try {
+      setIsLoading(true);
+      const { url } = await startCheckout({
+        data: { mode, email: user?.email ?? undefined, userId: user?.id ?? undefined },
+      });
+      if (url) window.location.assign(url);
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "Checkout failed");
+      setIsLoading(false);
+    }
   };
 
   const summaryChips = [
@@ -447,14 +450,14 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
               type="button"
-              onClick={handleAdd}
+              onClick={handleCheckout}
               disabled={isLoading}
               className="rounded-full bg-cta-rose px-8 py-4 text-sm font-medium uppercase tracking-widest text-cta-rose-ink transition hover:-translate-y-0.5 hover:bg-cta-rose-hover hover:shadow-lg disabled:opacity-60"
             >
-              {isLoading ? "Adding…" : `Add to cart — ${fmtSEK(price)}`}
+              {isLoading ? "Redirecting…" : `Checkout — ${fmtSEK(price)}`}
             </button>
             <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
-              Secure checkout · Free SE shipping
+              Secure checkout by Stripe · Free SE shipping
             </div>
           </div>
         </div>
@@ -981,28 +984,30 @@ function FooterCol({ title, links }: { title: string; links: { l: string; h: str
 function StickyBuy({ mode }: { mode: Mode }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const label = mode === "subscribe" ? "Subscribe" : "Buy once";
-  const addItem = useCartStore((s) => s.addItem);
-  const isLoading = useCartStore((s) => s.isLoading);
-  const handleAdd = async () => {
-    const variantId = mode === "subscribe" ? CREATINE_PRODUCT.variants.subscribe : CREATINE_PRODUCT.variants.onetime;
-    await addItem({
-      variantId,
-      productTitle: "Creatine Gummies — 180",
-      variantTitle: mode === "subscribe" ? "Subscription (every 2 months)" : "One-time purchase",
-      image: creatineCover.url,
-      price: { amount: String(price), currencyCode: "SEK" },
-      quantity: 1,
-    });
+  const { user } = useSession();
+  const startCheckout = useServerFn(createCheckoutSession);
+  const [isLoading, setIsLoading] = useState(false);
+  const handleCheckout = async () => {
+    try {
+      setIsLoading(true);
+      const { url } = await startCheckout({
+        data: { mode, email: user?.email ?? undefined, userId: user?.id ?? undefined },
+      });
+      if (url) window.location.assign(url);
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
   };
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-hairline bg-paper/95 px-4 py-3 backdrop-blur-xl md:hidden">
       <button
         type="button"
-        onClick={handleAdd}
+        onClick={handleCheckout}
         disabled={isLoading}
         className="flex w-full items-center justify-between rounded-full bg-ink px-5 py-3 text-sm font-medium uppercase tracking-widest text-paper disabled:opacity-60"
       >
-        <span>{isLoading ? "Adding…" : label}</span>
+        <span>{isLoading ? "Redirecting…" : label}</span>
         <span className="mono">{price} SEK</span>
       </button>
     </div>
