@@ -62,7 +62,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const isSub = data.mode === "subscribe";
-    const priceId = isSub ? STRIPE_PRICE_SUBSCRIPTION : STRIPE_PRICE_ONETIME;
+    const productId = isSub ? STRIPE_PRODUCT_SUBSCRIPTION : STRIPE_PRODUCT_ONETIME;
+    const priceId = await resolveDefaultPrice(productId);
 
     const body = stripeForm({
       mode: isSub ? "subscription" : "payment",
