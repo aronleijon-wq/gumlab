@@ -814,7 +814,8 @@ function About() {
           <p className="text-ink">
             The product is from Myprotein company. I did not create or manufacture these products myself —
             that work is done by the Myprotein team. What I can stand behind is that they are made in
-            the EU under strict quality standards, and every batch is third-party assayed.
+            the EU under strict quality standards, every batch is third-party assayed, and we keep our
+            pricing sharp so you get real value without the markup.
           </p>
           <p>
             We started with one product because one product done properly is worth more than ten
