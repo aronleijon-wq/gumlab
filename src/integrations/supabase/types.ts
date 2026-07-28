@@ -52,8 +52,14 @@ export type Database = {
           order_number: string | null
           ordered_at: string
           product_id: string
+          provider: string
           shopify_order_id: string | null
           status: string
+          stripe_customer_id: string | null
+          stripe_invoice_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          stripe_subscription_id: string | null
           subscription_id: string | null
           user_id: string | null
         }
@@ -70,8 +76,14 @@ export type Database = {
           order_number?: string | null
           ordered_at?: string
           product_id: string
+          provider?: string
           shopify_order_id?: string | null
           status?: string
+          stripe_customer_id?: string | null
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_id?: string | null
           user_id?: string | null
         }
@@ -88,8 +100,14 @@ export type Database = {
           order_number?: string | null
           ordered_at?: string
           product_id?: string
+          provider?: string
           shopify_order_id?: string | null
           status?: string
+          stripe_customer_id?: string | null
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_id?: string | null
           user_id?: string | null
         }
@@ -159,8 +177,11 @@ export type Database = {
           plan_title: string | null
           price_eur: number
           product_id: string
+          provider: string
           shopify_order_id: string | null
           status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -177,8 +198,11 @@ export type Database = {
           plan_title?: string | null
           price_eur: number
           product_id: string
+          provider?: string
           shopify_order_id?: string | null
           status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -195,8 +219,11 @@ export type Database = {
           plan_title?: string | null
           price_eur?: number
           product_id?: string
+          provider?: string
           shopify_order_id?: string | null
           status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
