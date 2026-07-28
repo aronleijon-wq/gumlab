@@ -85,6 +85,9 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       "shipping_address_collection[allowed_countries][9]": "IT",
       "metadata[mode]": data.mode,
       "metadata[user_id]": data.userId ?? "",
+      // Always create a Stripe customer so users can manage payments in the portal
+      // (subscription mode always creates one; payment mode requires this flag).
+      ...(isSub ? {} : { customer_creation: "always" }),
     });
 
     const session = (await stripeFetch("/checkout/sessions", { method: "POST", body })) as {
