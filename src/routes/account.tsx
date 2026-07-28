@@ -9,6 +9,7 @@ import {
   updateSubscriptionStatus,
   type AccountProfile,
 } from "@/lib/orders.functions";
+import { createBillingPortalSession } from "@/lib/stripe.functions";
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import creatineCover from "@/assets/creatine-cover.png.asset.json";
 
@@ -236,6 +237,7 @@ function AccountPage() {
           </Link>
           <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
             <Link to="/" className="hover:opacity-70">Shop</Link>
+            <ManageBillingButton />
             <button onClick={signOut} className="rounded-full border border-hairline px-4 py-2 hover:bg-paper-2">Sign out</button>
           </div>
         </div>
@@ -617,5 +619,29 @@ function TotalsRow({ label, value }: { label: string; value: string }) {
       <div className="text-muted-ink">{label}</div>
       <div className="mono">{value}</div>
     </div>
+  );
+}
+
+function ManageBillingButton() {
+  const openPortal = useServerFn(createBillingPortalSession);
+  const [loading, setLoading] = useState(false);
+  const onClick = async () => {
+    try {
+      setLoading(true);
+      const { url } = await openPortal();
+      if (url) window.location.assign(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Could not open billing portal");
+      setLoading(false);
+    }
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={loading}
+      className="rounded-full border border-hairline px-4 py-2 hover:bg-paper-2 disabled:opacity-60"
+    >
+      {loading ? "Opening…" : "Manage billing"}
+    </button>
   );
 }
