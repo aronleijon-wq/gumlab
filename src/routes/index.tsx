@@ -6,10 +6,8 @@ import creatineVerification from "@/assets/creatine-verification.png.asset.json"
 import gumlabLogo from "@/assets/gumlab-logo.png.asset.json";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
-import { CartButton, CartDrawer } from "@/components/CartDrawer";
-import { useCartSync } from "@/hooks/useCartSync";
-import { useCartStore } from "@/stores/cartStore";
-import { CREATINE_PRODUCT } from "@/lib/shopify";
+import { useServerFn } from "@tanstack/react-start";
+import { createCheckoutSession } from "@/lib/stripe.functions";
 
 
 const OG_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp";
@@ -61,7 +59,6 @@ function fmtSEK(n: number) {
 
 function Index() {
   const [mode, setMode] = useState<Mode>("subscribe");
-  useCartSync();
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -78,7 +75,6 @@ function Index() {
       <Newsletter />
       <Footer />
       <StickyBuy mode={mode} />
-      <CartDrawer />
     </div>
   );
 }
@@ -138,7 +134,6 @@ function Nav() {
               </Link>
             )
           )}
-          <CartButton />
 
         </div>
       </div>
