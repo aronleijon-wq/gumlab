@@ -40,7 +40,7 @@ export const createBillingPortalSession = createServerFn({ method: "POST" })
     });
 
     if (!customerId) {
-      throw new Error(error ?? "No Stripe checkout found for this account yet.");
+      return { url: null, error: error ?? "No Stripe checkout found for this account yet." };
     }
 
     return createStripeBillingPortal(customerId);
