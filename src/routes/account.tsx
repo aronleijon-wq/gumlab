@@ -640,7 +640,7 @@ function ManageBillingButton() {
         window.location.assign(result.url);
         return;
       }
-      alert(result.error);
+      alert("error" in result ? result.error : "Could not open billing portal");
       setLoading(false);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Could not open billing portal");
