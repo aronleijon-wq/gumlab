@@ -35,6 +35,7 @@ const SUB_PRICE_SEK = 390;
 type Sub = {
   id: string;
   product_id: string;
+  provider?: string;
   dose: number;
   status: "active" | "paused" | "cancelled";
   price_eur: number; // legacy column name — displayed in the row currency
@@ -45,6 +46,8 @@ type Sub = {
   plan_title?: string | null;
   cadence_days?: number;
   shopify_order_id?: string | null;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
 };
 type OrderAddress = {
   first_name?: string | null;
@@ -87,6 +90,7 @@ type OrderDetails = {
 type Order = {
   id: string;
   product_id: string;
+  provider?: string;
   dose: number;
   bags: number;
   amount_eur: number;
@@ -97,6 +101,9 @@ type Order = {
   shopify_order_id?: string | null;
   order_number?: string | null;
   fulfillment_status?: string | null;
+  stripe_customer_id?: string | null;
+  stripe_session_id?: string | null;
+  stripe_subscription_id?: string | null;
   details?: OrderDetails | null;
 };
 
@@ -219,6 +226,12 @@ function AccountPage() {
   }
 
   const activeCount = useMemo(() => subs.filter((s) => s.status === "active").length, [subs]);
+  const hasStripeBilling = useMemo(
+    () =>
+      subs.some((s) => s.provider === "stripe" && (s.stripe_customer_id || s.stripe_subscription_id)) ||
+      orders.some((o) => o.provider === "stripe" && (o.stripe_customer_id || o.stripe_session_id || o.stripe_subscription_id)),
+    [orders, subs],
+  );
   const bimonthly = useMemo(
     () => subs.filter((s) => s.status === "active").reduce((a, s) => a + Number(s.price_eur), 0),
     [subs]
@@ -237,7 +250,7 @@ function AccountPage() {
           </Link>
           <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
             <Link to="/" className="hover:opacity-70">Shop</Link>
-            <ManageBillingButton />
+            {hasStripeBilling && <ManageBillingButton />}
             <button onClick={signOut} className="rounded-full border border-hairline px-4 py-2 hover:bg-paper-2">Sign out</button>
           </div>
         </div>
@@ -290,13 +303,15 @@ function AccountPage() {
               />
             ) : (
               <div className="space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hairline bg-card px-5 py-4">
-                  <div>
-                    <div className="mono text-[10px] uppercase tracking-[0.28em] text-muted-ink">Betalning & fakturor</div>
-                    <div className="text-sm">Uppdatera kort, pausa, avboka eller ladda ner kvitton via Stripe.</div>
+                {hasStripeBilling && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hairline bg-card px-5 py-4">
+                    <div>
+                      <div className="mono text-[10px] uppercase tracking-[0.28em] text-muted-ink">Betalning & fakturor</div>
+                      <div className="text-sm">Uppdatera kort, pausa, avboka eller ladda ner kvitton via Stripe.</div>
+                    </div>
+                    <ManageBillingButton />
                   </div>
-                  <ManageBillingButton />
-                </div>
+                )}
                 {subs.map((s) => (
                   <SubCard key={s.id} sub={s} onUpdate={(status) => updateSub(s.id, status)} />
                 ))}
@@ -635,8 +650,13 @@ function ManageBillingButton() {
   const onClick = async () => {
     try {
       setLoading(true);
-      const { url } = await openPortal();
-      if (url) window.location.assign(url);
+      const result = await openPortal();
+      if (result.url) {
+        window.location.assign(result.url);
+        return;
+      }
+      alert("error" in result ? result.error : "Could not open billing portal");
+      setLoading(false);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Could not open billing portal");
       setLoading(false);
