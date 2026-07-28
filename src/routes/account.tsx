@@ -621,3 +621,27 @@ function TotalsRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function ManageBillingButton() {
+  const openPortal = useServerFn(createBillingPortalSession);
+  const [loading, setLoading] = useState(false);
+  const onClick = async () => {
+    try {
+      setLoading(true);
+      const { url } = await openPortal();
+      if (url) window.location.assign(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Could not open billing portal");
+      setLoading(false);
+    }
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={loading}
+      className="rounded-full border border-hairline px-4 py-2 hover:bg-paper-2 disabled:opacity-60"
+    >
+      {loading ? "Opening…" : "Manage billing"}
+    </button>
+  );
+}
