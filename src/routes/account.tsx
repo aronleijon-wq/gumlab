@@ -635,8 +635,10 @@ function ManageBillingButton() {
   const onClick = async () => {
     try {
       setLoading(true);
-      const { url } = await openPortal();
+      const { url, error } = await openPortal();
       if (url) window.location.assign(url);
+      if (error) alert(error);
+      setLoading(false);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Could not open billing portal");
       setLoading(false);
