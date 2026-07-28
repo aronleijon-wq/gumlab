@@ -290,6 +290,13 @@ function AccountPage() {
               />
             ) : (
               <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hairline bg-card px-5 py-4">
+                  <div>
+                    <div className="mono text-[10px] uppercase tracking-[0.28em] text-muted-ink">Betalning & fakturor</div>
+                    <div className="text-sm">Uppdatera kort, pausa, avboka eller ladda ner kvitton via Stripe.</div>
+                  </div>
+                  <ManageBillingButton />
+                </div>
                 {subs.map((s) => (
                   <SubCard key={s.id} sub={s} onUpdate={(status) => updateSub(s.id, status)} />
                 ))}
