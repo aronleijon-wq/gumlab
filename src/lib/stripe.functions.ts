@@ -85,6 +85,9 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       "shipping_address_collection[allowed_countries][9]": "IT",
       "metadata[mode]": data.mode,
       "metadata[user_id]": data.userId ?? "",
+      // Always create a Stripe customer so users can manage payments in the portal
+      // (subscription mode always creates one; payment mode requires this flag).
+      ...(isSub ? {} : { customer_creation: "always" }),
     });
 
     const session = (await stripeFetch("/checkout/sessions", { method: "POST", body })) as {
@@ -123,6 +126,27 @@ export const createBillingPortalSession = createServerFn({ method: "POST" })
         .limit(1)
         .maybeSingle();
       customerId = order?.stripe_customer_id as string | null | undefined;
+    }
+
+    // Fallback: search Stripe for a customer by the signed-in user's email.
+    if (!customerId) {
+      const email = (context.claims as any)?.email as string | undefined;
+      if (email) {
+        const search = (await stripeFetch(
+          `/customers?email=${encodeURIComponent(email)}&limit=1`,
+          { method: "GET" },
+        )) as { data: Array<{ id: string }> };
+        customerId = search.data?.[0]?.id;
+
+        // Backfill so future opens are instant.
+        if (customerId) {
+          await context.supabase
+            .from("orders")
+            .update({ stripe_customer_id: customerId })
+            .eq("provider", "stripe")
+            .is("stripe_customer_id", null);
+        }
+      }
     }
 
     if (!customerId) {
