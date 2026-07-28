@@ -2,11 +2,24 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-// Stripe price IDs (live) — configured in Stripe dashboard for GumLab.
-export const STRIPE_PRICE_SUBSCRIPTION = "price_1TyHI1AgPa81ZEVLdIYhaPM5"; // 390 SEK / 60 days
-export const STRIPE_PRICE_ONETIME = "price_1TyHHMAgPa81ZEVLvE8YQQi3"; // 449 SEK
+// Stripe product IDs (live) for GumLab. The default price on each product
+// in the Stripe dashboard is what customers are charged.
+export const STRIPE_PRODUCT_SUBSCRIPTION = "prod_UyDiQCZl934LoZ"; // every 60 days
+export const STRIPE_PRODUCT_ONETIME = "prod_UyDjP6fXwMAxEB"; // one-time
 
 const SITE_URL = "https://gumlab.se";
+
+async function resolveDefaultPrice(productId: string): Promise<string> {
+  const product = (await stripeFetch(`/products/${productId}`, { method: "GET" })) as {
+    default_price: string | { id: string } | null;
+  };
+  const dp = product.default_price;
+  const priceId = typeof dp === "string" ? dp : dp?.id;
+  if (!priceId) {
+    throw new Error(`Stripe product ${productId} has no default price set`);
+  }
+  return priceId;
+}
 
 function stripeForm(params: Record<string, string | undefined>): string {
   const usp = new URLSearchParams();
