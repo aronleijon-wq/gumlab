@@ -128,6 +128,27 @@ export const createBillingPortalSession = createServerFn({ method: "POST" })
       customerId = order?.stripe_customer_id as string | null | undefined;
     }
 
+    // Fallback: search Stripe for a customer by the signed-in user's email.
+    if (!customerId) {
+      const email = (context.claims as any)?.email as string | undefined;
+      if (email) {
+        const search = (await stripeFetch(
+          `/customers?email=${encodeURIComponent(email)}&limit=1`,
+          { method: "GET" },
+        )) as { data: Array<{ id: string }> };
+        customerId = search.data?.[0]?.id;
+
+        // Backfill so future opens are instant.
+        if (customerId) {
+          await context.supabase
+            .from("orders")
+            .update({ stripe_customer_id: customerId })
+            .eq("provider", "stripe")
+            .is("stripe_customer_id", null);
+        }
+      }
+    }
+
     if (!customerId) {
       throw new Error("No Stripe customer on file yet. Complete a checkout first.");
     }
