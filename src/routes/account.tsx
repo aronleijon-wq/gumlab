@@ -641,7 +641,7 @@ function ManageBillingButton() {
       disabled={loading}
       className="rounded-full border border-hairline px-4 py-2 hover:bg-paper-2 disabled:opacity-60"
     >
-      {loading ? "Opening…" : "Manage billing"}
+      {loading ? "Öppnar…" : "Hantera prenumeration"}
     </button>
   );
 }
