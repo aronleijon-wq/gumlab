@@ -8,6 +8,7 @@ import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { createCheckoutSession } from "@/lib/stripe.functions";
+import { useCurrency } from "@/lib/currency";
 
 
 const OG_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/nGL6NvM1vUQWq9gkC6u6fSG8FWA3/social-images/social-1784754043982-ChatGPT_Image_22_juli_2026_22_26_50.webp";
@@ -52,10 +53,6 @@ export const Route = createFileRoute("/")({
 });
 
 type Mode = "subscribe" | "onetime";
-
-function fmtSEK(n: number) {
-  return `${n.toLocaleString("sv-SE")} SEK`;
-}
 
 function Index() {
   const [mode, setMode] = useState<Mode>("subscribe");
@@ -144,6 +141,7 @@ function Nav() {
 /* ============================== HERO ============================== */
 
 function Hero() {
+  const { format } = useCurrency();
   return (
     <section className="relative overflow-hidden">
       <div
@@ -175,7 +173,7 @@ function Hero() {
                 href="#buy"
                 className="rounded-full bg-cta-rose px-7 py-4 text-sm font-medium uppercase tracking-widest text-cta-rose-ink shadow-[0_8px_24px_-8px_rgba(225,29,72,0.35)] transition hover:-translate-y-0.5 hover:bg-cta-rose-hover hover:shadow-[0_14px_32px_-10px_rgba(225,29,72,0.45)]"
               >
-                SHOP NOW — {SUB_PRICE_SEK} SEK/60 DAY SUPPLY
+                SHOP NOW — {format(SUB_PRICE_SEK)}/60 DAY SUPPLY
               </a>
               <a
                 href="#whats"
@@ -382,6 +380,7 @@ function ProductGallery() {
 function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const savings = ONETIME_PRICE_SEK - SUB_PRICE_SEK;
+  const { format } = useCurrency();
   const { user } = useSession();
   const startCheckout = useServerFn(createCheckoutSession);
   const [isLoading, setIsLoading] = useState(false);
@@ -454,7 +453,7 @@ function Buy({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
               disabled={isLoading}
               className="rounded-full bg-cta-rose px-8 py-4 text-sm font-medium uppercase tracking-widest text-cta-rose-ink transition hover:-translate-y-0.5 hover:bg-cta-rose-hover hover:shadow-lg disabled:opacity-60"
             >
-              {isLoading ? "Redirecting…" : `Checkout — ${fmtSEK(price)}`}
+              {isLoading ? "Redirecting…" : `Checkout — ${format(price)}`}
             </button>
             <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
               Secure checkout by Stripe · Free SE shipping
@@ -489,6 +488,7 @@ function SubscriptionCard({
   onSelect: () => void;
   savings: number;
 }) {
+  const { format, formatPrecise } = useCurrency();
   return (
     <button
       type="button"
@@ -518,19 +518,19 @@ function SubscriptionCard({
           </div>
         </div>
         <div className="text-right">
-          <div className="mono text-2xl leading-none">195 SEK<span className="text-xs text-muted-ink">/mo</span></div>
+          <div className="mono text-2xl leading-none">{format(SUB_PRICE_SEK / 2)}<span className="text-xs text-muted-ink">/mo</span></div>
           <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
-            Save {savings} SEK
+            Save {format(savings)}
           </div>
         </div>
       </div>
 
       <div className="mt-5 rounded-2xl bg-paper/70 px-4 py-3">
         <div className="mono text-[11px] uppercase tracking-widest text-muted-ink">
-          390 SEK today, then every 60 days
+          {format(SUB_PRICE_SEK)} today, then every 60 days
         </div>
         <div className="mono mt-1 text-[11px] uppercase tracking-widest text-ink">
-          Only 6.50 SEK/day
+          Only {formatPrecise(SUB_PRICE_SEK / 60)}/day
         </div>
       </div>
 
@@ -560,6 +560,7 @@ function OneTimeCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const { format, formatPrecise } = useCurrency();
   return (
     <button
       type="button"
@@ -582,9 +583,9 @@ function OneTimeCard({
           </div>
         </div>
         <div className="text-right">
-          <div className="mono text-2xl leading-none">449 SEK</div>
+          <div className="mono text-2xl leading-none">{format(ONETIME_PRICE_SEK)}</div>
           <div className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-ink">
-            Only 7.50 SEK/day
+            Only {formatPrecise(ONETIME_PRICE_SEK / 60)}/day
           </div>
         </div>
       </div>
@@ -984,6 +985,7 @@ function FooterCol({ title, links }: { title: string; links: { l: string; h: str
 function StickyBuy({ mode }: { mode: Mode }) {
   const price = mode === "subscribe" ? SUB_PRICE_SEK : ONETIME_PRICE_SEK;
   const label = mode === "subscribe" ? "Subscribe" : "Buy once";
+  const { format } = useCurrency();
   const { user } = useSession();
   const startCheckout = useServerFn(createCheckoutSession);
   const [isLoading, setIsLoading] = useState(false);
@@ -1008,7 +1010,7 @@ function StickyBuy({ mode }: { mode: Mode }) {
         className="flex w-full items-center justify-between rounded-full bg-ink px-5 py-3 text-sm font-medium uppercase tracking-widest text-paper disabled:opacity-60"
       >
         <span>{isLoading ? "Redirecting…" : label}</span>
-        <span className="mono">{price} SEK</span>
+        <span className="mono">{format(price)}</span>
       </button>
     </div>
   );
