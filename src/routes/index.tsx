@@ -54,10 +54,6 @@ export const Route = createFileRoute("/")({
 
 type Mode = "subscribe" | "onetime";
 
-function fmtSEK(n: number) {
-  return `${n.toLocaleString("sv-SE")} SEK`;
-}
-
 function Index() {
   const [mode, setMode] = useState<Mode>("subscribe");
 
